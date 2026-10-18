@@ -185,7 +185,11 @@ export class TradeShipExecution implements Execution {
     this.tradeShip!.delete(false);
     const gold = this.mg
       .config()
-      .tradeShipGold(this.tilesTraveled, this.tradeShip!.owner());
+      .tradeShipGold(
+        this.tilesTraveled,
+        this.tradeShip!.owner(),
+        this.mg.season(),
+      );
 
     if (this.wasCaptured && this.tradeShip!.owner() === this.origOwner) {
       // Retaken by its original owner: the payout stands, but nobody pirated it.

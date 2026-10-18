@@ -27,6 +27,7 @@ import { NoOpExecution } from "./NoOpExecution";
 import { PauseExecution } from "./PauseExecution";
 import { QuickChatExecution } from "./QuickChatExecution";
 import { ResearchExecution } from "./ResearchExecution";
+import { ParadropExecution } from "./ParadropExecution";
 import { SetCapitalExecution } from "./SetCapitalExecution";
 import { SpyExecution } from "./SpyExecution";
 import { RetreatExecution } from "./RetreatExecution";
@@ -149,6 +150,8 @@ export class Executor {
         return new ResearchExecution(player, intent.tech);
       case "set_capital":
         return new SetCapitalExecution(player, intent.tile);
+      case "paradrop":
+        return new ParadropExecution(player, intent.dst, intent.troops);
       case "spy":
         return new SpyExecution(
           player,

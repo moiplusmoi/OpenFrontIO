@@ -70,21 +70,41 @@ const TIER_1_TYPES: ReadonlySet<MessageType> = new Set([
   MessageType.SPY_FOILED,
   MessageType.SABOTAGED,
   MessageType.GOLD_STOLEN,
+  // GalloFront aviation
+  MessageType.BOMBER_INBOUND,
+  MessageType.AIR_RAID,
+  MessageType.PARADROP_INBOUND,
+  MessageType.FIGHTER_INTERCEPT,
+  MessageType.AIRCRAFT_SHOT_DOWN,
 ]);
 
 /**
- * GalloFront: the engine names a sabotaged structure by its raw UnitType
- * ("SAM Launcher"); shown through the unit_type.* keys, like intercepted
- * nukes.
+ * GalloFront: the engine names a sabotaged structure or an intercepted
+ * aircraft by its raw UnitType ("SAM Launcher"); shown through the
+ * unit_type.* keys, like intercepted nukes.
  */
-const SABOTAGED_UNIT_TRANSLATION_KEYS: Readonly<Record<string, string>> = {
+const RAW_UNIT_TRANSLATION_KEYS: Readonly<Record<string, string>> = {
   [UnitType.SAMLauncher]: "unit_type.sam_launcher",
   [UnitType.MissileSilo]: "unit_type.missile_silo",
   [UnitType.City]: "unit_type.city",
   [UnitType.Port]: "unit_type.port",
   [UnitType.Factory]: "unit_type.factory",
   [UnitType.DefensePost]: "unit_type.defense_post",
+  [UnitType.Airport]: "unit_type.airport",
+  [UnitType.Bomber]: "unit_type.bomber",
+  [UnitType.Fighter]: "unit_type.fighter",
+  [UnitType.AirTransport]: "unit_type.air_transport",
+  [UnitType.AtomBomb]: "unit_type.atom_bomb",
+  [UnitType.HydrogenBomb]: "unit_type.hydrogen_bomb",
 };
+
+/** Messages whose `{unit}` is a raw UnitType (see RAW_UNIT_TRANSLATION_KEYS). */
+const RAW_UNIT_MESSAGES: ReadonlySet<string> = new Set([
+  "events_display.spy_sabotage",
+  "events_display.sabotaged",
+  "events_display.fighter_intercept",
+  "events_display.aircraft_shot_down",
+]);
 
 /**
  * GalloFront: CAPITAL_FALLEN carries two messages — red for the victim,
@@ -95,6 +115,9 @@ const MESSAGE_COLORS: Readonly<Record<string, string>> = {
   "events_display.capital_lost": "text-red-400",
   "events_display.capital_destroyed": "text-red-400",
   "events_display.capital_captured": "text-green-400",
+  // GalloFront aviation: AIR_RAID is red for the victim, green for the raider.
+  "events_display.air_raid": "text-red-400",
+  "events_display.air_raid_done": "text-green-400",
 };
 
 const isTier1 = (type: MessageType): boolean => TIER_1_TYPES.has(type);
@@ -257,7 +280,9 @@ export class EventsDisplay extends LitElement implements Controller {
         event.type === MessageType.NUKE_INBOUND ||
         event.type === MessageType.HYDROGEN_BOMB_INBOUND ||
         event.type === MessageType.MIRV_INBOUND ||
-        event.type === MessageType.NAVAL_INVASION_INBOUND;
+        event.type === MessageType.NAVAL_INVASION_INBOUND ||
+        event.type === MessageType.BOMBER_INBOUND ||
+        event.type === MessageType.PARADROP_INBOUND;
       const unitGone =
         isInboundWarning &&
         event.unitView !== undefined &&
@@ -333,11 +358,10 @@ export class EventsDisplay extends LitElement implements Controller {
       params = { ...params, gold: renderNumber(event.goldAmount) };
     }
     if (
-      (event.message === "events_display.spy_sabotage" ||
-        event.message === "events_display.sabotaged") &&
+      RAW_UNIT_MESSAGES.has(event.message) &&
       typeof params.unit === "string"
     ) {
-      const key = SABOTAGED_UNIT_TRANSLATION_KEYS[params.unit];
+      const key = RAW_UNIT_TRANSLATION_KEYS[params.unit];
       if (key !== undefined) params = { ...params, unit: translateText(key) };
     }
 

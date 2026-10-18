@@ -24,6 +24,11 @@ export const UT_TRAIN = "Train" as const;
 /** GalloFront: a spy. Never drawn by the WebGL passes (no atlas column);
  *  the owner's spies are drawn by SpyLayer (Canvas 2D). */
 export const UT_SPY = "Spy" as const;
+/** GalloFront aviation: aircraft have no sprite in the WebGL unit atlas;
+ *  AircraftLayer (Canvas 2D) draws them for everyone. */
+export const UT_BOMBER = "Bomber" as const;
+export const UT_FIGHTER = "Fighter" as const;
+export const UT_AIR_TRANSPORT = "Air Transport" as const;
 
 // Structures
 export const UT_CITY = "City" as const;
@@ -32,6 +37,8 @@ export const UT_FACTORY = "Factory" as const;
 export const UT_DEFENSE_POST = "Defense Post" as const;
 export const UT_SAM_LAUNCHER = "SAM Launcher" as const;
 export const UT_MISSILE_SILO = "Missile Silo" as const;
+/** GalloFront aviation: 7th column of the icon atlas. */
+export const UT_AIRPORT = "Airport" as const;
 
 // ---------------------------------------------------------------------------
 // Derived sets
@@ -44,6 +51,7 @@ export const STRUCTURE_TYPES: ReadonlySet<string> = new Set([
   UT_DEFENSE_POST,
   UT_SAM_LAUNCHER,
   UT_MISSILE_SILO,
+  UT_AIRPORT,
 ]);
 
 export const NUKE_TYPES: ReadonlySet<string> = new Set([
@@ -103,4 +111,8 @@ export const ALL_UNIT_TYPES = [
   UT_MISSILE_SILO,
   UT_TRAIN,
   UT_SPY,
+  UT_AIRPORT,
+  UT_BOMBER,
+  UT_FIGHTER,
+  UT_AIR_TRANSPORT,
 ] as const;

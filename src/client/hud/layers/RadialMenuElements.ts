@@ -31,6 +31,7 @@ import { TooltipItem } from "./RadialMenu";
 import { EventBus } from "@openfront/shared/EventBus";
 import {
   BuildUnitIntentEvent,
+  SendParadropIntentEvent,
   SendSetCapitalIntentEvent,
   SendSpyIntentEvent,
   SendUpgradeStructureIntentEvent,
@@ -410,11 +411,19 @@ function getAllEnabledUnits(
 
   if (myPlayer) {
     Structures.types.forEach(addIfEnabled);
+    // GalloFront aviation: a fighter is stationed at one of MY airports, so
+    // it is built from my own territory, not aimed at an enemy.
+    addIfEnabled(UnitType.Fighter);
   } else {
     BuildableAttacks.types.forEach(addIfEnabled);
   }
 
   return units;
+}
+
+/** Whether `type` belongs to the attack submenu (aimed at a tile). */
+function isAttackMenuUnit(type: PlayerBuildableUnitType): boolean {
+  return BuildableAttacks.has(type) && type !== UnitType.Fighter;
 }
 
 function createMenuElements(
@@ -432,10 +441,13 @@ function createMenuElements(
       (item) =>
         unitTypes.has(item.unitType) &&
         (filterType === "attack"
-          ? BuildableAttacks.has(item.unitType)
-          : !BuildableAttacks.has(item.unitType)),
+          ? isAttackMenuUnit(item.unitType)
+          : !isAttackMenuUnit(item.unitType)),
     )
     .map((item: BuildItemDisplay) => {
+      if (item.unitType === UnitType.Fighter) {
+        return fighterBuildElement(item, params, `${elementIdPrefix}_`);
+      }
       return {
         id: `${elementIdPrefix}_${item.unitType}`,
         name: item.key
@@ -605,7 +617,163 @@ export const attackMenuElement: MenuElement = {
 
   subMenu: (params: MenuElementParams) => {
     if (params === undefined) return [];
-    return createMenuElements(params, "attack", "attack");
+    return [
+      ...createMenuElements(params, "attack", "attack"),
+      // GalloFront aviation: paradrop on land that isn't an ally's
+      ...(paradropOffered(params) ? [paradropMenuElement] : []),
+    ];
+  },
+};
+
+// ---- GalloFront aviation ----
+
+/** Reach of the airport pick around the clicked tile (as for the capital). */
+const AIRPORT_SELECTION_RADIUS = 5;
+/** Shown in tooltips when the engine's buildable list hasn't arrived yet. */
+const FIGHTER_COST_FALLBACK = 600_000n;
+
+/** My closest finished airport within reach of the clicked tile, or null. */
+export function airportNearTile(params: MenuElementParams) {
+  if (typeof params.myPlayer.units !== "function") return null;
+  const airports = params.myPlayer
+    .units(UnitType.Airport)
+    .filter(
+      (unit) =>
+        !unit.isUnderConstruction() &&
+        unit.markedForDeletion() === false &&
+        params.game.manhattanDist(unit.tile(), params.tile) <=
+          AIRPORT_SELECTION_RADIUS,
+    );
+  return (
+    findClosestBy(airports, (unit) =>
+      params.game.manhattanDist(unit.tile(), params.tile),
+    ) ?? null
+  );
+}
+
+/** Fighters already stationed at `airport` (one per airport level). */
+function fightersStationed(params: MenuElementParams, airportId: number) {
+  return params.myPlayer
+    .units(UnitType.Fighter)
+    .filter((f) => f.targetUnitId() === airportId).length;
+}
+
+function fighterCost(params: MenuElementParams): bigint {
+  return (
+    params.playerActions.buildableUnits?.find(
+      (bu) => bu.type === UnitType.Fighter,
+    )?.cost ?? FIGHTER_COST_FALLBACK
+  );
+}
+
+/**
+ * Why a fighter can't be built here: no airport of mine nearby, no free
+ * slot on it, no Air Superiority (mil_4) or not enough gold. The engine's
+ * canBuild is computed for the clicked tile, so it is not used here: the
+ * intent is sent with the airport's own tile.
+ */
+function fighterBlocked(params: MenuElementParams): boolean {
+  if (params.game.inSpawnPhase()) return true;
+  const airport = airportNearTile(params);
+  if (airport === null) return true;
+  const me = params.myPlayer;
+  if (typeof me.hasTech === "function" && !me.hasTech(TechId.Mil4)) {
+    return true;
+  }
+  if (me.gold() < fighterCost(params)) return true;
+  return fightersStationed(params, airport.id()) >= airport.level();
+}
+
+/**
+ * The build-submenu entry for a fighter: offered on own territory, enabled
+ * only next to one of my airports with a free slot; the intent targets the
+ * airport's tile.
+ */
+function fighterBuildElement(
+  item: BuildItemDisplay,
+  params: MenuElementParams,
+  idPrefix: string,
+): MenuElement {
+  const airport = airportNearTile(params);
+  return {
+    id: `${idPrefix}${item.unitType}`,
+    name: "fighter",
+    disabled: (p: MenuElementParams) => fighterBlocked(p),
+    color: (p: MenuElementParams) =>
+      fighterBlocked(p) ? COLORS.disabled : COLORS.building,
+    icon: item.icon,
+    tooltipItems: [
+      { text: translateText(item.key ?? ""), className: "title" },
+      {
+        text: translateText(item.description ?? ""),
+        className: "description",
+      },
+      {
+        text: `${renderNumber(fighterCost(params))} ${translateText("player_panel.gold")}`,
+        className: "cost",
+      },
+      airport === null
+        ? null
+        : {
+            text: `${fightersStationed(params, airport.id())}/${airport.level()}`,
+            className: "count",
+          },
+    ].filter((t): t is TooltipItem => t !== null),
+    action: (p: MenuElementParams) => {
+      const home = airportNearTile(p);
+      if (home !== null && !fighterBlocked(p)) {
+        p.eventBus.emit(
+          new BuildUnitIntentEvent(UnitType.Fighter, home.tile()),
+        );
+      }
+      p.closeMenu();
+    },
+  };
+}
+
+/**
+ * Paradrop is offered on land that is not an ally's (own land included: a
+ * drop there just reinforces). The engine decides whether an airport in
+ * range is ready; the menu only mirrors its buildable list.
+ */
+function paradropOffered(params: MenuElementParams): boolean {
+  if (params.game.inSpawnPhase()) return false;
+  if (typeof params.game.isLand !== "function") return false;
+  if (!params.game.isLand(params.tile)) return false;
+  return !(isFriendlyTarget(params) && !isDisconnectedTarget(params));
+}
+
+function paradropBlocked(params: MenuElementParams): boolean {
+  if (!paradropOffered(params)) return true;
+  return !(
+    params.playerActions.buildableUnits?.some(
+      (bu) => bu.type === UnitType.AirTransport && bu.canBuild !== false,
+    ) ?? false
+  );
+}
+
+/** GalloFront: "🪂 Paradrop" — the attack ratio of my troops, by air. */
+export const paradropMenuElement: MenuElement = {
+  id: "paradrop",
+  name: "paradrop",
+  text: "🪂",
+  fontSize: "22px",
+  color: (params: MenuElementParams) =>
+    paradropBlocked(params) ? COLORS.disabled : COLORS.attack,
+  disabled: (params: MenuElementParams) => paradropBlocked(params),
+  tooltipKeys: [
+    { key: "radial_menu.paradrop", className: "title" },
+    { key: "radial_menu.paradrop_desc", className: "description" },
+  ],
+  action: (params: MenuElementParams) => {
+    if (!paradropBlocked(params)) {
+      const ratio = params.uiState?.attackRatio ?? 1;
+      const troops = Math.floor(ratio * params.myPlayer.troops());
+      if (troops > 0) {
+        params.eventBus.emit(new SendParadropIntentEvent(params.tile, troops));
+      }
+    }
+    params.closeMenu();
   },
 };
 

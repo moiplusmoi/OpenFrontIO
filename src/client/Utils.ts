@@ -629,6 +629,7 @@ export function getMessageTypeClasses(type: MessageType): string {
     case MessageType.ALLIANCE_ACCEPTED:
     case MessageType.RESEARCH_COMPLETE:
     case MessageType.SPY_SUCCESS:
+    case MessageType.FIGHTER_INTERCEPT: // GalloFront aviation: my fighter scored
       return severityColors["success"];
     case MessageType.ATTACK_FAILED:
     case MessageType.ALLIANCE_REJECTED:
@@ -640,6 +641,8 @@ export function getMessageTypeClasses(type: MessageType): string {
     case MessageType.SPY_FOILED: // (and a lost spy) in red
     case MessageType.SABOTAGED:
     case MessageType.GOLD_STOLEN:
+    case MessageType.AIR_RAID: // GalloFront aviation (the raider's copy is
+    case MessageType.AIRCRAFT_SHOT_DOWN: // recoloured green by EventsDisplay)
       return severityColors["fail"];
     case MessageType.ATTACK_CANCELLED:
     case MessageType.ATTACK_REQUEST:
@@ -653,6 +656,8 @@ export function getMessageTypeClasses(type: MessageType): string {
     case MessageType.ALLIANCE_EXPIRED:
     case MessageType.NAVAL_INVASION_INBOUND:
     case MessageType.RENEW_ALLIANCE:
+    case MessageType.BOMBER_INBOUND: // GalloFront aviation
+    case MessageType.PARADROP_INBOUND:
       return severityColors["warn"];
     case MessageType.CHAT:
     case MessageType.ALLIANCE_REQUEST:

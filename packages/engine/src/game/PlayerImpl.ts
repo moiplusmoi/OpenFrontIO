@@ -1643,6 +1643,13 @@ export class PlayerImpl implements Player {
         return this.landBasedUnitSpawn(targetTile);
       case UnitType.Spy:
         return targetTile;
+      case UnitType.Airport:
+        return this.landBasedStructureSpawn(targetTile, validTiles);
+      case UnitType.Bomber:
+      case UnitType.AirTransport:
+        return this.airStrikeSpawn(targetTile);
+      case UnitType.Fighter:
+        return this.fighterSpawn(targetTile);
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
       case UnitType.SAMLauncher:
@@ -1652,6 +1659,42 @@ export class PlayerImpl implements Player {
       default:
         assertNever(unitType);
     }
+  }
+
+  // GalloFront: nearest ready airport whose range covers the target tile.
+  airStrikeSpawn(tile: TileRef): TileRef | false {
+    const mg = this.mg;
+    if (mg.isSpawnImmunityActive()) return false;
+    if (!mg.isLand(tile) || mg.isImpassable(tile)) return false;
+    const owner = mg.owner(tile);
+    if (owner.isPlayer() && this.isFriendly(owner)) return false;
+    const cfg = mg.config();
+    const ready = this.units(UnitType.Airport).filter(
+      (a) =>
+        a.isActive() &&
+        !a.isUnderConstruction() &&
+        !a.isInCooldown() &&
+        !a.isDisabled() &&
+        mg.manhattanDist(a.tile(), tile) <= cfg.airportRange(a.level()),
+    );
+    ready.sort(
+      (a, b) =>
+        mg.manhattanDist(a.tile(), tile) - mg.manhattanDist(b.tile(), tile) ||
+        a.id() - b.id(),
+    );
+    return ready[0]?.tile() ?? false;
+  }
+
+  // GalloFront: a fighter spawns at one of the player's airports with a free slot.
+  fighterSpawn(tile: TileRef): TileRef | false {
+    const airport = this.units(UnitType.Airport).find(
+      (a) => a.tile() === tile && a.isActive() && !a.isUnderConstruction(),
+    );
+    if (airport === undefined) return false;
+    const stationed = this.units(UnitType.Fighter).filter(
+      (f) => f.targetUnit() === airport,
+    ).length;
+    return stationed < airport.level() ? tile : false;
   }
 
   nukeSpawn(tile: TileRef, nukeType: UnitType): TileRef | false {

@@ -199,7 +199,14 @@ describe.each(VARIANTS)("full game snapshots: %s", (_, overrides) => {
       // GalloFront: a spy needs the def_3 tech (3 researches, 1800 ticks),
       // out of reach in this 1500-tick game; SpyExecution has its own
       // execution and snapshot round-trip tests.
-      const neverStored = new Set(["Pause", "Spy"]);
+      const neverStored = new Set([
+        "Pause",
+        "Spy",
+        "Airport",
+        "Bomber",
+        "Fighter",
+        "Paradrop",
+      ]);
       const missing = EXECUTION_SNAPSHOT_TYPES.map((t) => t.name).filter(
         (name) => !reference.execTypes.has(name) && !neverStored.has(name),
       );

@@ -16,7 +16,10 @@ import type {
 } from "../snapshot/SnapshotContext";
 import { CityExecution } from "./CityExecution";
 import { DefensePostExecution } from "./DefensePostExecution";
+import { AirportExecution } from "./AirportExecution";
+import { BomberExecution } from "./BomberExecution";
 import { FactoryExecution } from "./FactoryExecution";
+import { FighterExecution } from "./FighterExecution";
 import { MirvExecution } from "./MIRVExecution";
 import { MissileSiloExecution } from "./MissileSiloExecution";
 import { NukeExecution } from "./NukeExecution";
@@ -81,10 +84,11 @@ export class ConstructionExecution implements Execution {
         spawnTile,
         {},
       );
-      // eco_3 Urbanization halves construction time.
+      // eco_3 Urbanization halves construction time; spring builds faster.
       const duration = Math.floor(
         (info.constructionDuration ?? 0) *
-          this.mg.config().techConstructionMult(this.player),
+          this.mg.config().techConstructionMult(this.player) *
+          this.mg.config().seasonConstructionMult(this.mg.season()),
       );
       if (duration > 0) {
         this.structure.setUnderConstruction(true);
@@ -172,6 +176,15 @@ export class ConstructionExecution implements Execution {
       case UnitType.Factory:
         this.mg.addExecution(new FactoryExecution(this.structure!));
         break;
+      case UnitType.Airport:
+        this.mg.addExecution(new AirportExecution(this.structure!));
+        break;
+      case UnitType.Bomber:
+        this.mg.addExecution(new BomberExecution(player, this.tile));
+        break;
+      case UnitType.Fighter:
+        this.mg.addExecution(new FighterExecution(player, this.tile));
+        break;
       default:
         console.warn(
           `unit type ${this.constructionType} cannot be constructed`,
@@ -188,6 +201,7 @@ export class ConstructionExecution implements Execution {
       case UnitType.SAMLauncher:
       case UnitType.City:
       case UnitType.Factory:
+      case UnitType.Airport:
         return true;
       default:
         return false;

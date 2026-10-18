@@ -4,6 +4,7 @@ import { GameUpdateType } from "@openfront/engine-api/game/GameUpdates";
 import { ClientID } from "@openfront/engine-api/Schemas";
 import { Config } from "@openfront/engine-lib/configuration/Config";
 import { renderNumber, renderTroops } from "@openfront/engine-lib/Format";
+import { Season, seasonAt } from "@openfront/engine-lib/game/Seasons";
 import { assetUrl } from "@openfront/shared/AssetUrls";
 import { EventBus } from "@openfront/shared/EventBus";
 import { LitElement, html } from "lit";
@@ -134,7 +135,8 @@ export class ControlPanel extends LitElement implements Controller {
       .outgoingAttacks()
       .map((a) => a.troops)
       .reduce((a, b) => a + b, 0);
-    this.troopRate = config.troopIncreaseRate(player) * 10;
+    this.troopRate =
+      config.troopIncreaseRate(player, this.currentSeason()) * 10;
 
     const helpEnabled = new UserSettings().helpMessages();
 
@@ -316,10 +318,19 @@ export class ControlPanel extends LitElement implements Controller {
     }
   }
 
+  // GalloFront: the season in effect, so the displayed +/tick reflects winter.
+  private currentSeason(): Season | null {
+    return this.game.config().seasonsEnabled()
+      ? seasonAt(this.game.ticks())
+      : null;
+  }
+
   private updateTroopIncrease() {
     const player = this.game?.myPlayer();
     if (player === null) return;
-    const troopIncreaseRate = this.game.config().troopIncreaseRate(player);
+    const troopIncreaseRate = this.game
+      .config()
+      .troopIncreaseRate(player, this.currentSeason());
     this._troopRateIsIncreasing =
       troopIncreaseRate >= this._lastTroopIncreaseRate;
     this._lastTroopIncreaseRate = troopIncreaseRate;

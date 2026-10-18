@@ -26,6 +26,7 @@ import { ActionableEvents } from "./layers/ActionableEvents";
 import { AlertFrame } from "./layers/AlertFrame";
 import { AttacksDisplay } from "./layers/AttacksDisplay";
 import { BuildMenu } from "./layers/BuildMenu";
+import { AircraftLayer } from "./layers/AircraftLayer";
 import { CapitalLayer } from "./layers/CapitalLayer";
 import { SpyLayer } from "./layers/SpyLayer";
 import { ChatDisplay } from "./layers/ChatDisplay";
@@ -47,6 +48,7 @@ import { PlayerPanel } from "./layers/PlayerPanel";
 import { ReplayPanel } from "./layers/ReplayPanel";
 import { SettingsModal } from "./layers/SettingsModal";
 import { SpawnTimer } from "./layers/SpawnTimer";
+import { SeasonDisplay } from "./layers/SeasonDisplay";
 import { TechPanel } from "./layers/TechPanel";
 import { TutorialPanel } from "./layers/TutorialPanel";
 import { UnitDisplay } from "./layers/UnitDisplay";
@@ -198,6 +200,14 @@ export function createRenderer(
   gameRightSidebar.game = game;
   gameRightSidebar.eventBus = eventBus;
 
+  const seasonDisplay = document.querySelector(
+    "season-display",
+  ) as SeasonDisplay;
+  if (!(seasonDisplay instanceof SeasonDisplay)) {
+    console.error("season display not found");
+  }
+  seasonDisplay.game = game;
+
   const settingsModal = document.querySelector(
     "settings-modal",
   ) as SettingsModal;
@@ -348,6 +358,7 @@ export function createRenderer(
     new AmbienceController(game, eventBus, transformHandler),
     new CapitalLayer(game, transformHandler, inputEl),
     new SpyLayer(game, transformHandler, inputEl),
+    new AircraftLayer(game, transformHandler, inputEl),
     ...(mapLayerController ? [mapLayerController] : []),
     eventsDisplay,
     actionableEvents,
@@ -369,6 +380,7 @@ export function createRenderer(
     gameLeftSidebar,
     unitDisplay,
     gameRightSidebar,
+    seasonDisplay,
     controlPanel,
     playerInfo,
     winModal,

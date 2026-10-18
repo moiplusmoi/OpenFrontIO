@@ -208,7 +208,18 @@ export enum UnitType {
   Train = "Train",
   Factory = "Factory",
   Spy = "Spy",
+  // GalloFront aviation
+  Airport = "Airport",
+  Bomber = "Bomber",
+  Fighter = "Fighter",
+  AirTransport = "Air Transport",
 }
+
+export const Aircraft = [
+  UnitType.Bomber,
+  UnitType.Fighter,
+  UnitType.AirTransport,
+] as const;
 
 // GalloFront espionage
 export enum SpyMission {
@@ -360,6 +371,8 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.HydrogenBomb,
   UnitType.MIRV,
   UnitType.Warship,
+  UnitType.Bomber,
+  UnitType.Fighter,
 ] as const);
 
 export const Structures = unitTypeGroup([
@@ -369,6 +382,7 @@ export const Structures = unitTypeGroup([
   UnitType.MissileSilo,
   UnitType.Port,
   UnitType.Factory,
+  UnitType.Airport,
 ] as const);
 
 export const BuildMenus = unitTypeGroup([
@@ -380,6 +394,7 @@ export const PlayerBuildable = unitTypeGroup([
   ...BuildMenus.types,
   UnitType.TransportShip,
   UnitType.Spy,
+  UnitType.AirTransport,
 ] as const);
 
 export type PlayerBuildableUnitType = (typeof PlayerBuildable.types)[number];
@@ -610,6 +625,11 @@ export enum MessageType {
   SPY_FOILED,
   SABOTAGED,
   GOLD_STOLEN,
+  BOMBER_INBOUND,
+  AIR_RAID,
+  PARADROP_INBOUND,
+  FIGHTER_INTERCEPT,
+  AIRCRAFT_SHOT_DOWN,
 }
 
 // Message categories used for filtering events in the EventsDisplay
@@ -652,6 +672,11 @@ export const MESSAGE_TYPE_CATEGORIES: Record<MessageType, MessageCategory> = {
   [MessageType.SPY_FOILED]: MessageCategory.ATTACK,
   [MessageType.SABOTAGED]: MessageCategory.ATTACK,
   [MessageType.GOLD_STOLEN]: MessageCategory.ATTACK,
+  [MessageType.BOMBER_INBOUND]: MessageCategory.ATTACK,
+  [MessageType.AIR_RAID]: MessageCategory.ATTACK,
+  [MessageType.PARADROP_INBOUND]: MessageCategory.ATTACK,
+  [MessageType.FIGHTER_INTERCEPT]: MessageCategory.ATTACK,
+  [MessageType.AIRCRAFT_SHOT_DOWN]: MessageCategory.ATTACK,
 } as const;
 
 /**

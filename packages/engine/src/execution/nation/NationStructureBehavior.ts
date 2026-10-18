@@ -55,6 +55,14 @@ const SAM_RATIO_BY_DIFFICULTY: Record<Difficulty, number> = {
 /** Port ratio per city in team games (not on Easy), where teammates are safe trade partners */
 const TEAM_PORT_RATIO = 1;
 
+/** GalloFront aviation: airport ratio per city, keyed by difficulty (needs mil_3). */
+const AIRPORT_RATIO_BY_DIFFICULTY: Record<Difficulty, number> = {
+  [Difficulty.Easy]: 0,
+  [Difficulty.Medium]: 0,
+  [Difficulty.Hard]: 0.15,
+  [Difficulty.Impossible]: 0.2,
+};
+
 /**
  * Returns structure ratios relative to city count, adjusted by difficulty and game mode.
  * Cities are always prioritized and built first.
@@ -81,6 +89,10 @@ function getStructureRatios(
     },
     [UnitType.MissileSilo]: {
       ratioPerCity: 0.2,
+      perceivedCostIncreasePerOwned: 1,
+    },
+    [UnitType.Airport]: {
+      ratioPerCity: AIRPORT_RATIO_BY_DIFFICULTY[difficulty],
       perceivedCostIncreasePerOwned: 1,
     },
   };
@@ -673,6 +685,7 @@ export class NationStructureBehavior {
       UnitType.Factory,
       UnitType.SAMLauncher,
       UnitType.MissileSilo,
+      UnitType.Airport,
     ];
 
     const nukesEnabled =
@@ -708,6 +721,12 @@ export class NationStructureBehavior {
       if (
         this.shouldBuildStructure(structureType, cityCount, hasCoastalTiles)
       ) {
+        // GalloFront: a structure whose technology is missing (airports
+        // need mil_3) would fail canBuild on every candidate tile — skip it
+        // rather than sampling tiles for nothing.
+        if (!this.hasTechFor(structureType)) {
+          continue;
+        }
         if (this.maybeSpawnStructure(structureType)) {
           return true;
         }
@@ -719,6 +738,12 @@ export class NationStructureBehavior {
     }
 
     return false;
+  }
+
+  /** Whether the nation has the technology `type` requires, if any. */
+  private hasTechFor(type: UnitType): boolean {
+    const tech = this.game.config().unitRequiredTech(type);
+    return tech === null || this.player.hasTech(tech);
   }
 
   // Cities owned, or a territory-based equivalent when cities are disabled
@@ -1218,6 +1243,9 @@ export class NationStructureBehavior {
         return this.portValue();
       case UnitType.SAMLauncher:
         return this.samLauncherValue();
+      case UnitType.Airport:
+        // GalloFront: like a silo — inland, high and spaced out.
+        return this.missileSiloValue(UnitType.Airport);
       default:
         throw new Error(`Value function not implemented for ${type}`);
     }
@@ -1227,10 +1255,12 @@ export class NationStructureBehavior {
    * Value function for MissileSilo.
    * Prefers high elevation, distance from border, and spacing from same-type structures.
    */
-  private missileSiloValue(): (tile: TileRef) => number {
+  private missileSiloValue(
+    type: UnitType = UnitType.MissileSilo,
+  ): (tile: TileRef) => number {
     const game = this.game;
     const borderTiles = this.player.borderTiles();
-    const otherUnits = this.player.units(UnitType.MissileSilo);
+    const otherUnits = this.player.units(type);
     const { borderSpacing, structureSpacing } = this.spacingConstants();
 
     return (tile) => {

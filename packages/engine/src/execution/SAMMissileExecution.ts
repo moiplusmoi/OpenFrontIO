@@ -24,6 +24,9 @@ import type {
 } from "../snapshot/SnapshotContext";
 
 const INTERCEPTED_UNIT_TRANSLATION_KEYS: Partial<Record<UnitType, string>> = {
+  [UnitType.Bomber]: "unit_type.bomber",
+  [UnitType.AirTransport]: "unit_type.air_transport",
+  [UnitType.Fighter]: "unit_type.fighter",
   [UnitType.AtomBomb]: "unit_type.atom_bomb",
   [UnitType.HydrogenBomb]: "unit_type.hydrogen_bomb",
   [UnitType.MIRVWarhead]: "unit_type.mirv",
@@ -64,7 +67,18 @@ export class SAMMissileExecution implements Execution {
       UnitType.AtomBomb,
       UnitType.HydrogenBomb,
       UnitType.MIRVWarhead,
+      UnitType.Bomber,
+      UnitType.AirTransport,
+      UnitType.Fighter,
     ];
+    const isAircraft =
+      this.target.type() === UnitType.Bomber ||
+      this.target.type() === UnitType.AirTransport ||
+      this.target.type() === UnitType.Fighter;
+    // GalloFront: aircraft move, so the missile pursues the live position.
+    if (isAircraft && this.target.isActive()) {
+      this.targetTile = this.target.tile();
+    }
     if (
       !this.target.isActive() ||
       !this.ownerUnit.isActive() ||
@@ -100,10 +114,12 @@ export class SAMMissileExecution implements Execution {
         this.target.delete(true, this._owner);
         this.SAMMissile.delete(false);
 
-        // Record stats
-        this.mg
-          .stats()
-          .bombIntercept(this._owner, this.target.type() as NukeType, 1);
+        // Record stats (nukes only; aircraft are not bombs)
+        if (!isAircraft) {
+          this.mg
+            .stats()
+            .bombIntercept(this._owner, this.target.type() as NukeType, 1);
+        }
         return;
       } else if (result.status === PathStatus.NEXT) {
         this.SAMMissile.move(result.node);

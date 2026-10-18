@@ -148,6 +148,14 @@ export class SendSetCapitalIntentEvent implements GameEvent {
   constructor(public readonly tile: TileRef) {}
 }
 
+/** GalloFront: paradrop `troops` onto `dst` from an airport in range. */
+export class SendParadropIntentEvent implements GameEvent {
+  constructor(
+    public readonly dst: TileRef,
+    public readonly troops: number,
+  ) {}
+}
+
 /** GalloFront: send a spy against `targetID`; `unitId` is the structure to sabotage. */
 export class SendSpyIntentEvent implements GameEvent {
   constructor(
@@ -357,6 +365,7 @@ export class Transport {
       this.onSetCapitalIntent(e),
     );
     this.subscribe(SendSpyIntentEvent, (e) => this.onSpyIntent(e));
+    this.subscribe(SendParadropIntentEvent, (e) => this.onParadropIntent(e));
 
     this.subscribe(PauseGameIntentEvent, (e) => this.onPauseGameIntent(e));
     this.subscribe(SendWinnerEvent, (e) => this.onSendWinnerEvent(e));
@@ -932,6 +941,15 @@ export class Transport {
     this.sendIntent({
       type: "set_capital",
       tile: event.tile,
+    });
+  }
+
+  private onParadropIntent(event: SendParadropIntentEvent) {
+    if (!this.isSendableTroops("paradrop", event.troops)) return;
+    this.sendIntent({
+      type: "paradrop",
+      dst: event.dst,
+      troops: event.troops,
     });
   }
 

@@ -122,6 +122,11 @@ export function notableLobbySettings(
       label: translateText("game_settings.water_nukes"),
       value: enabled,
     });
+  if (c.seasons === false)
+    items.push({
+      label: translateText("game_settings.seasons"),
+      value: disabled,
+    });
   if (c.doomsdayClock?.enabled)
     items.push({
       label: translateText("game_settings.doomsday_clock"),

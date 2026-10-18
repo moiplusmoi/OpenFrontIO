@@ -1,3 +1,4 @@
+import { Season } from "@openfront/engine-lib/game/Seasons";
 import { GameMap, TileRef } from "@openfront/engine-api/game/GameMap";
 import {
   AllianceInfo,
@@ -67,6 +68,19 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Spy]: {
+    targetTile: TileRef;
+  };
+
+  // GalloFront aviation
+  [UnitType.Airport]: Record<string, never>;
+  [UnitType.Bomber]: {
+    targetTile: TileRef;
+  };
+  [UnitType.Fighter]: {
+    targetUnit: Unit;
+  };
+  [UnitType.AirTransport]: {
+    troops: number;
     targetTile: TileRef;
   };
 
@@ -677,6 +691,8 @@ export interface Game extends GameLike {
   conquerPlayer(conqueror: Player, conquered: Player): void;
   /** GalloFront: the victim's capital city was captured (conqueror) or destroyed (null). */
   capitalFallen(victim: Player, conqueror: Player | null): void;
+  /** GalloFront: current season (null when seasons are disabled). */
+  season(): Season | null;
   miniWaterHPA(): PathFinder<number> | null;
   miniWaterGraph(): AbstractGraph | null;
   getWaterComponent(tile: TileRef): number | null;

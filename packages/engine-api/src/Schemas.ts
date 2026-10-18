@@ -51,7 +51,8 @@ export type Intent =
   | ToggleGameStartTimer
   | ResearchIntent
   | SetCapitalIntent
-  | SpyIntent;
+  | SpyIntent
+  | ParadropIntent;
 
 export type AttackIntent = z.infer<typeof AttackIntentSchema>;
 export type CancelAttackIntent = z.infer<typeof CancelAttackIntentSchema>;
@@ -315,6 +316,8 @@ export const GameConfigSchema = z.object({
   startDelay: zb.uint({ max: 600 }).nullable().optional(), // In seconds
   spawnImmunityDuration: zb.uint().nullable().optional(), // In ticks
   disabledUnits: z.enum(UnitType).array().optional(),
+  // GalloFront: seasonal cycle (growth/gold/trade/build modifiers). Default on.
+  seasons: z.boolean().optional(),
   playerTeams: TeamCountConfigSchema.optional(),
   goldMultiplier: zb.float({ min: 0.1, max: 1000 }).nullable().optional(),
   startingGold: zb.uint({ max: 1000000000 }).nullable().optional(),
@@ -577,6 +580,14 @@ export const SpyIntentSchema = z.object({
 });
 export type SpyIntent = z.infer<typeof SpyIntentSchema>;
 
+// GalloFront: airborne landing from an airport in range.
+export const ParadropIntentSchema = z.object({
+  type: z.literal("paradrop"),
+  dst: zb.uint(),
+  troops: zb.float({ min: 0 }),
+});
+export type ParadropIntent = z.infer<typeof ParadropIntentSchema>;
+
 export const IntentSchema = z.discriminatedUnion("type", [
   AttackIntentSchema,
   CancelAttackIntentSchema,
@@ -606,6 +617,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   ResearchIntentSchema,
   SetCapitalIntentSchema,
   SpyIntentSchema,
+  ParadropIntentSchema,
 ]);
 
 // StampedIntent = Intent with server-stamped clientID (used in turns and execution)

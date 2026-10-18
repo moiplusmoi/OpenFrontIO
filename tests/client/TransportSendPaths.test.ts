@@ -57,6 +57,7 @@ import {
   SendBoatAttackIntentEvent,
   SendDonateGoldIntentEvent,
   SendHashEvent,
+  SendParadropIntentEvent,
   SendSpawnIntentEvent,
   SendSpyIntentEvent,
   SendWinnerEvent,
@@ -225,6 +226,20 @@ describe("Transport send paths", () => {
             mission: "sabotage",
             unitId: 42,
           },
+        },
+      ]);
+    });
+
+    // GalloFront aviation: a paradrop intent carries its destination and
+    // troops, and a non-finite troop count is dropped like a boat's.
+    it("turns paradrop events into paradrop intent frames", () => {
+      const { eventBus, ws } = connected();
+      eventBus.emit(new SendParadropIntentEvent(1234, 20_000));
+      eventBus.emit(new SendParadropIntentEvent(1234, NaN));
+      expect(decodeFrames(ws)).toEqual([
+        {
+          type: "intent",
+          intent: { type: "paradrop", dst: 1234, troops: 20_000 },
         },
       ]);
     });

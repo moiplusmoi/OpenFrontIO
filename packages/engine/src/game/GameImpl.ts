@@ -1,3 +1,4 @@
+import { Season, seasonAt } from "@openfront/engine-lib/game/Seasons";
 import { GameMap, TileRef } from "@openfront/engine-api/game/GameMap";
 import {
   Cell,
@@ -1551,6 +1552,10 @@ export class GameImpl implements Game {
     (this._stats as StatsImpl).restoreSnapshot(
       readVersioned(StatsSnapshot, s.stats),
     );
+  }
+
+  season(): Season | null {
+    return this._config.seasonsEnabled() ? seasonAt(this._ticks) : null;
   }
 
   // GalloFront: the victim loses a quarter of its troops and gold (the gold

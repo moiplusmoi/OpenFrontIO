@@ -380,30 +380,69 @@ export class SAMLauncherExecution implements Execution {
     // them (unit ids are unique). unitCount(type) is memoised per unit-list version — one shared
     // walk a tick, not one a launcher — and unlike units(type) a hit allocates nothing. A nuke's
     // level is always 1, so a zero count is exactly an empty list.
-    if (
-      this.mg.unitCount(UnitType.AtomBomb) === 0 &&
-      this.mg.unitCount(UnitType.HydrogenBomb) === 0 &&
-      this.mg.unitCount(UnitType.MIRVWarhead) === 0
-    ) {
+    const anyNuke =
+      this.mg.unitCount(UnitType.AtomBomb) > 0 ||
+      this.mg.unitCount(UnitType.HydrogenBomb) > 0 ||
+      this.mg.unitCount(UnitType.MIRVWarhead) > 0;
+    const anyAircraft =
+      this.mg.unitCount(UnitType.Bomber) > 0 ||
+      this.mg.unitCount(UnitType.AirTransport) > 0 ||
+      this.mg.unitCount(UnitType.Fighter) > 0;
+    if (!anyNuke && !anyAircraft) {
       return;
     }
-    // target is already filtered to exclude nukes targeted by other SAMs
-    const targets = this.targetingSystem.getValidTargets(ticks);
-    for (const target of targets) {
-      if (this.sam.isInCooldown()) {
-        break;
+    if (anyNuke) {
+      // target is already filtered to exclude nukes targeted by other SAMs
+      const targets = this.targetingSystem.getValidTargets(ticks);
+      for (const target of targets) {
+        if (this.sam.isInCooldown()) {
+          break;
+        }
+        this.sam.launch();
+        target.unit.setTargetedBySAM(true);
+        this.mg.addExecution(
+          new SAMMissileExecution(
+            this.sam.tile(),
+            this.sam.owner(),
+            this.sam,
+            target.unit,
+            target.tile,
+          ),
+        );
       }
-      this.sam.launch();
-      target.unit.setTargetedBySAM(true);
-      this.mg.addExecution(
-        new SAMMissileExecution(
-          this.sam.tile(),
-          this.sam.owner(),
-          this.sam,
-          target.unit,
-          target.tile,
-        ),
+    }
+    // GalloFront: aircraft are engaged after nukes (nukes keep priority), at
+    // a reduced range; the missile pursues the moving aircraft.
+    if (anyAircraft && !this.sam.isInCooldown()) {
+      const range =
+        this.mg.config().dynamicSamRange(this.sam, ticks) *
+        this.mg.config().samAircraftRangeFactor();
+      const aircraft = this.mg.nearbyUnits(
+        this.sam.tile(),
+        range,
+        [UnitType.Bomber, UnitType.AirTransport, UnitType.Fighter],
+        ({ unit: u }) =>
+          u.owner() !== this.player &&
+          !this.player.isFriendly(u.owner() as Player) &&
+          !(u as Unit).targetedBySAM(),
       );
+      if (aircraft.length > 0) {
+        aircraft.sort(
+          (a, b) => a.distSquared - b.distSquared || a.unit.id() - b.unit.id(),
+        );
+        const target = aircraft[0].unit;
+        this.sam.launch();
+        target.setTargetedBySAM(true);
+        this.mg.addExecution(
+          new SAMMissileExecution(
+            this.sam.tile(),
+            this.sam.owner(),
+            this.sam,
+            target,
+            target.tile(),
+          ),
+        );
+      }
     }
   }
 

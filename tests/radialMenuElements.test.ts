@@ -280,6 +280,58 @@ const makeEnemyParams = (opts: {
 
 const findSpy = (items: any[]) => items.find((i) => i && i.id === "spy");
 
+// ─── GalloFront: paradrop ───────────────────────────────────────────────────
+
+import { SendParadropIntentEvent } from "../src/client/Transport";
+
+/** The attack submenu on an enemy's land, with or without a ready airport. */
+const makeParadropParams = (opts: { ready?: boolean; land?: boolean }) => {
+  const { params, emit } = makeEnemyParams({});
+  (params.myPlayer as any).troops = () => 10_000;
+  params.uiState = { attackRatio: 0.3 } as any;
+  (params.game as any).isLand = () => opts.land ?? true;
+  (params.game as any).config = () => ({ isUnitDisabled: () => false });
+  params.playerActions.buildableUnits = [
+    { type: "Air Transport", cost: 150_000n, canBuild: opts.ready ? 7 : false },
+  ] as any;
+  const attack = rootMenuElement.subMenu!(params).find(
+    (i) => i.id === "attack",
+  )!;
+  return { params, emit, items: attack.subMenu!(params) };
+};
+
+const findParadrop = (items: any[]) =>
+  items.find((i) => i && i.id === "paradrop");
+
+describe("RadialMenuElements paradrop", () => {
+  test("is in the attack submenu on land, disabled without a ready airport", () => {
+    const { params, items } = makeParadropParams({ ready: false });
+    const drop = findParadrop(items);
+    expect(drop).toBeDefined();
+    expect(drop.disabled(params)).toBe(true);
+    expect(drop.color(params)).toBe(COLORS.disabled);
+    drop.action(params);
+    expect(params.closeMenu).toHaveBeenCalled();
+  });
+
+  test("is not offered on water", () => {
+    const { items } = makeParadropParams({ ready: true, land: false });
+    expect(findParadrop(items)).toBeUndefined();
+  });
+
+  test("sends the attack ratio of my troops to the clicked tile", () => {
+    const { params, emit, items } = makeParadropParams({ ready: true });
+    const drop = findParadrop(items);
+    expect(drop.disabled(params)).toBe(false);
+    expect(drop.color(params)).toBe(COLORS.attack);
+    drop.action(params);
+    expect(emit).toHaveBeenCalledTimes(1);
+    expect(emit.mock.calls[0][0]).toBeInstanceOf(SendParadropIntentEvent);
+    expect(emit.mock.calls[0][0]).toMatchObject({ dst: 100, troops: 3_000 });
+    expect(params.closeMenu).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("RadialMenuElements spy", () => {
   test("is absent on allies, the dead and on the legacy stubs", () => {
     expect(findSpy(rootMenuElement.subMenu!(makeParams()))).toBeUndefined();

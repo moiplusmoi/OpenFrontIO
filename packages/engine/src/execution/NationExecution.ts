@@ -32,6 +32,7 @@ import type {
   SnapshotReader,
   SnapshotWriter,
 } from "../snapshot/SnapshotContext";
+import { NationAirBehavior } from "./nation/NationAirBehavior";
 import { NationAllianceBehavior } from "./nation/NationAllianceBehavior";
 import { NationEmojiBehavior } from "./nation/NationEmojiBehavior";
 import { NationMIRVBehavior } from "./nation/NationMIRVBehavior";
@@ -57,6 +58,7 @@ export class NationExecution implements Execution {
   private structureBehavior!: NationStructureBehavior;
   private researchBehavior!: NationResearchBehavior;
   private spyBehavior!: NationSpyBehavior;
+  private airBehavior!: NationAirBehavior;
   private mg: Game;
   private player: Player | null = null;
 
@@ -228,6 +230,7 @@ export class NationExecution implements Execution {
     this.structureBehavior.handleStructures();
     this.researchBehavior.maybeResearch();
     this.spyBehavior.maybeSpy();
+    this.airBehavior.maybeAct();
     this.warshipBehavior.maybeSpawnWarship();
     this.handleEmbargoesToHostileNations();
     this.attackBehavior.maybeAttack();
@@ -290,6 +293,7 @@ export class NationExecution implements Execution {
       this.player,
     );
     this.spyBehavior = new NationSpyBehavior(this.random, this.mg, this.player);
+    this.airBehavior = new NationAirBehavior(this.random, this.mg, this.player);
     this.behaviorsInitialized = true;
   }
 
@@ -433,6 +437,7 @@ export class NationExecution implements Execution {
             structure: this.structureBehavior.snapshot(w),
             research: this.researchBehavior.snapshot(w),
             spy: this.spyBehavior.snapshot(w),
+            air: this.airBehavior.snapshot(w),
           }
         : null,
     });
@@ -507,6 +512,14 @@ export class NationExecution implements Execution {
       spy = shell(NationSpyBehavior);
       spy.restoreSnapshot(b.spy, r, random, player);
     }
+    // And the air behavior (GalloFront aviation).
+    let air: NationAirBehavior;
+    if (b.air === undefined) {
+      air = new NationAirBehavior(random, r.game, player);
+    } else {
+      air = shell(NationAirBehavior);
+      air.restoreSnapshot(b.air, r, random, player);
+    }
     this.emojiBehavior = emoji;
     this.mirvBehavior = mirv;
     this.allianceBehavior = alliance;
@@ -516,6 +529,7 @@ export class NationExecution implements Execution {
     this.structureBehavior = structure;
     this.researchBehavior = research;
     this.spyBehavior = spy;
+    this.airBehavior = air;
   }
 }
 
@@ -548,6 +562,7 @@ const NationStateSchema = z.object({
       // GalloFront; optional so older snapshots still load.
       research: VersionedSchema.optional(),
       spy: VersionedSchema.optional(),
+      air: VersionedSchema.optional(),
     })
     .nullable(),
 });

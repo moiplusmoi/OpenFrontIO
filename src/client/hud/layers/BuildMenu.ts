@@ -4,9 +4,11 @@ import {
   BuildMenus,
   Gold,
   PlayerBuildableUnitType,
+  TechId,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
 import { renderNumber } from "@openfront/engine-lib/Format";
+import { findClosestBy } from "@openfront/engine-lib/Util";
 import { assetUrl } from "@openfront/shared/AssetUrls";
 import { EventBus } from "@openfront/shared/EventBus";
 import { css, html, LitElement } from "lit";
@@ -37,6 +39,10 @@ const atomBombIcon = assetUrl("images/NukeIconWhite.svg");
 const portIcon = assetUrl("images/PortIcon.svg");
 const samlauncherIcon = assetUrl("images/SamLauncherIconWhite.svg");
 const shieldIcon = assetUrl("images/ShieldIconWhite.svg");
+// GalloFront aviation
+const airportIcon = assetUrl("images/AirportIconWhite.svg");
+const bomberIcon = assetUrl("images/BomberIconWhite.svg");
+const fighterIcon = assetUrl("images/FighterIconWhite.svg");
 
 export interface BuildItemDisplay {
   unitType: PlayerBuildableUnitType;
@@ -117,6 +123,28 @@ export const buildTable: BuildItemDisplay[][] = [
       description: "build_menu.desc.factory",
       key: "unit_type.factory",
       countable: true,
+    },
+    // GalloFront aviation (mil_3; fighters mil_4)
+    {
+      unitType: UnitType.Airport,
+      icon: airportIcon,
+      description: "build_menu.desc.airport",
+      key: "unit_type.airport",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Bomber,
+      icon: bomberIcon,
+      description: "build_menu.desc.bomber",
+      key: "unit_type.bomber",
+      countable: false,
+    },
+    {
+      unitType: UnitType.Fighter,
+      icon: fighterIcon,
+      description: "build_menu.desc.fighter",
+      key: "unit_type.fighter",
+      countable: false,
     },
   ],
 ];
@@ -382,7 +410,47 @@ export class BuildMenu extends LitElement implements Controller {
     return player.totalUnitLevels(item.unitType).toString();
   }
 
+  /**
+   * GalloFront aviation: a fighter is stationed at one of my airports, so
+   * the engine's canBuild (computed for the clicked tile) is replaced by
+   * "my closest finished airport within 5 tiles with a free slot".
+   */
+  private fighterHome(): TileRef | null {
+    const me = this.game?.myPlayer();
+    if (!me || this.clickedTile === undefined) return null;
+    const airports = me
+      .units(UnitType.Airport)
+      .filter(
+        (a) =>
+          !a.isUnderConstruction() &&
+          a.markedForDeletion() === false &&
+          this.game.manhattanDist(a.tile(), this.clickedTile) <= 5,
+      );
+    const home = findClosestBy(airports, (a) =>
+      this.game.manhattanDist(a.tile(), this.clickedTile),
+    );
+    if (!home) return null;
+    const stationed = me
+      .units(UnitType.Fighter)
+      .filter((f) => f.targetUnitId() === home.id()).length;
+    return stationed < home.level() ? home.tile() : null;
+  }
+
+  private canBuildFighter(bu: BuildableUnit): boolean {
+    const me = this.game?.myPlayer();
+    if (!me || !me.hasTech(TechId.Mil4) || me.gold() < bu.cost) return false;
+    return this.fighterHome() !== null;
+  }
+
   public sendBuildOrUpgrade(buildableUnit: BuildableUnit, tile: TileRef): void {
+    if (buildableUnit.type === UnitType.Fighter) {
+      const home = this.fighterHome();
+      if (home !== null && this.canBuildFighter(buildableUnit)) {
+        this.eventBus.emit(new BuildUnitIntentEvent(UnitType.Fighter, home));
+      }
+      this.hideMenu();
+      return;
+    }
     if (buildableUnit.canUpgrade !== false) {
       this.eventBus.emit(
         new SendUpgradeStructureIntentEvent(
@@ -420,8 +488,10 @@ export class BuildMenu extends LitElement implements Controller {
                   return html``;
                 }
                 const enabled =
-                  buildableUnit.canBuild !== false ||
-                  buildableUnit.canUpgrade !== false;
+                  item.unitType === UnitType.Fighter
+                    ? this.canBuildFighter(buildableUnit)
+                    : buildableUnit.canBuild !== false ||
+                      buildableUnit.canUpgrade !== false;
                 return html`
                   <button
                     class="build-button"

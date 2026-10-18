@@ -188,10 +188,13 @@
   },
   "build_menu": {
     "desc": {
+      "airport": "Launches bombers, fighters and paradrops within 200 tiles (+25 per level); each level is a sortie slot that reloads in 30 s. Needs Aviation (mil 3).",
       "atom_bomb": "Small explosion",
+      "bomber": "Flies straight to the target: the defender loses up to 8% of their troops (10% with mil 4) and one structure within 8 tiles loses a level. No territory, no fallout. Never on an ally.",
       "city": "Increases max population",
       "defense_post": "Increases defenses of nearby borders",
       "factory": "Creates railroads and spawns trains",
+      "fighter": "Patrols 60 tiles around its airport and intercepts enemy bombers and transports (60%), atom bombs (25%) and hydrogen bombs (15%). One per airport level. Needs Air Superiority (mil 4).",
       "hydrogen_bomb": "Large explosion",
       "mirv": "Huge explosion, only targets selected player",
       "missile_silo": "Used to launch nukes",
@@ -861,6 +864,9 @@
   "events_display": {
     "about_to_expire": "Your alliance with {name} is about to expire!",
     "accept_alliance": "Accept",
+    "air_raid": "{name}'s air raid killed {pct}% of your troops",
+    "air_raid_done": "Your air raid killed {pct}% of {name}'s troops",
+    "aircraft_shot_down": "{name}'s fighter shot down your {unit}",
     "alliance_accepted": "accepted",
     "alliance_expired": "Your alliance with {name} expired",
     "alliance_nukes_destroyed_incoming": "{count, plural, one {# nuke launched by {name} was destroyed due to the alliance} other {# nukes launched by {name} were destroyed due to the alliance}}",
@@ -876,12 +882,14 @@
     "betrayal_debuff_ends": "{time} seconds left until betrayal debuff ends",
     "betrayal_description": "You broke your alliance with {name}, making you a TRAITOR ({malusPercent}% defense debuff for {durationText})",
     "betrayed_you": "{name} broke their alliance with you",
+    "bomber_inbound": "Bomber inbound!",
     "capital_captured": "You captured {name}'s capital and seized {gold} gold!",
     "capital_destroyed": "Your capital was destroyed! You lose 25% of your troops and gold, and far-off territories revolt.",
     "capital_lost": "Your capital fell to {name}! You lose 25% of your troops and gold, and far-off territories revolt.",
     "conquered_no_gold": "Conquered {name} (didn't play, no gold awarded)",
     "duration_second": "1 second",
     "duration_seconds_plural": "{seconds} seconds",
+    "fighter_intercept": "Your fighter shot down {unit}",
     "focus": "Focus",
     "gold_stolen": "A spy stole {gold} gold from you!",
     "hydrogen_bomb_detonated": "{name} - hydrogen bomb detonated",
@@ -891,6 +899,7 @@
     "missile_intercepted": "SAM intercepted {unit}",
     "naval_invasion_inbound": "Naval invasion incoming from {name} ({troops})",
     "no_boats_available": "No boats available, max {max}",
+    "paradrop_inbound": "Paradrop inbound!",
     "received_gold_from_captured_ship": "Received {gold} gold from ship captured from {name}",
     "received_gold_from_conquest": "Conquered {name}, received {gold} gold",
     "received_gold_from_player": "Received {gold} gold from {name}",
@@ -1020,6 +1029,7 @@
     "options": "Options",
     "overtime": "Overtime after (minutes)",
     "random_spawn": "Random spawn",
+    "seasons": "Seasons",
     "start": "Start Game",
     "starting": "Starting…",
     "starting_gold": "Starting Gold (Millions)",
@@ -1188,10 +1198,12 @@
     "action_warship_multiselect": "Select multiple warships (drag to draw selection box)",
     "action_warship_selectall": "Select all your warships",
     "action_zoom": "Zoom out/in",
+    "airport": "With Aviation (mil 3), build an airport (750k, then +750k per level, 2M max). Each level is a sortie slot: a bomber, fighter or paradrop takes one, and it reloads in 30 s. Its range is 200 tiles (+25 per level). Captured with the land, it keeps its level; its fighters die with it.",
     "ally_betray": "Betray your ally, ending the alliance, halting trade, and weakening your defense. Trading between you is paused for 5 minutes (or until you become allies again) and others may stop trading too. And unless the other player was a traitor themselves, you'll be marked a traitor for 30 seconds. During this time an icon will be above your name and you will have a 50% defense debuff. Tribes are less likely to ally with you and players will think twice before doing so.",
     "ally_donate": "Donate some of your troops to your ally. Used when they're low on troops and are being attacked, or when they need that extra power to crush an enemy.",
     "ally_donate_gold": "Donate some of your gold to your ally. Used when they're low on gold and need it for buildings, or when your team member is saving for that MIRV.",
     "bomb_direction": "Atom / Hydrogen bomb arc direction",
+    "bomber": "400k gold. Aim it at an enemy tile from the attack menu: the nearest ready airport in range launches it, it flies straight at 5 tiles per tick, and on impact the defender loses up to 8% of their troops (10% with mil 4), scaled by how much of the 15-tile blast is their land; one structure within 8 tiles loses a level. No territory changes hands, no fallout. SAMs fire at it (80% of their range) and enemy fighters intercept it 60% of the time.",
     "build_atom_desc": "Small explosive bomb that destroys territory, buildings, ships and boats. Spawns from the nearest Missile Silo and lands in the area you first clicked to build it.",
     "build_city_desc": "Increases your max population. Useful when you can't expand your territory or you're about to hit your population limit.",
     "build_defense_desc": "Increases defenses around nearby borders, which show a checkered pattern. Attacks from enemies are slower and have more casualties.",
@@ -1210,6 +1222,7 @@
     "capital": "Your first city becomes your capital 👑: +10% max troops and ×1.5 defense within 30 tiles of it. If it is captured or destroyed, you lose 25% of your troops and gold (the gold goes to the conqueror), territory more than 60 tiles from any remaining city revolts, and your largest remaining city becomes the new capital. You can move the capital to another city from its menu (3 min cooldown).",
     "drag": "drag",
     "exit_confirmation": "Are you sure you want to exit the game?",
+    "fighter": "600k gold, needs Air Superiority (mil 4). Built from your own territory next to one of your airports (one fighter per airport level), it patrols 60 tiles around it and intercepts enemy bombers and air transports (60%), atom bombs (25%) and hydrogen bombs (15%), one try per target. It has 1 hit point against SAMs and is lost with its airport.",
     "game_id_tooltip": "Game ID",
     "hotkeys": "Hotkeys",
     "icon_ally": "Handshake - Ally. This player is your ally.",
@@ -1238,6 +1251,7 @@
     "option_settings": "Settings - Open the settings menu. Inside you can toggle things like Alternate view, Emojis, Dark Mode, Hidden names, action on left click and more.",
     "option_speed": "Speed - Adjust the game speed. Unavailable in public games.",
     "option_timer": "Timer - Time passed since the start of the game.",
+    "paradrop": "From the attack menu on any land that is not an ally's, with Aviation (mil 3): an air transport (150k gold) carries the attack ratio of your troops — at most 25% of them and 50k per airport level — from an airport in range, at 4 tiles per tick, and lands them as a local attack. Landing on a player's land costs 20% of the troops. Fighters and SAMs can shoot it down.",
     "player_icons": "Player icons",
     "radial_boat": "Send a Boat (transport ship) to attack at the selected location. Only available if you have access to water.",
     "radial_build": "Open the Build menu.",
@@ -1246,6 +1260,7 @@
     "radial_donate_troops": "Donate troops equivalent to your attack ratio slider percentage to the ally you opened the radial menu on.",
     "radial_info": "Open the Info menu.",
     "radial_title": "Radial menu",
+    "seasons": "Seasons - Under the timer: the season (3 minutes each, spring → summer → autumn → winter) and its effect. Spring: buildings go up 20% faster. Summer: workers earn 10% more gold. Autumn: trade ships bring 15% more gold. Winter: troops grow 30% slower. Can be turned off in private lobbies and solo.",
     "spy": "With the Intelligence technology (def 3), send a spy 🕵 against an enemy from their menu (300k gold, 3 in flight at most, 20 s between two). Nobody else sees it. Reveal shows their exact gold, troops and ready silos/SAMs for 60 s (85%); Steal takes 8% of their gold, up to 2M (65%); Sabotage stops a SAM or silo for 60 s or takes a level off a city, port, factory or defense post (55%). Your def 4 adds 10 points; the target's def 3 removes 15 and def 4 another 35 (and makes revealed data 30 s old). A failed spy has one chance in two to be captured, which tells the victim who sent it.",
     "table_action": "Action",
     "table_key": "Key",
@@ -2126,6 +2141,8 @@
   "radial_menu": {
     "delete_unit_description": "Click to delete the nearest unit",
     "delete_unit_title": "Delete Unit",
+    "paradrop": "Paradrop",
+    "paradrop_desc": "Fly the attack ratio of your troops (at most 25% of them, 50k per airport level) from an airport in range and land them here as an attack. Landing on a player costs 20%. 150k gold, needs Aviation (mil 3).",
     "set_capital": "Capital",
     "set_capital_desc": "Make this city your capital: +10% max troops and stronger defense within 30 tiles. 3 min cooldown between moves.",
     "spy": "Spy",
@@ -2199,6 +2216,20 @@
   },
   "rewards_modal": {
     "title": "Rewards"
+  },
+  "season": {
+    "autumn": "Autumn",
+    "changed": "{season} begins",
+    "effect": {
+      "autumn": "Autumn: trade +15%",
+      "spring": "Spring: construction 20% faster",
+      "summer": "Summer: worker gold +10%",
+      "winter": "Winter: troop growth −30%"
+    },
+    "next": "next in {time}",
+    "spring": "Spring",
+    "summer": "Summer",
+    "winter": "Winter"
   },
   "select_lang": {
     "title": "Select Language"
@@ -2478,11 +2509,11 @@
       "name": "Offensive Doctrine"
     },
     "mil_3": {
-      "desc": "Will unlock aviation (coming soon).",
+      "desc": "Unlocks airports, bombers and paradrops.",
       "name": "Aviation"
     },
     "mil_4": {
-      "desc": "Coming soon.",
+      "desc": "Unlocks fighters; raids kill up to 10%, airports reload in 22.5 s.",
       "name": "Air Superiority"
     }
   },
@@ -2600,11 +2631,15 @@
     "title": "Tutorial"
   },
   "unit_type": {
+    "air_transport": "Air Transport",
+    "airport": "Airport",
     "atom_bomb": "Atom Bomb",
     "boat": "Boat",
+    "bomber": "Bomber",
     "city": "City",
     "defense_post": "Defense Post",
     "factory": "Factory",
+    "fighter": "Fighter",
     "hydrogen_bomb": "Hydrogen Bomb",
     "mirv": "MIRV",
     "missile_silo": "Missile Silo",
@@ -2661,6 +2696,8 @@
     "box_select_warships_desc": "Hold this key and drag to select multiple warships.",
     "break_alliance": "Break Alliance (Betray)",
     "break_alliance_desc": "Break alliance with the player whose tile is under your cursor.",
+    "build_airport": "Build Airport",
+    "build_airport_desc": "Build an Airport under your cursor.",
     "build_atom_bomb": "Build Atom Bomb",
     "build_atom_bomb_desc": "Build an Atom Bomb under your cursor.",
     "build_city": "Build City",

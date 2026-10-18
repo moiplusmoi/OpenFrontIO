@@ -281,6 +281,7 @@ export class UnitImpl implements Unit {
 
   // ---- GalloFront sabotage ----
   private _disabledUntil: number = -1;
+  private _aircraftTargetedBySAM = false;
   disable(untilTick: number): void {
     this._disabledUntil = untilTick;
     this.mg.addUpdate(this.toUpdate());
@@ -644,11 +645,17 @@ export class UnitImpl implements Unit {
   }
 
   setTargetedBySAM(targeted: boolean): void {
-    this._nukeState!.targetedBySam = targeted;
+    // GalloFront: aircraft have no nuke state; keep a plain flag for them.
+    if (this._nukeState === undefined) {
+      this._aircraftTargetedBySAM = targeted;
+      return;
+    }
+    this._nukeState.targetedBySam = targeted;
   }
 
   targetedBySAM(): boolean {
-    return this._nukeState!.targetedBySam;
+    if (this._nukeState === undefined) return this._aircraftTargetedBySAM;
+    return this._nukeState.targetedBySam;
   }
 
   setReachedTarget(): void {
@@ -820,6 +827,7 @@ export class UnitImpl implements Unit {
     return {
       id: this._id,
       disabledUntil: this._disabledUntil,
+      aircraftTargetedBySAM: this._aircraftTargetedBySAM,
       type: this._type,
       owner: w.player(this._owner),
       tile: this._tile,
@@ -927,6 +935,7 @@ export class UnitImpl implements Unit {
     this._hasTrainStation = s.hasTrainStation;
     this._level = s.level;
     this._disabledUntil = s.disabledUntil;
+    this._aircraftTargetedBySAM = s.aircraftTargetedBySAM;
     this._targetable = s.targetable;
     this._loaded = s.loaded ?? undefined;
     this._trainType = s.trainType ?? undefined;
@@ -984,8 +993,9 @@ export const UnitSnapshot = snapshotType({
     missileTimerQueue: z.array(zInt()),
     hasTrainStation: z.boolean(),
     level: zInt(),
-    // v2 (GalloFront): sabotage
+    // v2 (GalloFront): sabotage + SAM lock on aircraft
     disabledUntil: zInt(),
+    aircraftTargetedBySAM: z.boolean(),
     targetable: z.boolean(),
     loaded: z.boolean().nullable(),
     trainType: z.enum(TrainType).nullable(),
@@ -1000,7 +1010,11 @@ export const UnitSnapshot = snapshotType({
       .nullable(),
   }),
   migrations: {
-    1: (d: object) => ({ ...d, disabledUntil: -1 }),
+    1: (d: object) => ({
+      ...d,
+      disabledUntil: -1,
+      aircraftTargetedBySAM: false,
+    }),
   },
 });
 export type UnitState = z.infer<typeof UnitSnapshot.schema>;

@@ -183,7 +183,10 @@
       "missile_silo": "Utilisé pour lancer des bombes nucléaires",
       "port": "Envoie des bateaux de commerce pour produire de l'or",
       "sam_launcher": "Protège contre les bombes nucléaires",
-      "warship": "Capture les bateaux de commerce, détruit les navires de guerre et les bateaux de transport"
+      "warship": "Capture les bateaux de commerce, détruit les navires de guerre et les bateaux de transport",
+      "airport": "Lance bombardiers, chasseurs et parachutages à 200 cases (+25 par niveau) ; chaque niveau est un créneau de sortie qui se recharge en 30 s. Nécessite Aviation (mil 3).",
+      "bomber": "Vole en ligne droite vers la cible : le défenseur perd jusqu'à 8 % de ses troupes (10 % avec mil 4) et une structure dans un rayon de 8 perd un niveau. Ni territoire, ni retombées. Jamais sur un allié.",
+      "fighter": "Patrouille à 60 cases de son aéroport et intercepte bombardiers et transports ennemis (60 %), bombes A (25 %) et bombes H (15 %). Un par niveau d'aéroport. Nécessite Supériorité aérienne (mil 4)."
     },
     "not_enough_money": "Pas assez d'argent",
     "upgrade_amount": "x{amount}",
@@ -855,7 +858,13 @@
     "spy_lost": "Votre espion a été capturé par {name}",
     "spy_failed": "Votre espion a échoué chez {name}",
     "sabotaged": "Votre {unit} a été saboté !",
-    "gold_stolen": "Un espion vous a volé {gold} d'or !"
+    "gold_stolen": "Un espion vous a volé {gold} d'or !",
+    "bomber_inbound": "Bombardier en approche !",
+    "air_raid": "Le raid aérien de {name} a tué {pct} % de vos troupes",
+    "air_raid_done": "Votre raid aérien a tué {pct} % des troupes de {name}",
+    "paradrop_inbound": "Parachutage en approche !",
+    "fighter_intercept": "Votre chasseur a abattu {unit}",
+    "aircraft_shot_down": "Un chasseur de {name} a abattu votre {unit}"
   },
   "featured_stream": {
     "expand": "Agrandir",
@@ -957,6 +966,7 @@
     "options": "Options",
     "overtime": "Blitz après (minutes)",
     "random_spawn": "Apparition aléatoire",
+    "seasons": "Saisons",
     "start": "Commencer la partie",
     "starting": "Lancement…",
     "starting_gold": "Or de départ (En millions)",
@@ -1180,6 +1190,7 @@
     "radial_donate_troops": "Donner des troupes équivalent à votre ratio d'attaque à l'allié sur lequel vous avez ouvert le menu radial.",
     "radial_info": "Ouvrir le menu d'informations.",
     "radial_title": "Menu radial",
+    "seasons": "Saisons - Sous le chronomètre : la saison (3 minutes chacune, printemps → été → automne → hiver) et son effet. Printemps : constructions 20 % plus rapides. Été : les ouvriers rapportent 10 % d'or en plus. Automne : les navires marchands rapportent 15 % d'or en plus. Hiver : les troupes croissent 30 % plus lentement. Désactivable en salon privé et en solo.",
     "table_action": "Action",
     "table_key": "Touche",
     "troubleshooting_desc": "Si vous rencontrez des problèmes de performance, des plantages ou d'autres problèmes lors de la lecture d'OpenFront, veuillez visiter notre page de dépannage pour vous aider à diagnostiquer et à résoudre les problèmes courants :",
@@ -1206,7 +1217,11 @@
     "action_quick_chat": "Ouvrir le chat rapide",
     "action_tech_panel": "Ouvrir le panneau des technologies",
     "capital": "Votre première ville devient votre capitale 👑 : +10 % de troupes max et défense ×1,5 dans un rayon de 30 cases. Si elle est capturée ou détruite, vous perdez 25 % de vos troupes et de votre or (l'or va au conquérant), les territoires à plus de 60 cases de toute ville restante se révoltent, et votre plus grande ville restante devient la nouvelle capitale. Vous pouvez déplacer la capitale vers une autre ville depuis son menu (3 min de recharge).",
-    "spy": "Avec la technologie Renseignement (déf 3), envoyez un espion 🕵 chez un ennemi depuis son menu (300k d'or, 3 en vol max, 20 s entre deux). Personne d'autre ne le voit. Révéler montre son or, ses troupes et ses silos/SAM prêts pendant 60 s (85 %) ; Voler prend 8 % de son or, 2M max (65 %) ; Saboter arrête un SAM ou un silo 60 s, ou retire un niveau à une ville, un port, une usine ou un poste défensif (55 %). Votre déf 4 ajoute 10 points ; la déf 3 de la cible en retire 15 et sa déf 4 encore 35 (et rend les données révélées vieilles de 30 s). Un espion qui échoue a une chance sur deux d'être capturé, ce qui révèle à la victime qui l'a envoyé."
+    "spy": "Avec la technologie Renseignement (déf 3), envoyez un espion 🕵 chez un ennemi depuis son menu (300k d'or, 3 en vol max, 20 s entre deux). Personne d'autre ne le voit. Révéler montre son or, ses troupes et ses silos/SAM prêts pendant 60 s (85 %) ; Voler prend 8 % de son or, 2M max (65 %) ; Saboter arrête un SAM ou un silo 60 s, ou retire un niveau à une ville, un port, une usine ou un poste défensif (55 %). Votre déf 4 ajoute 10 points ; la déf 3 de la cible en retire 15 et sa déf 4 encore 35 (et rend les données révélées vieilles de 30 s). Un espion qui échoue a une chance sur deux d'être capturé, ce qui révèle à la victime qui l'a envoyé.",
+    "airport": "Avec Aviation (mil 3), construisez un aéroport (750k, puis +750k par niveau, 2M max). Chaque niveau est un créneau de sortie : un bombardier, un chasseur ou un parachutage en prend un, et il se recharge en 30 s. Sa portée est de 200 cases (+25 par niveau). Capturé avec le terrain, il garde son niveau ; ses chasseurs meurent avec lui.",
+    "bomber": "400k d'or. Visez une case ennemie depuis le menu d'attaque : l'aéroport prêt le plus proche à portée le lance, il vole en ligne droite à 5 cases par tick, et à l'impact le défenseur perd jusqu'à 8 % de ses troupes (10 % avec mil 4), selon la part du souffle de 15 cases qui touche son terrain ; une structure dans un rayon de 8 perd un niveau. Aucun territoire ne change de mains, pas de retombées. Les SAM tirent dessus (80 % de leur portée) et les chasseurs ennemis l'interceptent 60 % du temps.",
+    "fighter": "600k d'or, nécessite Supériorité aérienne (mil 4). Construit depuis votre territoire à côté d'un de vos aéroports (un chasseur par niveau d'aéroport), il patrouille à 60 cases autour et intercepte bombardiers et transports ennemis (60 %), bombes A (25 %) et bombes H (15 %), une tentative par cible. Il a 1 PV face aux SAM et disparaît avec son aéroport.",
+    "paradrop": "Depuis le menu d'attaque sur toute terre qui n'est pas à un allié, avec Aviation (mil 3) : un transport aérien (150k d'or) emporte le ratio d'attaque de vos troupes — 25 % max et 50k par niveau d'aéroport — depuis un aéroport à portée, à 4 cases par tick, et les fait atterrir en attaque locale. Atterrir sur le terrain d'un joueur coûte 20 % des troupes. Chasseurs et SAM peuvent l'abattre."
   },
   "host_modal": {
     "anonymous_players": "Joueurs anonymes",
@@ -1921,7 +1936,9 @@
     "spy_steal": "Voler",
     "spy_steal_desc": "Voler 8 % de l'or de ce joueur (2M max). 65 % de réussite. 300k d'or.",
     "spy_sabotage": "Saboter",
-    "spy_sabotage_desc": "Saboter la structure la plus proche : un SAM ou un silo s'arrête 60 s, une ville, un port, une usine ou un poste défensif perd un niveau. 55 % de réussite. 300k d'or."
+    "spy_sabotage_desc": "Saboter la structure la plus proche : un SAM ou un silo s'arrête 60 s, une ville, un port, une usine ou un poste défensif perd un niveau. 55 % de réussite. 300k d'or.",
+    "paradrop": "Parachutage",
+    "paradrop_desc": "Envoyer le ratio d'attaque de vos troupes (25 % max, 50k par niveau d'aéroport) depuis un aéroport à portée et les faire atterrir ici en attaque. Atterrir chez un joueur coûte 20 %. 150k d'or, nécessite Aviation (mil 3)."
   },
   "relation": {
     "default": "Défaut",
@@ -1955,6 +1972,20 @@
   },
   "rewards_modal": {
     "title": "Récompenses"
+  },
+  "season": {
+    "autumn": "Automne",
+    "changed": "{season} commence",
+    "effect": {
+      "autumn": "Automne : commerce +15 %",
+      "spring": "Printemps : construction 20 % plus rapide",
+      "summer": "Été : or des ouvriers +10 %",
+      "winter": "Hiver : croissance −30 %"
+    },
+    "next": "prochaine dans {time}",
+    "spring": "Printemps",
+    "summer": "Été",
+    "winter": "Hiver"
   },
   "select_lang": {
     "title": "Sélectionner une langue"
@@ -2281,7 +2312,11 @@
     "port": "Port",
     "sam_launcher": "Lanceur de SAM",
     "warship": "Navire de guerre",
-    "spy": "Espion"
+    "spy": "Espion",
+    "airport": "Aéroport",
+    "bomber": "Bombardier",
+    "fighter": "Chasseur",
+    "air_transport": "Transport aérien"
   },
   "update_available": {
     "desktop": "Une nouvelle version d’OpenFront est disponible. Elle sera téléchargée en arrière-plan ; une fois prête, rechargez la page depuis la barre de mise à jour.",
@@ -2482,7 +2517,9 @@
     "ui_scale_desc": "Taille du HUD, des menus et du texte. 100 % = taille d'origine ; la carte n'est pas affectée.",
     "ui_scale_label": "Taille de l'interface",
     "tech_panel": "Panneau des technologies",
-    "tech_panel_desc": "Ouvrir ou fermer le panneau des technologies."
+    "tech_panel_desc": "Ouvrir ou fermer le panneau des technologies.",
+    "build_airport": "Construire un aéroport",
+    "build_airport_desc": "Construire un aéroport sous votre curseur."
   },
   "username": {
     "account_invalid_chars": "Les pseudonymes peuvent uniquement contenir des lettres, chiffres, tirets et espaces.",
@@ -2594,11 +2631,11 @@
       "name": "Doctrine offensive"
     },
     "mil_3": {
-      "desc": "Débloquera l'aviation (à venir).",
+      "desc": "Débloque aéroports, bombardiers et parachutages.",
       "name": "Aviation"
     },
     "mil_4": {
-      "desc": "À venir.",
+      "desc": "Débloque les chasseurs ; les raids tuent jusqu'à 10 %, les aéroports rechargent en 22,5 s.",
       "name": "Supériorité aérienne"
     }
   },

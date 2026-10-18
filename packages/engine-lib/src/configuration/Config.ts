@@ -14,6 +14,7 @@ import {
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { GameConfig } from "@openfront/engine-api/Schemas";
 import { pow } from "../DetMath";
+import { Season } from "../game/Seasons";
 import { DoomsdayClockSpeed } from "../game/DoomsdayClock";
 import { assertNever } from "../Util";
 
@@ -201,7 +202,101 @@ export class Config {
   }
   /** Tech required to build a unit type, or null (none of the base units need one). */
   unitRequiredTech(type: UnitType): TechId | null {
-    return type === UnitType.Spy ? TechId.Def3 : null;
+    switch (type) {
+      case UnitType.Spy:
+        return TechId.Def3;
+      case UnitType.Airport:
+      case UnitType.Bomber:
+      case UnitType.AirTransport:
+        return TechId.Mil3;
+      case UnitType.Fighter:
+        return TechId.Mil4;
+      default:
+        return null;
+    }
+  }
+
+  // ---- GalloFront seasons ----
+  seasonsEnabled(): boolean {
+    return this._gameConfig.seasons ?? true;
+  }
+  /** Winter slows troop growth. */
+  seasonGrowthMult(season: Season | null): number {
+    return season === Season.Winter ? 0.7 : 1;
+  }
+  /** Summer boosts worker gold. */
+  seasonGoldMult(season: Season | null): number {
+    return season === Season.Summer ? 1.1 : 1;
+  }
+  /** Autumn harvest boosts trade. */
+  seasonTradeMult(season: Season | null): number {
+    return season === Season.Autumn ? 1.15 : 1;
+  }
+  /** Spring speeds up construction. */
+  seasonConstructionMult(season: Season | null): number {
+    return season === Season.Spring ? 0.8 : 1;
+  }
+
+  // ---- GalloFront aviation ----
+  airportRange(level: number): number {
+    return Math.min(300, 200 + 25 * (level - 1));
+  }
+  airportSortieCooldown(player: PlayerLike): Tick {
+    return this.techLevelOf(player, TechBranch.Military) >= 4 ? 225 : 300;
+  }
+  bomberSpeed(): number {
+    return 5;
+  }
+  bomberRadius(): number {
+    return 15;
+  }
+  bomberStructureRadius(): number {
+    return 8;
+  }
+  /** Max fraction of the defender's troops one raid can kill (percent). */
+  bomberKillCapPct(player: PlayerLike): number {
+    return this.techLevelOf(player, TechBranch.Military) >= 4 ? 10 : 8;
+  }
+  /** Kill fraction per (hit tiles / owned tiles), ×100 for integer math. */
+  bomberKillPerTilePct(): number {
+    return 150;
+  }
+  fighterPatrolRange(): number {
+    return 60;
+  }
+  fighterSpeed(): number {
+    return 6;
+  }
+  fighterEngageRange(): number {
+    return 3;
+  }
+  fighterEngageCooldown(): Tick {
+    return 50;
+  }
+  fighterInterceptChance(type: UnitType): number {
+    switch (type) {
+      case UnitType.Bomber:
+      case UnitType.AirTransport:
+        return 60;
+      case UnitType.AtomBomb:
+        return 25;
+      case UnitType.HydrogenBomb:
+        return 15;
+      default:
+        return 0;
+    }
+  }
+  samAircraftRangeFactor(): number {
+    return 0.8;
+  }
+  airTransportSpeed(): number {
+    return 4;
+  }
+  paradropMaxTroops(level: number): number {
+    return 50_000 * level;
+  }
+  paradropLandingLossPct(): number {
+    return 20;
   }
 
   // ---- GalloFront espionage ----
@@ -398,7 +493,16 @@ export class Config {
       case UnitType.TradeShip:
       case UnitType.Train:
       case UnitType.Spy:
+      case UnitType.Bomber:
+      case UnitType.Fighter:
+      case UnitType.AirTransport:
         info = {};
+        break;
+      case UnitType.Airport:
+        info = {
+          constructionDuration: this._gameConfig.instantBuild ? 0 : 150,
+          upgradable: true,
+        };
         break;
       default:
         assertNever(type);
@@ -512,11 +616,11 @@ export class Config {
     }
   }
 
-  troopIncreaseRate(player: PlayerLike): number {
+  troopIncreaseRate(player: PlayerLike, season: Season | null = null): number {
     const max = this.maxTroops(player);
 
     let toAdd = 10 + pow(player.troops(), 0.73) / 4;
-    toAdd *= this.techGrowthMult(player);
+    toAdd *= this.techGrowthMult(player) * this.seasonGrowthMult(season);
 
     const ratio = 1 - player.troops() / max;
     toAdd *= ratio;

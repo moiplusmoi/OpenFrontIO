@@ -29,6 +29,7 @@ const HUD_TAGS = [
   "new-lobby-prompt",
   "replay-panel",
   "game-right-sidebar",
+  "season-display",
   "settings-modal",
   "graphics-settings-modal",
   "unit-display",

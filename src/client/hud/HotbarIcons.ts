@@ -11,6 +11,11 @@ export const atomBombIcon = assetUrl("images/NukeIconWhite.svg");
 export const portIcon = assetUrl("images/PortIcon.svg");
 export const samLauncherIcon = assetUrl("images/SamLauncherIconWhite.svg");
 export const defensePostIcon = assetUrl("images/ShieldIconWhite.svg");
+// GalloFront aviation
+export const airportIcon = assetUrl("images/AirportIconWhite.svg");
+export const bomberIcon = assetUrl("images/BomberIconWhite.svg");
+export const fighterIcon = assetUrl("images/FighterIconWhite.svg");
+export const paradropIcon = assetUrl("images/ParadropIconWhite.svg");
 export const soldierIcon = assetUrl("images/SoldierIcon.svg");
 export const claimIcon = assetUrl("images/ClaimIcon.svg");
 export const profileIcon = assetUrl("images/ProfileIcon.svg");

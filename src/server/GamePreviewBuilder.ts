@@ -267,6 +267,7 @@ export async function buildPreview(
       if (gc?.randomSpawn) gameOptions.push("Random Spawn");
       if (gc?.nations === "disabled") gameOptions.push("Nations Disabled");
       if (gc?.donateTroops) gameOptions.push("Troop Donations Enabled");
+      if (gc?.seasons === false) gameOptions.push("Seasons Off");
 
       if (gameOptions.length > 0) {
         sections.push(`Game Options: ${gameOptions.join(" | ")}`);

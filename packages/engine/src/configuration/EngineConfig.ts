@@ -9,6 +9,7 @@ import {
   UnitType,
   TechBranch,
 } from "@openfront/engine-api/game/GameTypes";
+import { Season } from "@openfront/engine-lib/game/Seasons";
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { TeamCountConfig } from "@openfront/engine-api/Schemas";
 import { NukeType } from "@openfront/engine-api/StatsSchemas";
@@ -274,13 +275,20 @@ export class EngineConfig extends Config {
     return this.trainStationMaxRange() * 1.4142;
   }
 
-  tradeShipGold(dist: number, player: PlayerLike): Gold {
+  tradeShipGold(
+    dist: number,
+    player: PlayerLike,
+    season: Season | null = null,
+  ): Gold {
     // Sigmoid: concave start, sharp S-curve middle, linear end - heavily punishes trades under range debuff.
     const debuff = this.tradeShipShortRangeDebuff();
     const baseGold = 75_000 / (1 + exp(-0.03 * (dist - debuff))) + 50 * dist;
     return BigInt(
       Math.floor(
-        baseGold * this.goldMultiplierFor(player) * this.techTradeMult(player),
+        baseGold *
+          this.goldMultiplierFor(player) *
+          this.techTradeMult(player) *
+          this.seasonTradeMult(season),
       ),
     );
   }
@@ -401,6 +409,17 @@ export class EngineConfig extends Config {
         );
       case UnitType.Spy:
         return this.costWrapper(() => 300_000, UnitType.Spy);
+      case UnitType.Airport:
+        return this.costWrapper(
+          (n) => Math.min(2_000_000, (n + 1) * 750_000),
+          UnitType.Airport,
+        );
+      case UnitType.Bomber:
+        return this.costWrapper(() => 400_000, UnitType.Bomber);
+      case UnitType.Fighter:
+        return this.costWrapper(() => 600_000, UnitType.Fighter);
+      case UnitType.AirTransport:
+        return this.costWrapper(() => 150_000, UnitType.AirTransport);
       case UnitType.TransportShip:
       case UnitType.Shell:
       case UnitType.SAMMissile:
@@ -706,7 +725,7 @@ export class EngineConfig extends Config {
     return this.hasInfiniteTroopsForInfo(playerInfo) ? 1_000_000 : 25_000;
   }
 
-  goldAdditionRate(player: PlayerLike): Gold {
+  goldAdditionRate(player: PlayerLike, season: Season | null = null): Gold {
     const multiplier = this.goldMultiplierFor(player);
     let baseRate: bigint;
     if (player.type() === PlayerType.Bot) {
@@ -715,7 +734,12 @@ export class EngineConfig extends Config {
       baseRate = 100n;
     }
     return BigInt(
-      Math.floor(Number(baseRate) * multiplier * this.techGoldMult(player)),
+      Math.floor(
+        Number(baseRate) *
+          multiplier *
+          this.techGoldMult(player) *
+          this.seasonGoldMult(season),
+      ),
     );
   }
 

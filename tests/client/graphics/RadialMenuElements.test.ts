@@ -218,17 +218,24 @@ describe("RadialMenuElements", () => {
         UnitType.MIRV,
         UnitType.HydrogenBomb,
         UnitType.Warship,
+        // GalloFront aviation: the bomber is aimed at a tile; the fighter
+        // is built next to one's own airport, so it is not in this menu.
+        UnitType.Bomber,
       ];
-      const returnedUnitTypes = subMenu.map((item) => {
-        const unitTypeStr = item.id.replace("attack_", "");
-        return Object.values(UnitType).find(
-          (type) => type.toString() === unitTypeStr,
-        );
-      });
+      // GalloFront: the paradrop entry has no unit type in its id.
+      const returnedUnitTypes = subMenu
+        .filter((item) => item.id.startsWith("attack_"))
+        .map((item) => {
+          const unitTypeStr = item.id.replace("attack_", "");
+          return Object.values(UnitType).find(
+            (type) => type.toString() === unitTypeStr,
+          );
+        });
 
       returnedUnitTypes.forEach((unitType) => {
         expect(attackUnitTypes).toContain(unitType);
       });
+      expect(returnedUnitTypes).not.toContain(UnitType.Fighter);
     });
 
     it("should not include construction units in attack menu", () => {
