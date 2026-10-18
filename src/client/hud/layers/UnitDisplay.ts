@@ -143,7 +143,9 @@ export class UnitDisplay extends LitElement implements Controller {
 
     return html`
       <div class="border-t border-white/10 p-0.5 w-full">
-        <div class="grid grid-rows-1 grid-flow-col gap-0.5 w-fit mx-auto">
+        <div
+          class="grid grid-rows-1 grid-flow-col gap-1 lg:gap-0.5 w-fit max-w-full mx-auto overflow-x-auto"
+        >
           ${this.renderUnitItem(
             cityIcon,
             this._cities,
@@ -238,7 +240,7 @@ export class UnitDisplay extends LitElement implements Controller {
 
     return html`
       <div
-        class="flex flex-col items-center relative"
+        class="flex flex-col items-center relative min-w-11 lg:min-w-0"
         @mouseenter=${() => {
           this._hoveredUnit = unitType;
           this.requestUpdate();
@@ -317,7 +319,11 @@ export class UnitDisplay extends LitElement implements Controller {
             ${displayHotkey}
           </div>`}
           <div class="flex items-center gap-0.5 pt-0.5">
-            <img src=${icon} alt=${structureKey} class="align-middle size-5" />
+            <img
+              src=${icon}
+              alt=${structureKey}
+              class="align-middle size-7 lg:size-5"
+            />
             ${number !== null
               ? html`<span class="text-xs">${renderNumber(number)}</span>`
               : null}

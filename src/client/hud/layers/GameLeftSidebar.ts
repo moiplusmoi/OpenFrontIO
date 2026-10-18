@@ -119,7 +119,7 @@ export class GameLeftSidebar extends LitElement implements Controller {
       >
         <div class="flex items-center gap-4 xl:gap-6 text-white">
           <div
-            class="cursor-pointer p-0.5 bg-gray-700/50 hover:bg-gray-600 border rounded-md border-slate-500 transition-colors"
+            class="cursor-pointer p-2 lg:p-0.5 bg-gray-700/50 hover:bg-gray-600 border rounded-md border-slate-500 transition-colors"
             @click=${this.togglePlayerStats}
             role="button"
             tabindex="0"
@@ -143,7 +143,7 @@ export class GameLeftSidebar extends LitElement implements Controller {
           ${this.isTeamGame
             ? html`
                 <div
-                  class="cursor-pointer p-0.5 bg-gray-700/50 hover:bg-gray-600 border rounded-md border-slate-500 transition-colors"
+                  class="cursor-pointer p-2 lg:p-0.5 bg-gray-700/50 hover:bg-gray-600 border rounded-md border-slate-500 transition-colors"
                   @click=${this.toggleTeamStats}
                   role="button"
                   tabindex="0"

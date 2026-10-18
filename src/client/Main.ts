@@ -383,6 +383,7 @@ class Client {
       "--hud-opacity",
       String(this.userSettings.hudOpacity()),
     );
+    this.userSettings.applyUiScale();
 
     flushReloadToast();
 

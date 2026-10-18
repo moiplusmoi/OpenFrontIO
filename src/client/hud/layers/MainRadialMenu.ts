@@ -1,3 +1,4 @@
+import { Platform } from "../../Platform";
 import { TileRef } from "@openfront/engine-api/game/GameMap";
 import { PlayerActions } from "@openfront/engine-api/game/GameTypes";
 import { assetUrl } from "@openfront/shared/AssetUrls";
@@ -54,6 +55,15 @@ export class MainRadialMenu implements Controller {
   ) {
     const menuConfig: RadialMenuConfig = {
       centerButtonIcon: swordIcon,
+      // GalloFront: finger-sized radial menu on touch screens.
+      ...(Platform.isTouch
+        ? {
+            menuSize: 260,
+            centerButtonSize: 40,
+            iconSize: 40,
+            mainMenuInnerRadius: 52,
+          }
+        : {}),
       tooltipStyle: `
         .radial-tooltip .cost {
           margin-top: 4px;

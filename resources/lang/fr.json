@@ -2443,7 +2443,9 @@
     "snap_build_preview_desc": "Déplace l'aperçu de construction sur la tuile où la structure sera réellement bâtie",
     "snap_build_preview_label": "Aperçu de construction aimanté",
     "target_player": "Cibler un joueur",
-    "target_player_desc": "Marque le joueur dont la tuile est sous le curseur comme cible pour toi et tes alliés."
+    "target_player_desc": "Marque le joueur dont la tuile est sous le curseur comme cible pour toi et tes alliés.",
+    "ui_scale_desc": "Taille du HUD, des menus et du texte. 100 % = taille d'origine ; la carte n'est pas affectée.",
+    "ui_scale_label": "Taille de l'interface"
   },
   "username": {
     "account_invalid_chars": "Les pseudonymes peuvent uniquement contenir des lettres, chiffres, tirets et espaces.",

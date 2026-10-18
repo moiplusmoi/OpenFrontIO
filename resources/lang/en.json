@@ -2697,6 +2697,8 @@
     "toggle_view": "Toggle View",
     "toggle_view_desc": "Alternate view (terrain/countries)",
     "toggle_visibility": "Toggle Visibility",
+    "ui_scale_desc": "Size of the HUD, menus and text. 100% is the original size; the map itself is not affected.",
+    "ui_scale_label": "UI scale",
     "unbind": "Unbind",
     "view_options": "View Options",
     "zoom_controls": "Zoom Controls",

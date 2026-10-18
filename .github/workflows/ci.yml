@@ -6,7 +6,7 @@ on:
       - checks_requested
   pull_request:
   push:
-    branches: [main]
+    branches: [main, gallophonie]
 
 permissions: {}
 

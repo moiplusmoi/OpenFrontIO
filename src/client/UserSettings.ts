@@ -419,6 +419,20 @@ export class UserSettings {
     this.setFloat("settings.hudOpacity", value);
   }
 
+  // GalloFront: UI scale (0.8–1.4) applied as the root font-size; Tailwind
+  // sizes are rem-based, so the whole HUD scales while the map canvas does not.
+  uiScale() {
+    return Math.max(0.8, Math.min(1.4, this.getFloat("settings.uiScale", 1)));
+  }
+
+  setUiScale(value: number) {
+    this.setFloat("settings.uiScale", value);
+  }
+
+  applyUiScale() {
+    document.documentElement.style.fontSize = `${Math.round(this.uiScale() * 100)}%`;
+  }
+
   performanceOverlay() {
     return this.getBool(PERFORMANCE_OVERLAY_KEY, false);
   }

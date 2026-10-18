@@ -968,9 +968,28 @@ export class ClientGameRunner {
     return !!this.myPlayer?.isAlive();
   }
 
+  // GalloFront: keep the phone screen on while a game is running.
+  private wakeLock: WakeLockSentinel | null = null;
+
+  private requestWakeLock() {
+    const wl = (navigator as Navigator & { wakeLock?: WakeLock }).wakeLock;
+    if (!wl) return;
+    wl.request("screen")
+      .then((lock) => {
+        this.wakeLock = lock;
+      })
+      .catch(() => {});
+  }
+
+  private releaseWakeLock() {
+    this.wakeLock?.release().catch(() => {});
+    this.wakeLock = null;
+  }
+
   public start() {
     this.soundManager.playBackgroundMusic();
     console.log("starting client game");
+    this.requestWakeLock();
 
     this.isActive = true;
     this.lastMessageTime = Date.now();
@@ -1195,6 +1214,7 @@ export class ClientGameRunner {
   }
 
   public stop() {
+    this.releaseWakeLock();
     this.soundManager.dispose();
     this.graphicsListenerAbort?.abort();
     // Detach the input handler's window/canvas listeners and its EventBus

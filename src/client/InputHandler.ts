@@ -306,7 +306,7 @@ export class InputHandler {
   private longPressTimer: ReturnType<typeof setTimeout> | null = null;
   private longPressActive: boolean = false;
   private suppressNextTap: boolean = false;
-  private readonly LONG_PRESS_MS = 800;
+  private readonly LONG_PRESS_MS = Platform.isTouch ? 450 : 800;
 
   private moveInterval: NodeJS.Timeout | null = null;
   /** Aborts every window/canvas listener added in
@@ -319,7 +319,7 @@ export class InputHandler {
 
   private readonly PAN_SPEED = 5;
   private readonly ZOOM_SPEED = 10;
-  private readonly DRAG_THRESHOLD_PX = 10;
+  private readonly DRAG_THRESHOLD_PX = Platform.isTouch ? 14 : 10;
 
   private readonly userSettings: UserSettings = new UserSettings();
 

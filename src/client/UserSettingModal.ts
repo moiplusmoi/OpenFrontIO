@@ -1767,6 +1767,18 @@ export class UserSettingModal extends BaseModal {
   private renderGraphicsSettings() {
     return html`
       <setting-slider
+        label=${translateText("user_setting.ui_scale_label")}
+        description=${translateText("user_setting.ui_scale_desc")}
+        id="ui-scale-slider"
+        min="80"
+        max="140"
+        .value=${Math.round(this.userSettings.uiScale() * 100)}
+        @change=${(e: CustomEvent<{ value: number }>) => {
+          this.userSettings.setUiScale(e.detail.value / 100);
+          this.userSettings.applyUiScale();
+        }}
+      ></setting-slider>
+      <setting-slider
         label=${translateText("user_setting.hud_opacity_label")}
         description=${translateText("user_setting.hud_opacity_desc")}
         id="hud-opacity-slider"

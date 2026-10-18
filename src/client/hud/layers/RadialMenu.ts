@@ -1,3 +1,4 @@
+import { Platform } from "../../Platform";
 import { assetUrl } from "@openfront/shared/AssetUrls";
 import { EventBus, GameEvent } from "@openfront/shared/EventBus";
 import * as d3 from "d3";
@@ -95,6 +96,9 @@ export class RadialMenu implements Controller {
   private centerButtonIconSize: number;
 
   private params: MenuElementParams | null = null;
+  // GalloFront touch flow: the first tap on an item previews it (tooltip with
+  // name/cost), the second tap confirms. Reset whenever the menu changes.
+  private touchPreviewId: string | null = null;
 
   constructor(
     private eventBus: EventBus,
@@ -231,9 +235,11 @@ export class RadialMenu implements Controller {
     this.tooltipElement.style.pointerEvents = "none";
     this.tooltipElement.style.background = "rgba(12, 35, 64, 0.88)";
     this.tooltipElement.style.color = "white";
-    this.tooltipElement.style.padding = "6px 10px";
+    this.tooltipElement.style.padding = Platform.isTouch
+      ? "8px 12px"
+      : "6px 10px";
     this.tooltipElement.style.borderRadius = "6px";
-    this.tooltipElement.style.fontSize = "12px";
+    this.tooltipElement.style.fontSize = Platform.isTouch ? "15px" : "12px";
     this.tooltipElement.style.zIndex = "10000";
     this.tooltipElement.style.maxWidth = "250px";
     this.tooltipElement.style.display = "none";
@@ -560,9 +566,35 @@ export class RadialMenu implements Controller {
         onClick(d, event);
       });
 
-      path.on("touchstart", function (event) {
+      path.on("touchstart", (event) => {
         event.preventDefault();
         event.stopPropagation();
+        const hasTooltip =
+          (d.data.tooltipItems?.length ?? 0) > 0 ||
+          (d.data.tooltipKeys?.length ?? 0) > 0;
+        const subMenu = this.params ? d.data.subMenu?.(this.params) : null;
+        if (
+          Platform.isTouch &&
+          hasTooltip &&
+          !(subMenu && subMenu.length > 0) &&
+          this.touchPreviewId !== d.data.id
+        ) {
+          this.touchPreviewId = d.data.id;
+          onHover(d, path);
+          const touch = (event as TouchEvent).touches?.[0];
+          if (touch && this.tooltipElement) {
+            const w = this.tooltipElement.offsetWidth || 200;
+            this.tooltipElement.style.left =
+              Math.max(
+                8,
+                Math.min(window.innerWidth - w - 8, touch.pageX - w / 2),
+              ) + "px";
+            this.tooltipElement.style.top =
+              Math.max(8, touch.pageY - 90) + "px";
+          }
+          return;
+        }
+        this.touchPreviewId = null;
         onClick(d, event);
       });
     });
@@ -900,6 +932,7 @@ export class RadialMenu implements Controller {
     this.menuElement.style("display", "none");
     this.isVisible = false;
     this.selectedItemId = null;
+    this.touchPreviewId = null;
     this.hideTooltip();
 
     this.resetMenu();

@@ -375,13 +375,13 @@ export class GameRightSidebar extends LitElement implements Controller {
         <!-- Buttons -->
         ${this.maybeRenderReplayButtons()}
 
-        <div class="cursor-pointer" @click=${this.onSettingsButtonClick}>
+        <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.onSettingsButtonClick}>
           <img src=${settingsIcon} alt="settings" width="20" height="20" />
         </div>
 
         ${document.fullscreenEnabled && !this.hideFullscreenButton
           ? html`<div
-              class="cursor-pointer"
+              class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0"
               @click=${this.onFullscreenButtonClick}
             >
               <img
@@ -395,7 +395,7 @@ export class GameRightSidebar extends LitElement implements Controller {
             </div>`
           : ""}
 
-        <div class="cursor-pointer" @click=${this.onExitButtonClick}>
+        <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.onExitButtonClick}>
           <img src=${exitIcon} alt="exit" width="20" height="20" />
         </div>
       </aside>
@@ -425,7 +425,7 @@ export class GameRightSidebar extends LitElement implements Controller {
     return html`
       ${isReplayOrSingleplayer
         ? html`
-            <div class="cursor-pointer" @click=${this.toggleReplayPanel}>
+            <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.toggleReplayPanel}>
               <img
                 src=${FastForwardIconSolid}
                 alt="replay"
@@ -437,7 +437,7 @@ export class GameRightSidebar extends LitElement implements Controller {
         : ""}
       ${showPauseButton
         ? html`
-            <div class="cursor-pointer" @click=${this.onPauseButtonClick}>
+            <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.onPauseButtonClick}>
               <img
                 src=${this.isPaused ? playIcon : pauseIcon}
                 alt="play/pause"

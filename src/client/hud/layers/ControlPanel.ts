@@ -356,6 +356,15 @@ export class ControlPanel extends LitElement implements Controller {
     (e.target as HTMLInputElement).blur();
   }
 
+  // GalloFront: -/+ buttons next to the mobile slider (5 % steps).
+  private nudgeAttackRatio(delta: number) {
+    const pct = Math.round(this.attackRatio * 100);
+    const next = Math.max(1, Math.min(100, pct + delta));
+    this.attackRatio = next / 100;
+    this.onAttackRatioChange(this.attackRatio);
+    this.requestUpdate();
+  }
+
   private calculateTroopBar(): { greenPercent: number; orangePercent: number } {
     const base = Math.max(this._maxTroops, 1);
     const greenPercentRaw = (this._troops / base) * 100;
@@ -635,7 +644,7 @@ export class ControlPanel extends LitElement implements Controller {
               style="filter: brightness(0) invert(1);"
             />
             <span
-              class="text-white text-[11px] font-bold tabular-nums text-center leading-tight whitespace-pre-wrap"
+              class="text-white text-sm font-bold tabular-nums text-center leading-tight whitespace-pre-wrap"
               >${translateText("control_panel.attack_ratio", {
                 percent: (this.attackRatio * 100).toFixed(0),
                 troops: renderTroops(
@@ -647,9 +656,18 @@ export class ControlPanel extends LitElement implements Controller {
         </div>
         <!-- Attack ratio slider -->
         <div
-          class="flex-1 ${this.tutorialHighlightClass("attack_ratio")}"
+          class="flex-1 flex items-center gap-1 ${this.tutorialHighlightClass(
+            "attack_ratio",
+          )}"
           translate="no"
         >
+          <button
+            class="touch-nudge"
+            aria-label="-5%"
+            @click=${() => this.nudgeAttackRatio(-5)}
+          >
+            −
+          </button>
           <input
             type="range"
             min="1"
@@ -657,8 +675,15 @@ export class ControlPanel extends LitElement implements Controller {
             .value=${String(Math.round(this.attackRatio * 100))}
             @input=${(e: Event) => this.handleRatioSliderInput(e)}
             @pointerup=${(e: Event) => this.handleRatioSliderPointerUp(e)}
-            class="w-full h-1.5 accent-aquarius cursor-pointer"
+            class="touch-slider flex-1 cursor-pointer"
           />
+          <button
+            class="touch-nudge"
+            aria-label="+5%"
+            @click=${() => this.nudgeAttackRatio(5)}
+          >
+            +
+          </button>
         </div>
       </div>
     `;
@@ -679,6 +704,41 @@ export class ControlPanel extends LitElement implements Controller {
         }
         .gold-gain-pop {
           animation: gold-gain-pop 0.25s ease-out;
+        }
+        /* GalloFront: finger-sized attack-ratio slider on phones */
+        .touch-slider {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 12px;
+          border-radius: 6px;
+          background: rgba(148, 163, 184, 0.45);
+          margin: 10px 0;
+        }
+        .touch-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #38bdf8;
+          border: 2px solid #fff;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+        .touch-slider::-moz-range-thumb {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #38bdf8;
+          border: 2px solid #fff;
+        }
+        .touch-nudge {
+          min-width: 40px;
+          min-height: 40px;
+          border-radius: 8px;
+          border: 1px solid rgba(148, 163, 184, 0.6);
+          color: #fff;
+          font-size: 22px;
+          line-height: 1;
+          background: rgba(30, 41, 59, 0.7);
         }
       </style>
       <div

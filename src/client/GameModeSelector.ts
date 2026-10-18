@@ -707,25 +707,25 @@ export class GameModeSelector extends LitElement {
           ${isStandalone()
             ? nothing
             : this.renderSmallActionCard(
-            translateText("mode_selector.ranked_title"),
-            this.openRankedMenu,
-            SECONDARY_ACTION,
-            undefined,
-            true,
-            // Ranked admits trusted accounts only. A trusted viewer gets the
-            // green open lock; anyone else meets the red locks and the trust
-            // popup inside the ranked modal. Small, so it clears the label on
-            // narrow (mobile) buttons.
-            this.viewerTrusted
-              ? trustLockIcon(true, {
-                  tooltipTitle: translateText(
-                    "mode_selector.ranked_trust_tooltip_title",
-                  ),
-                  position: "top-1 right-1",
-                  small: true,
-                })
-              : nothing,
-          )}
+                translateText("mode_selector.ranked_title"),
+                this.openRankedMenu,
+                SECONDARY_ACTION,
+                undefined,
+                true,
+                // Ranked admits trusted accounts only. A trusted viewer gets the
+                // green open lock; anyone else meets the red locks and the trust
+                // popup inside the ranked modal. Small, so it clears the label on
+                // narrow (mobile) buttons.
+                this.viewerTrusted
+                  ? trustLockIcon(true, {
+                      tooltipTitle: translateText(
+                        "mode_selector.ranked_trust_tooltip_title",
+                      ),
+                      position: "top-1 right-1",
+                      small: true,
+                    })
+                  : nothing,
+              )}
           ${this.renderSmallActionCard(
             translateText("main.join"),
             this.openJoinLobby,
