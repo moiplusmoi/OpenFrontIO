@@ -5,6 +5,10 @@ import {
   Tick,
   UnitInfo,
   UnitType,
+  TechBranch,
+  TechId,
+  techDef,
+  Gold,
 } from "@openfront/engine-api/game/GameTypes";
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { GameConfig } from "@openfront/engine-api/Schemas";
@@ -165,8 +169,60 @@ export class Config {
   msPerTick(): number {
     return 100;
   }
-  SAMCooldown(): number {
-    return 90;
+  SAMCooldown(player?: PlayerLike): number {
+    // def_2 Radar: faster reload.
+    return player !== undefined && player.techLevel(TechBranch.Defense) >= 2
+      ? 70
+      : 90;
+  }
+
+  // ---- GalloFront technologies (see GameTypes.TECH_TREE) ----
+  techCost(id: TechId): Gold {
+    const costs: readonly Gold[] = [250_000n, 750_000n, 2_000_000n, 5_000_000n];
+    return costs[techDef(id).level - 1];
+  }
+  techDuration(id: TechId): Tick {
+    const durations = [300, 600, 900, 1500];
+    return durations[techDef(id).level - 1];
+  }
+  /** Tech required to build a unit type, or null (none of the base units need one). */
+  unitRequiredTech(_type: UnitType): TechId | null {
+    return null;
+  }
+  techGoldMult(player: PlayerLike): number {
+    const lvl = player.techLevel(TechBranch.Economy);
+    return lvl >= 4 ? 1.3 : lvl >= 1 ? 1.15 : 1;
+  }
+  techTradeMult(player: PlayerLike): number {
+    const lvl = player.techLevel(TechBranch.Economy);
+    return lvl >= 4 ? 1.4 : lvl >= 2 ? 1.2 : 1;
+  }
+  techTroopCapMult(player: PlayerLike): number {
+    return player.techLevel(TechBranch.Economy) >= 3 ? 1.1 : 1;
+  }
+  techStructureCostMult(player: PlayerLike): number {
+    return player.techLevel(TechBranch.Economy) >= 3 ? 0.85 : 1;
+  }
+  techConstructionMult(player: PlayerLike): number {
+    return player.techLevel(TechBranch.Economy) >= 3 ? 0.5 : 1;
+  }
+  techGrowthMult(player: PlayerLike): number {
+    return player.techLevel(TechBranch.Military) >= 1 ? 1.15 : 1;
+  }
+  techAttackerLossMult(militaryLevel: number): number {
+    return militaryLevel >= 2 ? 0.88 : 1;
+  }
+  techAttackSpeedMult(militaryLevel: number): number {
+    return militaryLevel >= 2 ? 0.92 : 1;
+  }
+  techDefenderLossMult(defenseLevel: number): number {
+    return defenseLevel >= 1 ? 0.85 : 1;
+  }
+  techSamRangeMult(defenseLevel: number): number {
+    return defenseLevel >= 2 ? 1.15 : 1;
+  }
+  techWarshipHealthMult(player: PlayerLike): number {
+    return player.techLevel(TechBranch.Military) >= 2 ? 1.2 : 1;
   }
   SiloCooldown(): number {
     return 90;
@@ -343,7 +399,8 @@ export class Config {
     const maxTroops =
       player.type() === PlayerType.Human && this.hasInfiniteTroopsFor(player)
         ? 1_000_000_000
-        : 2 * (pow(player.numTilesOwned(), 0.6) * 1000 + 50000) + cityTroops;
+        : (2 * (pow(player.numTilesOwned(), 0.6) * 1000 + 50000) + cityTroops) *
+          this.techTroopCapMult(player);
 
     if (player.type() === PlayerType.Bot) {
       return maxTroops / 3;
@@ -371,6 +428,7 @@ export class Config {
     const max = this.maxTroops(player);
 
     let toAdd = 10 + pow(player.troops(), 0.73) / 4;
+    toAdd *= this.techGrowthMult(player);
 
     const ratio = 1 - player.troops() / max;
     toAdd *= ratio;
@@ -417,9 +475,12 @@ export class Config {
     return 100;
   }
 
-  samRange(level: number): number {
+  samRange(level: number, defenseTechLevel: number = 0): number {
     // rational growth function (level 1 = 70, level 5 just above hydro range, asymptotically approaches 150)
-    return this.maxSamRange() - 480 / (level + 5);
+    return (
+      (this.maxSamRange() - 480 / (level + 5)) *
+      this.techSamRangeMult(defenseTechLevel)
+    );
   }
 
   maxSamRange(): number {

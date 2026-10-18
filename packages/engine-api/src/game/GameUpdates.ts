@@ -16,6 +16,8 @@ import {
   TransportShipState,
   UnitType,
   WarshipState,
+  TechId,
+  ResearchState,
 } from "./GameTypes";
 
 export interface GameUpdateViewData {
@@ -279,6 +281,10 @@ export interface PlayerUpdate {
   betrayals?: number;
   lastDeleteUnitTick?: Tick;
   isLobbyCreator?: boolean;
+  /** GalloFront: acquired technologies (sent when the list changes). */
+  techs?: TechId[];
+  /** GalloFront: research in progress, null when idle. */
+  research?: ResearchState | null;
 }
 
 export interface AllianceView {

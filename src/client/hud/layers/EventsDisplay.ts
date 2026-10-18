@@ -56,6 +56,7 @@ const TIER_1_TYPES: ReadonlySet<MessageType> = new Set([
   MessageType.CONQUERED_PLAYER,
   MessageType.CHAT,
   MessageType.DONATION_RECEIVED,
+  MessageType.RESEARCH_COMPLETE,
 ]);
 
 const isTier1 = (type: MessageType): boolean => TIER_1_TYPES.has(type);
@@ -265,6 +266,16 @@ export class EventsDisplay extends LitElement implements Controller {
       params.unit.startsWith("unit_type.")
     ) {
       params = { ...params, unit: translateText(params.unit) };
+    }
+    // GalloFront: research_complete carries the tech id (or its name key).
+    if (
+      event.message === "events_display.research_complete" &&
+      typeof params.tech === "string"
+    ) {
+      const key = params.tech.startsWith("tech.")
+        ? params.tech
+        : `tech.${params.tech}.name`;
+      params = { ...params, tech: translateText(key) };
     }
 
     if (params.name === undefined || event.focusPlayerID === undefined) {

@@ -26,6 +26,7 @@ import { NationExecution } from "./NationExecution";
 import { NoOpExecution } from "./NoOpExecution";
 import { PauseExecution } from "./PauseExecution";
 import { QuickChatExecution } from "./QuickChatExecution";
+import { ResearchExecution } from "./ResearchExecution";
 import { RetreatExecution } from "./RetreatExecution";
 import { SpawnExecution } from "./SpawnExecution";
 import { TargetPlayerExecution } from "./TargetPlayerExecution";
@@ -142,6 +143,8 @@ export class Executor {
         );
       case "mark_disconnected":
         return new MarkDisconnectedExecution(player, intent.isDisconnected);
+      case "research":
+        return new ResearchExecution(player, intent.tech);
       case "toggle_pause":
         return new PauseExecution(player, intent.paused);
       default:

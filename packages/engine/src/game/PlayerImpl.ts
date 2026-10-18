@@ -22,6 +22,10 @@ import {
   TerraNullius,
   Tick,
   UnitType,
+  TechId,
+  TechBranch,
+  ResearchState,
+  techLevelOf,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   AllianceView,
@@ -132,6 +136,10 @@ Object.freeze(EMPTY_ALLIANCE_VIEWS);
 Object.freeze(EMPTY_EMOJIS);
 
 export class PlayerImpl implements Player {
+  // GalloFront technologies. Both are replaced, never mutated, so the
+  // update diff can compare by identity.
+  private _techs: TechId[] = [];
+  private _research: ResearchState | null = null;
   public _lastTileChange: number = 0;
   // Bumped on every ownership change of one of this player's tiles (several
   // can happen within one tick, so the tick alone is not a cache key).
@@ -416,6 +424,8 @@ export class PlayerImpl implements Player {
       betrayals: this._betrayalCount,
       lastDeleteUnitTick: this.lastDeleteUnitTick,
       isLobbyCreator: this.isLobbyCreator(),
+      techs: this._techs,
+      research: this._research,
     };
   }
 
@@ -1460,6 +1470,10 @@ export class PlayerImpl implements Player {
     if (this.mg.config().isUnitDisabled(unitType)) {
       return false;
     }
+    const requiredTech = this.mg.config().unitRequiredTech(unitType);
+    if (requiredTech !== null && !this.hasTech(requiredTech)) {
+      return false;
+    }
     const cost = knownCost ?? this.mg.unitInfo(unitType).cost(this.mg, this);
     if (this._gold < cost) {
       return false;
@@ -1859,8 +1873,32 @@ export class PlayerImpl implements Player {
   hash(): number {
     return (
       simpleHash(this.id()) * (this.troops() + this.numTilesOwned()) +
-      this._units.reduce((acc, unit) => acc + unit.hash(), 0)
+      this._units.reduce((acc, unit) => acc + unit.hash(), 0) +
+      this._techs.length * 7919
     );
+  }
+
+  // ---- GalloFront technologies ----
+  techs(): readonly TechId[] {
+    return this._techs;
+  }
+  hasTech(id: TechId): boolean {
+    return this._techs.includes(id);
+  }
+  techLevel(branch: TechBranch): number {
+    return techLevelOf(this._techs, branch);
+  }
+  research(): ResearchState | null {
+    return this._research;
+  }
+  startResearch(tech: TechId, endTick: number): void {
+    this._research = { tech, startTick: this.mg.ticks(), endTick };
+  }
+  completeResearch(): void {
+    if (this._research === null) return;
+    const tech = this._research.tech;
+    if (!this._techs.includes(tech)) this._techs = [...this._techs, tech];
+    this._research = null;
   }
   toString(): string {
     return `Player:{name:${this.info().name},clientID:${
@@ -2038,6 +2076,8 @@ export class PlayerImpl implements Player {
       numUnitsConstructed: Object.entries(this.numUnitsConstructed).map(
         ([type, n]) => [type as UnitType, n],
       ),
+      techs: [...this._techs],
+      research: this._research === null ? null : { ...this._research },
     };
   }
 
@@ -2112,12 +2152,14 @@ export class PlayerImpl implements Player {
       : (box as null);
     this.numUnitsConstructed = Object.fromEntries(s.numUnitsConstructed);
     this.nearbyMemo = null;
+    this._techs = [...s.techs];
+    this._research = s.research === null ? null : { ...s.research };
   }
 }
 
 export const PlayerSnapshot = snapshotType({
   name: "Player",
-  version: 1,
+  version: 2,
   schema: z.object({
     smallID: zInt(),
     info: PlayerInfoSchema,
@@ -2181,6 +2223,14 @@ export const PlayerSnapshot = snapshotType({
       .nullable()
       .optional(),
     numUnitsConstructed: z.array(z.tuple([UnitTypeSchema, zInt()])),
+    // v2 (GalloFront): technologies
+    techs: z.array(z.enum(TechId)),
+    research: z
+      .object({ tech: z.enum(TechId), startTick: zInt(), endTick: zInt() })
+      .nullable(),
   }),
+  migrations: {
+    1: (d: object) => ({ ...d, techs: [], research: null }),
+  },
 });
 export type PlayerState = z.infer<typeof PlayerSnapshot.schema>;

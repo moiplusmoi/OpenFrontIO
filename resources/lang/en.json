@@ -894,6 +894,7 @@
     "reject_alliance": "Reject",
     "renew_alliance": "Request to renew",
     "request_alliance": "{name} requests an alliance!",
+    "research_complete": "Research complete: {tech}",
     "retreating": "retreating",
     "sent_emoji": "Sent {name}: {emoji}",
     "sent_emoji_all": "Sent everyone: {emoji}",
@@ -1171,6 +1172,7 @@
     "action_quick_chat": "Open quick chat",
     "action_ratio_change": "Decrease/Increase attack ratio",
     "action_reset_gfx": "Reset graphics",
+    "action_tech_panel": "Open the technologies panel",
     "action_warship_multiselect": "Select multiple warships (drag to draw selection box)",
     "action_warship_selectall": "Select all your warships",
     "action_zoom": "Zoom out/in",
@@ -1797,6 +1799,7 @@
     "stop_trade_enemies": "Stop Trading with Enemies",
     "stopped": "Stopped",
     "target": "Target",
+    "techs": "Technologies",
     "trading": "Trading",
     "traitor": "Traitor",
     "troops": "Troops"
@@ -2402,6 +2405,77 @@
     "teal": "Teal",
     "yellow": "Yellow"
   },
+  "tech": {
+    "def_1": {
+      "desc": "Defense losses -15%, stronger defense posts.",
+      "name": "Fortifications"
+    },
+    "def_2": {
+      "desc": "SAM range +15%, SAM reload 90→70, warship range +15%.",
+      "name": "Radar"
+    },
+    "def_3": {
+      "desc": "Will unlock espionage (coming soon).",
+      "name": "Intelligence"
+    },
+    "def_4": {
+      "desc": "Coming soon.",
+      "name": "Counter-intelligence"
+    },
+    "eco_1": {
+      "desc": "Worker gold +15%.",
+      "name": "Taxation"
+    },
+    "eco_2": {
+      "desc": "Trade ship and train gold +20%.",
+      "name": "Trade Routes"
+    },
+    "eco_3": {
+      "desc": "Cities, ports and factories -15% cost, build 2× faster, max troops +10%.",
+      "name": "Urbanization"
+    },
+    "eco_4": {
+      "desc": "Workers +30%, trade +40%, conquest loot +50%.",
+      "name": "Globalization"
+    },
+    "mil_1": {
+      "desc": "Troop growth +15%.",
+      "name": "Conscription"
+    },
+    "mil_2": {
+      "desc": "Attack losses -12%, attacks 8% faster, 4 boats, warships +20% HP.",
+      "name": "Offensive Doctrine"
+    },
+    "mil_3": {
+      "desc": "Will unlock aviation (coming soon).",
+      "name": "Aviation"
+    },
+    "mil_4": {
+      "desc": "Coming soon.",
+      "name": "Air Superiority"
+    }
+  },
+  "tech_panel": {
+    "branch": {
+      "defense": "Defense",
+      "economy": "Economy",
+      "military": "Military"
+    },
+    "branch_short": {
+      "defense": "Def",
+      "economy": "Eco",
+      "military": "Mil"
+    },
+    "cost": "Cost",
+    "done": "Acquired",
+    "duration": "{seconds}s",
+    "level": "Level {level}",
+    "open": "Technologies (T)",
+    "requires": "Requires level {level}",
+    "research": "Research",
+    "researching": "Researching…",
+    "title": "Technologies"
+  },
   "territory_patterns": {
     "pattern": {
       "default": "Default"
@@ -2692,6 +2766,8 @@
     "tab_keybinds": "Keybinds",
     "target_player": "Target Player",
     "target_player_desc": "Mark the player whose tile is under your cursor as a target for you and your allies.",
+    "tech_panel": "Technologies Panel",
+    "tech_panel_desc": "Open or close the technologies panel.",
     "title": "Settings",
     "toggle_terrain": "Toggle Terrain",
     "toggle_view": "Toggle View",

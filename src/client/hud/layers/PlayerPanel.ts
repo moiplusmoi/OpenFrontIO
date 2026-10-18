@@ -8,6 +8,7 @@ import {
   Relation,
 } from "@openfront/engine-api/game/GameTypes";
 import { Emoji, flattenedEmojiTable } from "@openfront/engine-api/Schemas";
+import { TechBranch } from "@openfront/engine-api/game/GameTypes";
 import { renderNumber, renderTroops } from "@openfront/engine-lib/Format";
 import type { UserMeResponse } from "@openfront/shared/ApiSchemas";
 import { assetUrl } from "@openfront/shared/AssetUrls";
@@ -708,6 +709,34 @@ export class PlayerPanel extends LitElement implements Controller {
     `;
   }
 
+  /** GalloFront: "Technologies: Eco N · Mil N · Def N". */
+  private renderTechs(other: PlayerView) {
+    const levels = [
+      ["economy", other.techLevel(TechBranch.Economy)],
+      ["military", other.techLevel(TechBranch.Military)],
+      ["defense", other.techLevel(TechBranch.Defense)],
+    ] as const;
+    return html`
+      <div
+        class="mb-1 flex items-center gap-1.5 rounded-lg bg-white/4 px-3 py-1.5 text-white"
+        data-techs
+      >
+        <span class="mr-0.5">🔬</span>
+        <span class="text-zinc-200 whitespace-nowrap">
+          ${translateText("player_panel.techs")}
+        </span>
+        <span translate="no" class="tabular-nums font-semibold">
+          ${levels
+            .map(
+              ([key, level]) =>
+                `${translateText(`tech_panel.branch_short.${key}`)} ${level}`,
+            )
+            .join(" · ")}
+        </span>
+      </div>
+    `;
+  }
+
   private renderRocketDirectionToggle() {
     return html`
       <ui-divider></ui-divider>
@@ -1166,7 +1195,7 @@ export class PlayerPanel extends LitElement implements Controller {
                     <ui-divider></ui-divider>
 
                     <!-- Resources -->
-                    ${this.renderResources(other)}
+                    ${this.renderResources(other)} ${this.renderTechs(other)}
 
                     <!-- Rocket direction toggle -->
                     ${other === viewer && !isSpectator

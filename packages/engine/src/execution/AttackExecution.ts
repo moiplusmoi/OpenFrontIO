@@ -8,6 +8,7 @@ import {
   TerrainType,
   TerraNullius,
   UnitType,
+  TechBranch,
 } from "@openfront/engine-api/game/GameTypes";
 import { renderTroops } from "@openfront/engine-lib/Format";
 import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
@@ -393,6 +394,9 @@ export class AttackExecution implements Execution {
                 defender.isDisconnected() && this._owner.isOnSameTeam(defender),
             },
       defenderHasDefensePost,
+      attackerMilitaryTech: this._owner.techLevel(TechBranch.Military),
+      defenderDefenseTech:
+        defender === null ? 0 : defender.techLevel(TechBranch.Defense),
       falloutRatio: this.mg.hasFallout(tile)
         ? this.mg.numTilesWithFallout() / this.mg.numLandTiles()
         : null,

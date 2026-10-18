@@ -12,6 +12,10 @@
  */
 
 import type {
+  ResearchState,
+  TechId,
+} from "@openfront/engine-api/game/GameTypes";
+import type {
   AllianceData,
   AttackData,
   EmojiData,
@@ -250,6 +254,19 @@ const ALLIANCE = struct<AllianceData>({
   hasExtensionRequest: BOOL,
 });
 
+// GalloFront: tech ids are short strings ("eco_1"); a research in progress.
+const TECH_ID: ValueCodec<TechId> = {
+  write: (w, v) => w.writeShortString(v),
+  read: (r) => r.readShortString() as TechId,
+  eq: same,
+};
+
+const RESEARCH = struct<ResearchState>({
+  tech: TECH_ID,
+  startTick: U32,
+  endTick: U32,
+});
+
 const ALL_PLAYERS_RECIPIENT = 0xffff;
 const EMOJI_RECIPIENT: ValueCodec<number | "AllPlayers"> = {
   write: (w, v) => w.writeU16(v === "AllPlayers" ? ALL_PLAYERS_RECIPIENT : v),
@@ -387,6 +404,9 @@ export const PLAYER_FIELDS: readonly FieldDef<PlayerFields>[] = [
   field(["outgoingAllianceRequests", list(STRING)]),
   field(["alliances", list(ALLIANCE)]),
   field(["outgoingEmojis", list(EMOJI)]),
+  // GalloFront technologies (REPLAY_VERSION 2).
+  field(["techs", list(TECH_ID)]),
+  field(["research", maybe(RESEARCH, null)]),
 ];
 
 export const UNIT_FIELDS: readonly FieldDef<UnitFields>[] = [

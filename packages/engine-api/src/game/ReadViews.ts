@@ -5,6 +5,7 @@ import {
   PlayerType,
   TerraNullius,
   UnitType,
+  TechBranch,
 } from "./GameTypes";
 
 /*
@@ -27,6 +28,8 @@ export interface PlayerLike {
   troops(): number;
   gold(): Gold;
   units(type: UnitType): readonly UnitLike[];
+  /** GalloFront: highest researched level in a tech branch (0 = none). */
+  techLevel(branch: TechBranch): number;
 }
 
 export interface UnitLike {

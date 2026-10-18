@@ -31,7 +31,10 @@ export function getDefaultKeybinds(isMac: boolean): Record<string, string> {
     buildAtomBomb: "Digit8",
     buildHydrogenBomb: "Digit9",
     buildMIRV: "Digit0",
-    attackRatioDown: "KeyT",
+    // GalloFront: T opens the technologies panel; the attack-ratio keys moved
+    // to V / Y.
+    techPanel: "KeyT",
+    attackRatioDown: "KeyV",
     attackRatioUp: "KeyY",
     boatAttack: "KeyB",
     groundAttack: "KeyG",

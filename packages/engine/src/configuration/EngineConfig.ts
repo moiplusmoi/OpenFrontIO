@@ -7,6 +7,7 @@ import {
   TerraNullius,
   Tick,
   UnitType,
+  TechBranch,
 } from "@openfront/engine-api/game/GameTypes";
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { TeamCountConfig } from "@openfront/engine-api/Schemas";
@@ -40,6 +41,10 @@ export interface AttackLogicInput {
   falloutRatio: number | null;
   /** Tiles on the attack front this tick (plus jitter); fixed for the tick. */
   borderSize: number;
+  /** GalloFront: attacker's Military tech level (0 when absent). */
+  attackerMilitaryTech?: number;
+  /** GalloFront: defender's Defense tech level (0 when absent). */
+  defenderDefenseTech?: number;
 }
 
 export interface AttackLogicResult {
@@ -255,7 +260,9 @@ export class EngineConfig extends Config {
     }
     const distPenalty = citiesVisited * 5_000;
     const gold = Math.max(5000, baseGold - distPenalty);
-    return toInt(gold * this.goldMultiplierFor(player));
+    return toInt(
+      gold * this.goldMultiplierFor(player) * this.techTradeMult(player),
+    );
   }
 
   trainStationMinRange(): number {
@@ -269,7 +276,11 @@ export class EngineConfig extends Config {
     // Sigmoid: concave start, sharp S-curve middle, linear end - heavily punishes trades under range debuff.
     const debuff = this.tradeShipShortRangeDebuff();
     const baseGold = 75_000 / (1 + exp(-0.03 * (dist - debuff))) + 50 * dist;
-    return BigInt(Math.floor(baseGold * this.goldMultiplierFor(player)));
+    return BigInt(
+      Math.floor(
+        baseGold * this.goldMultiplierFor(player) * this.techTradeMult(player),
+      ),
+    );
   }
 
   /**
@@ -452,7 +463,13 @@ export class EngineConfig extends Config {
           Math.min(player.unitsOwned(type), player.unitsConstructed(type)),
         0,
       );
-      return BigInt(costFn(numUnits + extraUnits));
+      // eco_3 Urbanization: cheaper cities, ports and factories.
+      const civil = types.every(
+        (t) =>
+          t === UnitType.City || t === UnitType.Port || t === UnitType.Factory,
+      );
+      const mult = civil ? this.techStructureCostMult(player) : 1;
+      return BigInt(Math.floor(costFn(numUnits + extraUnits) * mult));
     };
   }
 
@@ -497,9 +514,13 @@ export class EngineConfig extends Config {
   minDistanceBetweenPlayers(): number {
     return 30;
   }
-  boatMaxNumber(): number {
+  boatMaxNumber(player?: PlayerLike): number {
     if (this.isUnitDisabled(UnitType.TransportShip)) {
       return 0;
+    }
+    // mil_2 Offensive doctrine: one more boat at sea.
+    if (player !== undefined && player.techLevel(TechBranch.Military) >= 2) {
+      return 4;
     }
     return 3;
   }
@@ -600,16 +621,19 @@ export class EngineConfig extends Config {
       attacker.numTiles,
       LARGE_ATTACKER_SPEED_DEPTH,
     );
+    const milTech = input.attackerMilitaryTech ?? 0;
+    const defTech = input.defenderDefenseTech ?? 0;
     return {
-      attackerTroopLoss,
-      defenderTroopLoss,
+      attackerTroopLoss: attackerTroopLoss * this.techAttackerLossMult(milTech),
+      defenderTroopLoss: defenderTroopLoss * this.techDefenderLossMult(defTech),
       tickFraction:
-        (speedCost *
+        ((speedCost *
           tileCost *
           largeAttackerSpeedBonus *
           largeDefenderBonus *
           traitorCostMod) /
-        input.borderSize,
+          input.borderSize) *
+        this.techAttackSpeedMult(milTech),
     };
   }
 
@@ -673,7 +697,9 @@ export class EngineConfig extends Config {
     } else {
       baseRate = 100n;
     }
-    return BigInt(Math.floor(Number(baseRate) * multiplier));
+    return BigInt(
+      Math.floor(Number(baseRate) * multiplier * this.techGoldMult(player)),
+    );
   }
 
   nukeSpeed(unitType: UnitType): number {
@@ -707,15 +733,16 @@ export class EngineConfig extends Config {
 
   dynamicSamRange(sam: Unit, currentTick: number): number {
     const state = sam.samLauncherState();
+    const defTech = sam.owner().techLevel(TechBranch.Defense);
     if (state === undefined || state.upgradeStartTick === undefined) {
-      return this.samRange(sam.level());
+      return this.samRange(sam.level(), defTech);
     }
     const duration = state.duration ?? this.samUpgradeDuration();
     const elapsed = currentTick - state.upgradeStartTick;
     if (elapsed >= duration) {
-      return this.samRange(state.targetLevel);
+      return this.samRange(state.targetLevel, defTech);
     }
-    const targetRange = this.samRange(state.targetLevel);
+    const targetRange = this.samRange(state.targetLevel, defTech);
     const diff = targetRange - state.startRange;
     return state.startRange + (diff * elapsed) / duration;
   }

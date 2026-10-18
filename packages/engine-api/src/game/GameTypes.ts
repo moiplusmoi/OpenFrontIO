@@ -209,6 +209,125 @@ export enum UnitType {
   Factory = "Factory",
 }
 
+// ---- GalloFront: technologies ----
+// Three branches × four levels. A level requires the previous one of the
+// same branch. Costs/durations live in Config (engine-lib) so client and
+// engine read the same numbers; effects are applied inside the rules they
+// modify (gold rate, troop cap, attack logic, SAM range, unit gating).
+export enum TechBranch {
+  Economy = "eco",
+  Military = "mil",
+  Defense = "def",
+}
+
+export enum TechId {
+  Eco1 = "eco_1",
+  Eco2 = "eco_2",
+  Eco3 = "eco_3",
+  Eco4 = "eco_4",
+  Mil1 = "mil_1",
+  Mil2 = "mil_2",
+  Mil3 = "mil_3",
+  Mil4 = "mil_4",
+  Def1 = "def_1",
+  Def2 = "def_2",
+  Def3 = "def_3",
+  Def4 = "def_4",
+}
+
+export interface TechDef {
+  id: TechId;
+  branch: TechBranch;
+  level: 1 | 2 | 3 | 4;
+  requires: TechId | null;
+}
+
+export const TECH_TREE: readonly TechDef[] = [
+  { id: TechId.Eco1, branch: TechBranch.Economy, level: 1, requires: null },
+  {
+    id: TechId.Eco2,
+    branch: TechBranch.Economy,
+    level: 2,
+    requires: TechId.Eco1,
+  },
+  {
+    id: TechId.Eco3,
+    branch: TechBranch.Economy,
+    level: 3,
+    requires: TechId.Eco2,
+  },
+  {
+    id: TechId.Eco4,
+    branch: TechBranch.Economy,
+    level: 4,
+    requires: TechId.Eco3,
+  },
+  { id: TechId.Mil1, branch: TechBranch.Military, level: 1, requires: null },
+  {
+    id: TechId.Mil2,
+    branch: TechBranch.Military,
+    level: 2,
+    requires: TechId.Mil1,
+  },
+  {
+    id: TechId.Mil3,
+    branch: TechBranch.Military,
+    level: 3,
+    requires: TechId.Mil2,
+  },
+  {
+    id: TechId.Mil4,
+    branch: TechBranch.Military,
+    level: 4,
+    requires: TechId.Mil3,
+  },
+  { id: TechId.Def1, branch: TechBranch.Defense, level: 1, requires: null },
+  {
+    id: TechId.Def2,
+    branch: TechBranch.Defense,
+    level: 2,
+    requires: TechId.Def1,
+  },
+  {
+    id: TechId.Def3,
+    branch: TechBranch.Defense,
+    level: 3,
+    requires: TechId.Def2,
+  },
+  {
+    id: TechId.Def4,
+    branch: TechBranch.Defense,
+    level: 4,
+    requires: TechId.Def3,
+  },
+];
+
+export function techDef(id: TechId): TechDef {
+  const def = TECH_TREE.find((t) => t.id === id);
+  if (def === undefined) throw new Error(`unknown tech ${id}`);
+  return def;
+}
+
+/** Highest level acquired in a branch, from a list of acquired tech ids. */
+export function techLevelOf(
+  techs: readonly TechId[],
+  branch: TechBranch,
+): number {
+  let level = 0;
+  for (const id of techs) {
+    const def = techDef(id);
+    if (def.branch === branch && def.level > level) level = def.level;
+  }
+  return level;
+}
+
+/** A research in progress: started at startTick, completes at endTick. */
+export interface ResearchState {
+  tech: TechId;
+  startTick: Tick;
+  endTick: Tick;
+}
+
 export enum TrainType {
   Engine = "Engine",
   TailEngine = "TailEngine",
@@ -468,6 +587,8 @@ export enum MessageType {
   DONATION_RECEIVED,
   CHAT,
   RENEW_ALLIANCE,
+  // GalloFront: a technology finished researching.
+  RESEARCH_COMPLETE,
 }
 
 // Message categories used for filtering events in the EventsDisplay
@@ -503,6 +624,7 @@ export const MESSAGE_TYPE_CATEGORIES: Record<MessageType, MessageCategory> = {
   [MessageType.DONATION_SENT]: MessageCategory.TRADE,
   [MessageType.DONATION_RECEIVED]: MessageCategory.TRADE,
   [MessageType.CHAT]: MessageCategory.CHAT,
+  [MessageType.RESEARCH_COMPLETE]: MessageCategory.TRADE,
 } as const;
 
 /**

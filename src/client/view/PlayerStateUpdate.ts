@@ -54,4 +54,7 @@ export function applyStateUpdate(target: PlayerState, pu: PlayerUpdate): void {
   if (pu.alliances !== undefined) target.alliances = pu.alliances;
   if (pu.outgoingEmojis !== undefined)
     target.outgoingEmojis = pu.outgoingEmojis;
+  // GalloFront technologies: emitted on change only.
+  if (pu.techs !== undefined) target.techs = pu.techs.slice();
+  if (pu.research !== undefined) target.research = pu.research;
 }

@@ -45,6 +45,7 @@ import { PlayerPanel } from "./layers/PlayerPanel";
 import { ReplayPanel } from "./layers/ReplayPanel";
 import { SettingsModal } from "./layers/SettingsModal";
 import { SpawnTimer } from "./layers/SpawnTimer";
+import { TechPanel } from "./layers/TechPanel";
 import { TutorialPanel } from "./layers/TutorialPanel";
 import { UnitDisplay } from "./layers/UnitDisplay";
 import { WinModal } from "./layers/WinModal";
@@ -91,6 +92,13 @@ export function createRenderer(
   buildMenu.eventBus = eventBus;
   buildMenu.uiState = uiState;
   buildMenu.transformHandler = transformHandler;
+
+  const techPanel = document.querySelector("tech-panel") as TechPanel;
+  if (!(techPanel instanceof TechPanel)) {
+    console.error("TechPanel element not found in the DOM");
+  }
+  techPanel.game = game;
+  techPanel.eventBus = eventBus;
 
   const gameLeftSidebar = document.querySelector(
     "game-left-sidebar",
@@ -342,6 +350,7 @@ export function createRenderer(
     attacksDisplay,
     chatDisplay,
     buildMenu,
+    techPanel,
     new MainRadialMenu(
       eventBus,
       game,

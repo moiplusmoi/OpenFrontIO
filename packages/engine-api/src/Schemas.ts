@@ -14,6 +14,7 @@ import {
   Quads,
   RankedType,
   Trios,
+  TechId,
   UnitType,
 } from "./game/GameTypes";
 import { PlayerStatsSchema } from "./StatsSchemas";
@@ -46,7 +47,8 @@ export type Intent =
   | KickPlayerIntent
   | TogglePauseIntent
   | UpdateGameConfigIntent
-  | ToggleGameStartTimer;
+  | ToggleGameStartTimer
+  | ResearchIntent;
 
 export type AttackIntent = z.infer<typeof AttackIntentSchema>;
 export type CancelAttackIntent = z.infer<typeof CancelAttackIntentSchema>;
@@ -549,6 +551,13 @@ export const ToggleGameStartTimerIntentSchema = z.object({
   type: z.literal("toggle_game_start_timer"),
 });
 
+// GalloFront: start researching a technology (one at a time per player).
+export const ResearchIntentSchema = z.object({
+  type: z.literal("research"),
+  tech: z.enum(TechId),
+});
+export type ResearchIntent = z.infer<typeof ResearchIntentSchema>;
+
 export const IntentSchema = z.discriminatedUnion("type", [
   AttackIntentSchema,
   CancelAttackIntentSchema,
@@ -575,6 +584,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   TogglePauseIntentSchema,
   UpdateGameConfigIntentSchema,
   ToggleGameStartTimerIntentSchema,
+  ResearchIntentSchema,
 ]);
 
 // StampedIntent = Intent with server-stamped clientID (used in turns and execution)

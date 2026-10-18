@@ -147,6 +147,9 @@ export class TouchLongPressStartEvent implements GameEvent {
   ) {}
 }
 
+/** GalloFront: open/close the technologies panel (keybind `techPanel`). */
+export class ToggleTechPanelEvent implements GameEvent {}
+
 export class ShowBuildMenuEvent implements GameEvent {
   constructor(
     public readonly x: number,
@@ -502,6 +505,13 @@ export class InputHandler {
     this.addKeybindAndEvent("Shift+KeyD", () => {
       this.eventBus.emit(new TogglePerformanceOverlayEvent());
     });
+    this.addKeybindAndEvent(
+      this.keybinds.techPanel,
+      () => {
+        this.eventBus.emit(new ToggleTechPanelEvent());
+      },
+      (e: KeyboardEvent) => !e.altKey && !e.ctrlKey && !e.metaKey,
+    );
     this.addKeybindAndEvent(this.keybinds.toggleView, () => {
       this.alternateView = false;
       this.eventBus.emit(new AlternateViewEvent(false));

@@ -19,6 +19,12 @@
  */
 
 import type { TileRef } from "@openfront/engine-api/game/GameMap";
+import {
+  type ResearchState,
+  TechBranch,
+  TechId,
+  techLevelOf,
+} from "@openfront/engine-api/game/GameTypes";
 import type {
   PlayerType,
   Team,
@@ -208,6 +214,19 @@ export class ReplayPlayerView {
   }
   numTilesOwned(): number {
     return this.state?.tilesOwned ?? 0;
+  }
+  // GalloFront technologies (read from the frame state, like the live view).
+  techs(): readonly TechId[] {
+    return this.state?.techs ?? [];
+  }
+  hasTech(id: TechId): boolean {
+    return this.techs().includes(id);
+  }
+  techLevel(branch: TechBranch): number {
+    return techLevelOf(this.techs(), branch);
+  }
+  research(): ResearchState | null {
+    return this.state?.research ?? null;
   }
   gold(): bigint {
     return BigInt(Math.round(this.state?.gold ?? 0));

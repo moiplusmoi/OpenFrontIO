@@ -12,8 +12,12 @@ import {
   PlayerID,
   PlayerProfile,
   PlayerType,
+  ResearchState,
   Team,
+  TechBranch,
+  TechId,
   Tick,
+  techLevelOf,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
 import {
@@ -619,6 +623,27 @@ export class PlayerView implements PlayerLike {
 
   lastDeleteUnitTick(): Tick {
     return this.state.lastDeleteUnitTick;
+  }
+
+  // ---- GalloFront technologies ----
+
+  /** Technologies acquired so far. */
+  techs(): readonly TechId[] {
+    return this.state.techs;
+  }
+
+  hasTech(id: TechId): boolean {
+    return this.state.techs.includes(id);
+  }
+
+  /** Highest level acquired in a branch (0 when none). */
+  techLevel(branch: TechBranch): number {
+    return techLevelOf(this.state.techs, branch);
+  }
+
+  /** The research in progress, or null. */
+  research(): ResearchState | null {
+    return this.state.research;
   }
 
   deleteUnitCooldown(): number {

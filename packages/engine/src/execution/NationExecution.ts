@@ -36,6 +36,7 @@ import { NationAllianceBehavior } from "./nation/NationAllianceBehavior";
 import { NationEmojiBehavior } from "./nation/NationEmojiBehavior";
 import { NationMIRVBehavior } from "./nation/NationMIRVBehavior";
 import { NationNukeBehavior } from "./nation/NationNukeBehavior";
+import { NationResearchBehavior } from "./nation/NationResearchBehavior";
 import { NationStructureBehavior } from "./nation/NationStructureBehavior";
 import { NationWarshipBehavior } from "./nation/NationWarshipBehavior";
 import { SpawnExecution } from "./SpawnExecution";
@@ -53,6 +54,7 @@ export class NationExecution implements Execution {
   private warshipBehavior!: NationWarshipBehavior;
   private nukeBehavior!: NationNukeBehavior;
   private structureBehavior!: NationStructureBehavior;
+  private researchBehavior!: NationResearchBehavior;
   private mg: Game;
   private player: Player | null = null;
 
@@ -222,6 +224,7 @@ export class NationExecution implements Execution {
     this.allianceBehavior.handleAllianceExtensionRequests();
     this.mirvBehavior.considerMIRV();
     this.structureBehavior.handleStructures();
+    this.researchBehavior.maybeResearch();
     this.warshipBehavior.maybeSpawnWarship();
     this.handleEmbargoesToHostileNations();
     this.attackBehavior.maybeAttack();
@@ -274,6 +277,11 @@ export class NationExecution implements Execution {
       this.emojiBehavior,
     );
     this.structureBehavior = new NationStructureBehavior(
+      this.random,
+      this.mg,
+      this.player,
+    );
+    this.researchBehavior = new NationResearchBehavior(
       this.random,
       this.mg,
       this.player,
@@ -419,6 +427,7 @@ export class NationExecution implements Execution {
             attack: this.attackBehavior.snapshot(w),
             nuke: this.nukeBehavior.snapshot(w),
             structure: this.structureBehavior.snapshot(w),
+            research: this.researchBehavior.snapshot(w),
           }
         : null,
     });
@@ -476,6 +485,15 @@ export class NationExecution implements Execution {
     );
     nuke.restoreSnapshot(b.nuke, r, random, player, attack, emoji);
     structure.restoreSnapshot(b.structure, r, random, player);
+    // Snapshots from before the research behavior existed have no record
+    // for it: start it fresh (it holds no state a game depends on).
+    let research: NationResearchBehavior;
+    if (b.research === undefined) {
+      research = new NationResearchBehavior(random, r.game, player);
+    } else {
+      research = shell(NationResearchBehavior);
+      research.restoreSnapshot(b.research, r, random, player);
+    }
     this.emojiBehavior = emoji;
     this.mirvBehavior = mirv;
     this.allianceBehavior = alliance;
@@ -483,6 +501,7 @@ export class NationExecution implements Execution {
     this.attackBehavior = attack;
     this.nukeBehavior = nuke;
     this.structureBehavior = structure;
+    this.researchBehavior = research;
   }
 }
 
@@ -512,6 +531,8 @@ const NationStateSchema = z.object({
       attack: VersionedSchema,
       nuke: VersionedSchema,
       structure: VersionedSchema,
+      // GalloFront; optional so older snapshots still load.
+      research: VersionedSchema.optional(),
     })
     .nullable(),
 });

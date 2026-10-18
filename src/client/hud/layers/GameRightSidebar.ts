@@ -19,6 +19,7 @@ import { ImmunityBarVisibleEvent } from "./ImmunityTimer";
 import { ShowReplayPanelEvent } from "./ReplayPanel";
 import { ShowSettingsModalEvent } from "./SettingsModal";
 import { SpawnBarVisibleEvent } from "./SpawnTimer";
+import { ShowTechPanelEvent } from "./TechPanel";
 const exitIcon = assetUrl("images/ExitIconWhite.svg");
 const FastForwardIconSolid = assetUrl("images/FastForwardIconSolidWhite.svg");
 const pauseIcon = assetUrl("images/PauseIconWhite.svg");
@@ -281,6 +282,10 @@ export class GameRightSidebar extends LitElement implements Controller {
     window.location.href = homeHref();
   }
 
+  private onTechButtonClick() {
+    this.eventBus.emit(new ShowTechPanelEvent(true));
+  }
+
   private onSettingsButtonClick() {
     this.eventBus.emit(
       new ShowSettingsModalEvent(true, this._isSinglePlayer, this.isPaused),
@@ -375,7 +380,20 @@ export class GameRightSidebar extends LitElement implements Controller {
         <!-- Buttons -->
         ${this.maybeRenderReplayButtons()}
 
-        <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.onSettingsButtonClick}>
+        <!-- GalloFront: technologies panel (also the T key) -->
+        <button
+          class="flex min-h-11 min-w-11 cursor-pointer items-center justify-center -m-2 text-xl leading-none lg:min-h-0 lg:min-w-0 lg:m-0"
+          title=${translateText("tech_panel.open")}
+          aria-label=${translateText("tech_panel.open")}
+          @click=${this.onTechButtonClick}
+        >
+          🔬
+        </button>
+
+        <div
+          class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0"
+          @click=${this.onSettingsButtonClick}
+        >
           <img src=${settingsIcon} alt="settings" width="20" height="20" />
         </div>
 
@@ -395,7 +413,10 @@ export class GameRightSidebar extends LitElement implements Controller {
             </div>`
           : ""}
 
-        <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.onExitButtonClick}>
+        <div
+          class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0"
+          @click=${this.onExitButtonClick}
+        >
           <img src=${exitIcon} alt="exit" width="20" height="20" />
         </div>
       </aside>
@@ -425,7 +446,10 @@ export class GameRightSidebar extends LitElement implements Controller {
     return html`
       ${isReplayOrSingleplayer
         ? html`
-            <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.toggleReplayPanel}>
+            <div
+              class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0"
+              @click=${this.toggleReplayPanel}
+            >
               <img
                 src=${FastForwardIconSolid}
                 alt="replay"
@@ -437,7 +461,10 @@ export class GameRightSidebar extends LitElement implements Controller {
         : ""}
       ${showPauseButton
         ? html`
-            <div class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0" @click=${this.onPauseButtonClick}>
+            <div
+              class="cursor-pointer p-2 -m-1 lg:p-0 lg:m-0"
+              @click=${this.onPauseButtonClick}
+            >
               <img
                 src=${this.isPaused ? playIcon : pauseIcon}
                 alt="play/pause"

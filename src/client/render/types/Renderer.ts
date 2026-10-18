@@ -1,4 +1,8 @@
 import type { TileRef } from "@openfront/engine-api/game/GameMap";
+import type {
+  ResearchState,
+  TechId,
+} from "@openfront/engine-api/game/GameTypes";
 
 /** TrainType enum — numeric values matching UnitState.trainType. */
 export enum TrainType {
@@ -93,6 +97,10 @@ export interface PlayerState {
   outgoingAllianceRequests: string[];
   alliances: AllianceData[];
   outgoingEmojis: EmojiData[];
+  /** GalloFront: technologies acquired (TECH_TREE ids). */
+  techs: TechId[];
+  /** GalloFront: research in progress, or null. */
+  research: ResearchState | null;
 }
 
 export interface UnitState {

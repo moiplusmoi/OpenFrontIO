@@ -4,6 +4,7 @@ import {
   GameType,
   Gold,
   PlayerID,
+  TechId,
   Tick,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
@@ -134,6 +135,11 @@ export class BuildUnitIntentEvent implements GameEvent {
     public readonly rocketDirectionUp?: boolean,
     public readonly amount?: number,
   ) {}
+}
+
+/** GalloFront: start researching a technology. */
+export class SendResearchIntentEvent implements GameEvent {
+  constructor(public readonly tech: TechId) {}
 }
 
 export class SendTargetPlayerIntentEvent implements GameEvent {
@@ -331,6 +337,7 @@ export class Transport {
       this.onSendEmbargoAllIntent(e),
     );
     this.subscribe(BuildUnitIntentEvent, (e) => this.onBuildUnitIntent(e));
+    this.subscribe(SendResearchIntentEvent, (e) => this.onResearchIntent(e));
 
     this.subscribe(PauseGameIntentEvent, (e) => this.onPauseGameIntent(e));
     this.subscribe(SendWinnerEvent, (e) => this.onSendWinnerEvent(e));
@@ -892,6 +899,13 @@ export class Transport {
       tile: event.tile,
       rocketDirectionUp: event.rocketDirectionUp,
       amount: event.amount,
+    });
+  }
+
+  private onResearchIntent(event: SendResearchIntentEvent) {
+    this.sendIntent({
+      type: "research",
+      tech: event.tech,
     });
   }
 

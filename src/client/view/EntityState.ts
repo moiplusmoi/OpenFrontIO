@@ -185,6 +185,8 @@ export function playerStateFromUpdate(pu: PlayerUpdate): PlayerState {
     outgoingAllianceRequests: pu.outgoingAllianceRequests!.slice(),
     alliances: pu.alliances!,
     outgoingEmojis: pu.outgoingEmojis!,
+    techs: (pu.techs ?? []).slice(),
+    research: pu.research ?? null,
   };
 }
 

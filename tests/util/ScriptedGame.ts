@@ -7,6 +7,7 @@ import {
   GameMode,
   GameType,
   UnitType,
+  TECH_TREE,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   ErrorUpdate,
@@ -162,6 +163,25 @@ export function scriptedTurn(game: Game): Turn {
       ? (spawnIntent(game, p, tick) ?? queuedIntent(game, p, tick))
       : playIntent(game, p, rand);
     if (intent !== null) intents.push({ ...intent, clientID } as StampedIntent);
+  }
+  // GalloFront: the first scripted human researches whenever idle, so the
+  // Research execution shows up in every full-game snapshot (infinite gold
+  // makes tech free for humans).
+  if (!game.inSpawnPhase() && tick % 25 === 5) {
+    const p = game.playerByClientID(SCRIPTED_HUMANS[0]);
+    if (p !== null && p.isAlive() && p.research() === null) {
+      const next = TECH_TREE.find(
+        (t) =>
+          !p.hasTech(t.id) && (t.requires === null || p.hasTech(t.requires)),
+      );
+      if (next !== undefined) {
+        intents.push({
+          type: "research",
+          tech: next.id,
+          clientID: SCRIPTED_HUMANS[0],
+        });
+      }
+    }
   }
   if (tick === 21) {
     // From a client that is not in the game: becomes a NoOpExecution.

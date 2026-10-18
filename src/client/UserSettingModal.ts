@@ -1595,6 +1595,16 @@ export class UserSettingModal extends BaseModal {
         @change=${this.handleKeybindChange}
       ></setting-keybind>
 
+      <setting-keybind
+        action="techPanel"
+        label=${translateText("user_setting.tech_panel")}
+        description=${translateText("user_setting.tech_panel_desc")}
+        defaultKey=${this.defaultKeybinds.techPanel}
+        .value=${this.getKeyValue("techPanel")}
+        .display=${this.getKeyChar("techPanel")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
       <h2
         class="text-blue-200 text-xl font-bold mt-8 mb-3 border-b border-white/10 pb-2"
       >

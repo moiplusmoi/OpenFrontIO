@@ -81,7 +81,11 @@ export class ConstructionExecution implements Execution {
         spawnTile,
         {},
       );
-      const duration = info.constructionDuration ?? 0;
+      // eco_3 Urbanization halves construction time.
+      const duration = Math.floor(
+        (info.constructionDuration ?? 0) *
+          this.mg.config().techConstructionMult(this.player),
+      );
       if (duration > 0) {
         this.structure.setUnderConstruction(true);
         this.ticksUntilComplete = duration;

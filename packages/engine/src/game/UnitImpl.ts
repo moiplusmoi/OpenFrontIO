@@ -279,7 +279,12 @@ export class UnitImpl implements Unit {
   }
 
   maxHealth(): number {
-    const base = this.info().maxHealth ?? 1;
+    // mil_2 Offensive doctrine: sturdier warships.
+    const base =
+      (this.info().maxHealth ?? 1) *
+      (this._type === UnitType.Warship
+        ? this.mg.config().techWarshipHealthMult(this.owner())
+        : 1);
     // veterancy() is 0 for non-warships, so this returns base for them.
     return maxHealthWithVeterancy(
       base,

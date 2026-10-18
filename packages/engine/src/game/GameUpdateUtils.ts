@@ -73,7 +73,9 @@ export function diffPlayerUpdate(
     emojiArrayEqual(prev.outgoingEmojis, next.outgoingEmojis) &&
     attackArrayMembershipEqual(prev.outgoingAttacks, next.outgoingAttacks) &&
     attackArrayMembershipEqual(prev.incomingAttacks, next.incomingAttacks) &&
-    allianceArrayEqual(prev.alliances, next.alliances)
+    allianceArrayEqual(prev.alliances, next.alliances) &&
+    prev.techs === next.techs &&
+    prev.research === next.research
   ) {
     return null;
   }
@@ -130,6 +132,10 @@ export function diffPlayerUpdate(
     prev.lastDeleteUnitTick === next.lastDeleteUnitTick,
   );
   setIfDifferent("isLobbyCreator", prev.isLobbyCreator === next.isLobbyCreator);
+  // Techs/research are replaced (never mutated) by PlayerImpl, so identity is
+  // the change test.
+  setIfDifferent("techs", prev.techs === next.techs);
+  setIfDifferent("research", prev.research === next.research);
   setIfDifferent("allies", numberArrayEqual(prev.allies, next.allies));
   setIfDifferent("targets", numberArrayEqual(prev.targets, next.targets));
   setIfDifferent(

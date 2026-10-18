@@ -842,7 +842,8 @@
     "hydrogen_bomb_inbound": "{name} - bombe H en approche",
     "mirv_inbound": "⚠️⚠️⚠️ {name} - MIRV EN APPROCHE ⚠️⚠️⚠️",
     "naval_invasion_inbound": "Invasion navale en approche depuis {name} ({troops})",
-    "sent_emoji_all": "Envoyé à tous : {emoji}"
+    "sent_emoji_all": "Envoyé à tous : {emoji}",
+    "research_complete": "Recherche terminée : {tech}"
   },
   "featured_stream": {
     "expand": "Agrandir",
@@ -1190,7 +1191,8 @@
     "ui_your_team": "Votre équipe :",
     "video_tutorial": "Tutoriel vidéo",
     "video_tutorial_title": "Tutoriel OpenFront.io",
-    "action_quick_chat": "Ouvrir le chat rapide"
+    "action_quick_chat": "Ouvrir le chat rapide",
+    "action_tech_panel": "Ouvrir le panneau des technologies"
   },
   "host_modal": {
     "anonymous_players": "Joueurs anonymes",
@@ -1704,7 +1706,8 @@
     "traitor": "Traître",
     "troops": "Troupes",
     "start_trade_enemies": "Commercer avec les ennemis",
-    "stop_trade_enemies": "Arrêter de commercer avec les ennemis"
+    "stop_trade_enemies": "Arrêter de commercer avec les ennemis",
+    "techs": "Technologies"
   },
   "player_profile": {
     "loading": "Chargement du profil...",
@@ -2445,7 +2448,9 @@
     "target_player": "Cibler un joueur",
     "target_player_desc": "Marque le joueur dont la tuile est sous le curseur comme cible pour toi et tes alliés.",
     "ui_scale_desc": "Taille du HUD, des menus et du texte. 100 % = taille d'origine ; la carte n'est pas affectée.",
-    "ui_scale_label": "Taille de l'interface"
+    "ui_scale_label": "Taille de l'interface",
+    "tech_panel": "Panneau des technologies",
+    "tech_panel_desc": "Ouvrir ou fermer le panneau des technologies."
   },
   "username": {
     "account_invalid_chars": "Les pseudonymes peuvent uniquement contenir des lettres, chiffres, tirets et espaces.",
@@ -2514,5 +2519,76 @@
     "gestures": "Gestes",
     "ranks": "Rangs",
     "things": "Objets"
+  },
+  "tech": {
+    "def_1": {
+      "desc": "Pertes en défense −15 %, postes défensifs plus forts.",
+      "name": "Fortifications"
+    },
+    "def_2": {
+      "desc": "Portée SAM +15 %, rechargement SAM 90→70, portée des navires +15 %.",
+      "name": "Radar"
+    },
+    "def_3": {
+      "desc": "Débloquera l'espionnage (à venir).",
+      "name": "Renseignement"
+    },
+    "def_4": {
+      "desc": "À venir.",
+      "name": "Contre-espionnage"
+    },
+    "eco_1": {
+      "desc": "Or des ouvriers +15 %.",
+      "name": "Fiscalité"
+    },
+    "eco_2": {
+      "desc": "Or des navires marchands et des trains +20 %.",
+      "name": "Routes commerciales"
+    },
+    "eco_3": {
+      "desc": "Villes, ports et usines −15 % de coût, construction 2× plus rapide, troupes max +10 %.",
+      "name": "Urbanisation"
+    },
+    "eco_4": {
+      "desc": "Ouvriers +30 %, commerce +40 %, butin de conquête +50 %.",
+      "name": "Mondialisation"
+    },
+    "mil_1": {
+      "desc": "Croissance des troupes +15 %.",
+      "name": "Conscription"
+    },
+    "mil_2": {
+      "desc": "Pertes en attaque −12 %, attaques 8 % plus rapides, 4 bateaux, navires de guerre +20 % PV.",
+      "name": "Doctrine offensive"
+    },
+    "mil_3": {
+      "desc": "Débloquera l'aviation (à venir).",
+      "name": "Aviation"
+    },
+    "mil_4": {
+      "desc": "À venir.",
+      "name": "Supériorité aérienne"
+    }
+  },
+  "tech_panel": {
+    "branch": {
+      "defense": "Défense",
+      "economy": "Économie",
+      "military": "Militaire"
+    },
+    "branch_short": {
+      "defense": "Déf",
+      "economy": "Éco",
+      "military": "Mil"
+    },
+    "cost": "Coût",
+    "done": "Acquise",
+    "duration": "{seconds} s",
+    "level": "Niveau {level}",
+    "open": "Technologies (T)",
+    "requires": "Nécessite le niveau {level}",
+    "research": "Rechercher",
+    "researching": "Recherche en cours…",
+    "title": "Technologies"
   }
 }

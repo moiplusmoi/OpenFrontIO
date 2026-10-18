@@ -56,6 +56,8 @@ function ps(overrides: Partial<PlayerState> = {}): PlayerState {
     outgoingAllianceRequests: [],
     alliances: [],
     outgoingEmojis: [],
+    techs: [],
+    research: null,
     ...overrides,
   };
 }

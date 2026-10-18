@@ -1,5 +1,4 @@
 import { isStandalone } from "./Standalone";
-import { ClientEnv } from "./ClientEnv";
 import {
   isGrantedSubscription,
   UserMeResponse,

@@ -5,6 +5,7 @@
  * are covered).
  */
 
+import { TechId } from "@openfront/engine-api/game/GameTypes";
 import type {
   PlayerState,
   UnitState,
@@ -63,6 +64,8 @@ const basePlayer: PlayerState = {
   outgoingAllianceRequests: [],
   alliances: [],
   outgoingEmojis: [],
+  techs: [],
+  research: null,
 };
 
 const playerAlternatives: { [K in keyof PlayerFields]: PlayerFields[K] } = {
@@ -115,6 +118,8 @@ const playerAlternatives: { [K in keyof PlayerFields]: PlayerFields[K] } = {
     { message: "🤝", senderID: 7, recipientID: "AllPlayers", createdAt: 55 },
     { message: "💀", senderID: 7, recipientID: 3, createdAt: 56 },
   ],
+  techs: [TechId.Eco1, TechId.Mil2],
+  research: { tech: TechId.Def1, startTick: 1200, endTick: 1500 },
 };
 
 const baseUnit: UnitState = {

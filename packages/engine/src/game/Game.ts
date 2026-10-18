@@ -27,6 +27,8 @@ import {
   UnitInfo,
   UnitType,
   WarshipState,
+  TechId,
+  ResearchState,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdate,
@@ -413,6 +415,13 @@ export interface Player extends PlayerLike {
   // or false if it cannot be upgraded.
   // New units of the same type can upgrade existing units.
   // e.g. if a place a new city here, can it upgrade an existing city?
+  // GalloFront technologies
+  techs(): readonly TechId[];
+  hasTech(id: TechId): boolean;
+  research(): ResearchState | null;
+  startResearch(tech: TechId, endTick: Tick): void;
+  completeResearch(): void;
+
   findUnitToUpgrade(type: UnitType, targetTile: TileRef): Unit | false;
   canUpgradeUnit(unit: Unit): boolean;
   upgradeUnit(unit: Unit): void;
