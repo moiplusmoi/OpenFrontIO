@@ -35,6 +35,7 @@ import { SAMMissileExecutionSnapshot } from "../execution/SAMMissileExecution";
 import { SetCapitalExecutionSnapshot } from "../execution/SetCapitalExecution";
 import { ShellExecutionSnapshot } from "../execution/ShellExecution";
 import { SpawnExecutionSnapshot } from "../execution/SpawnExecution";
+import { SpyExecutionSnapshot } from "../execution/SpyExecution";
 import { SpawnTimerExecutionSnapshot } from "../execution/SpawnTimerExecution";
 import { TargetPlayerExecutionSnapshot } from "../execution/TargetPlayerExecution";
 import { TradeShipExecutionSnapshot } from "../execution/TradeShipExecution";
@@ -91,6 +92,7 @@ export const EXECUTION_SNAPSHOT_TYPES = [
   SetCapitalExecutionSnapshot,
   ShellExecutionSnapshot,
   SpawnExecutionSnapshot,
+  SpyExecutionSnapshot,
   SpawnTimerExecutionSnapshot,
   TargetPlayerExecutionSnapshot,
   TradeShipExecutionSnapshot,

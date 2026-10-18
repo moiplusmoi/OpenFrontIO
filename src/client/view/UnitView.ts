@@ -242,4 +242,16 @@ export class UnitView implements UnitLike {
   missileTimerQueue(): number[] {
     return this.state.missileTimerQueue;
   }
+
+  // ---- GalloFront sabotage ----
+
+  /** Tick until which a sabotaged SAM/silo stays disabled (-1 = none). */
+  disabledUntil(): number {
+    return this.state.disabledUntil;
+  }
+
+  /** Whether the unit is sabotaged at `ticks` (the current tick by default). */
+  isDisabled(ticks: number = this.gameView.ticks()): boolean {
+    return this.state.disabledUntil > ticks;
+  }
 }

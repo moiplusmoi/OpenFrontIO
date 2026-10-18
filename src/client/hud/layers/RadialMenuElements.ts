@@ -7,8 +7,10 @@ import {
   NUKE_BULK_STEPS,
   PlayerActions,
   PlayerBuildableUnitType,
+  SpyMission,
   STRUCTURE_BULK_STEPS,
   Structures,
+  TechId,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
 import { Emoji, flattenedEmojiTable } from "@openfront/engine-api/Schemas";
@@ -30,6 +32,7 @@ import { EventBus } from "@openfront/shared/EventBus";
 import {
   BuildUnitIntentEvent,
   SendSetCapitalIntentEvent,
+  SendSpyIntentEvent,
   SendUpgradeStructureIntentEvent,
 } from "../../Transport";
 const allianceIcon = assetUrl("images/AllianceIconWhite.svg");
@@ -109,6 +112,7 @@ export const COLORS = {
   infoEmoji: "#fbbf24",
   trade: "#0891b2",
   embargo: "#7c3aed",
+  spy: "#334155",
   tooltip: {
     cost: "#f59e0b",
     count: "#94a3b8",
@@ -755,6 +759,145 @@ export const setCapitalElement: MenuElement = {
   },
 };
 
+// ---- GalloFront espionage ----
+
+/** Structures a spy can sabotage (finished ones, owned by the target). */
+const SABOTAGE_TYPES: readonly UnitType[] = [
+  UnitType.SAMLauncher,
+  UnitType.MissileSilo,
+  UnitType.City,
+  UnitType.Port,
+  UnitType.Factory,
+  UnitType.DefensePost,
+];
+/** Reach of the sabotage pick around the clicked tile (as for the capital). */
+const SABOTAGE_SELECTION_RADIUS = 5;
+/** Shown in tooltips when the engine's buildable list hasn't arrived yet. */
+const SPY_COST_FALLBACK = 300_000n;
+
+/**
+ * The selected player when they are a valid spy target: another, living
+ * player who is neither allied nor on my team. The menu is built from
+ * partial stubs in tests, so missing methods count as "not an enemy".
+ */
+export function enemyTarget(params: MenuElementParams): PlayerView | null {
+  const selected = params.selected;
+  if (selected === null || selected === params.myPlayer) return null;
+  if (
+    typeof selected.isAlive !== "function" ||
+    typeof selected.isFriendly !== "function" ||
+    typeof selected.id !== "function"
+  ) {
+    return null;
+  }
+  if (selected.id() === params.myPlayer.id()) return null;
+  if (!selected.isAlive() || selected.isFriendly(params.myPlayer)) return null;
+  return selected;
+}
+
+/** The spy's cost, from the engine's buildable list when it has arrived. */
+function spyCost(params: MenuElementParams): bigint {
+  return (
+    params.playerActions.buildableUnits?.find((bu) => bu.type === UnitType.Spy)
+      ?.cost ?? SPY_COST_FALLBACK
+  );
+}
+
+/** The target's closest finished structure to the clicked tile, or null. */
+export function sabotageTargetNearTile(params: MenuElementParams) {
+  const target = enemyTarget(params);
+  if (target === null || typeof target.units !== "function") return null;
+  const structures = target
+    .units(...SABOTAGE_TYPES)
+    .filter(
+      (unit) =>
+        !unit.isUnderConstruction() &&
+        unit.markedForDeletion() === false &&
+        params.game.manhattanDist(unit.tile(), params.tile) <=
+          SABOTAGE_SELECTION_RADIUS,
+    );
+  return (
+    findClosestBy(structures, (unit) =>
+      params.game.manhattanDist(unit.tile(), params.tile),
+    ) ?? null
+  );
+}
+
+/** Why a spy can't be sent right now (shared by the three missions). */
+function spyBlocked(params: MenuElementParams): boolean {
+  const me = params.myPlayer;
+  if (params.game.inSpawnPhase() || enemyTarget(params) === null) return true;
+  if (!me.hasTech(TechId.Def3)) return true;
+  if (me.gold() < spyCost(params)) return true;
+  return me.units(UnitType.Spy).length >= params.game.config().maxSpies();
+}
+
+function spyMissionElement(
+  mission: SpyMission,
+  key: "spy_reveal" | "spy_steal" | "spy_sabotage",
+  text: string,
+): MenuElement {
+  const sabotage = mission === SpyMission.Sabotage;
+  return {
+    id: key,
+    name: key,
+    text,
+    fontSize: "22px",
+    color: (params: MenuElementParams) =>
+      spyBlocked(params) ||
+      (sabotage && sabotageTargetNearTile(params) === null)
+        ? COLORS.disabled
+        : COLORS.spy,
+    disabled: (params: MenuElementParams) =>
+      spyBlocked(params) ||
+      (sabotage && sabotageTargetNearTile(params) === null),
+    tooltipKeys: [
+      { key: `radial_menu.${key}`, className: "title" },
+      { key: `radial_menu.${key}_desc`, className: "description" },
+    ],
+    action: (params: MenuElementParams) => {
+      const target = enemyTarget(params);
+      if (target !== null && !spyBlocked(params)) {
+        if (sabotage) {
+          const unit = sabotageTargetNearTile(params);
+          if (unit !== null) {
+            params.eventBus.emit(
+              new SendSpyIntentEvent(target.id(), mission, unit.id()),
+            );
+          }
+        } else {
+          params.eventBus.emit(new SendSpyIntentEvent(target.id(), mission));
+        }
+      }
+      params.closeMenu();
+    },
+  };
+}
+
+/**
+ * GalloFront: "🕵 Spy" submenu on an enemy player — reveal, steal or
+ * sabotage. Needs the Intelligence technology (def_3), 300k gold and fewer
+ * than three spies in flight; the engine also enforces a 20 s cooldown.
+ */
+export const spyMenuElement: MenuElement = {
+  id: "spy",
+  name: "spy",
+  text: "🕵",
+  fontSize: "22px",
+  color: (params: MenuElementParams) =>
+    spyBlocked(params) ? COLORS.disabled : COLORS.spy,
+  disabled: (params: MenuElementParams) => spyBlocked(params),
+  tooltipKeys: [
+    { key: "radial_menu.spy", className: "title" },
+    { key: "radial_menu.spy_desc", className: "description" },
+  ],
+  subMenu: () => [
+    spyMissionElement(SpyMission.Reveal, "spy_reveal", "👁"),
+    spyMissionElement(SpyMission.Steal, "spy_steal", "💰"),
+    spyMissionElement(SpyMission.Sabotage, "spy_sabotage", "💣"),
+  ],
+};
+
 export const buildMenuElement: MenuElement = {
   id: Slot.Build,
   name: "build",
@@ -864,6 +1007,8 @@ export const rootMenuElement: MenuElement = {
 
     // GalloFront: a 5th slot on own territory when a city is under the cursor
     const hasCityHere = isOwnTerritory && cityNearTile(params) !== null;
+    // GalloFront: a 5th slot on an enemy player for the spy missions
+    const canSpyOn = !isOwnTerritory && enemyTarget(params) !== null;
 
     const menuItems: (MenuElement | null)[] = [
       infoMenuElement,
@@ -880,6 +1025,7 @@ export const rootMenuElement: MenuElement = {
             showDonateInsteadOfAttack
               ? donateGoldRadialElement
               : attackMenuElement,
+            ...(canSpyOn ? [spyMenuElement] : []),
           ]),
     ];
 

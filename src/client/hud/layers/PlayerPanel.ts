@@ -8,7 +8,7 @@ import {
   Relation,
 } from "@openfront/engine-api/game/GameTypes";
 import { Emoji, flattenedEmojiTable } from "@openfront/engine-api/Schemas";
-import { TechBranch } from "@openfront/engine-api/game/GameTypes";
+import { TechBranch, UnitType } from "@openfront/engine-api/game/GameTypes";
 import { renderNumber, renderTroops } from "@openfront/engine-lib/Format";
 import type { UserMeResponse } from "@openfront/shared/ApiSchemas";
 import { assetUrl } from "@openfront/shared/AssetUrls";
@@ -737,6 +737,64 @@ export class PlayerPanel extends LitElement implements Controller {
     `;
   }
 
+  /**
+   * GalloFront espionage: when the viewer holds intel on the displayed
+   * player, their exact gold and troops and the number of silos / SAMs ready
+   * to fire, with the seconds left — and a "stale" note when the target's
+   * def_4 delays the data by 30 s. Without intel, nothing is added.
+   */
+  private renderIntel(other: PlayerView, viewer: PlayerView) {
+    if (other === viewer || typeof viewer.intelOn !== "function") return html``;
+    const entry = viewer.intelOn(other.smallID());
+    if (entry === null) return html``;
+    const seconds = Math.max(0, Math.ceil((entry.until - this.g.ticks()) / 10));
+    const ready = (type: UnitType) =>
+      other
+        .units(type)
+        .filter((u) => !u.isUnderConstruction() && !u.isDisabled())
+        .reduce(
+          (acc, u) =>
+            acc + Math.max(0, u.level() - u.missileTimerQueue().length),
+          0,
+        );
+    const silosReady = ready(UnitType.MissileSilo);
+    const samsReady = ready(UnitType.SAMLauncher);
+    return html`
+      <div
+        class="mb-1 flex flex-col gap-1 rounded-lg bg-sky-500/10 px-3 py-1.5 text-white"
+        data-intel
+      >
+        <div class="flex items-center gap-1.5">
+          <span class="mr-0.5">🕵</span>
+          <span class="whitespace-nowrap font-semibold">
+            ${translateText("player_panel.intel", { seconds })}
+          </span>
+        </div>
+        <div
+          class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-sm text-zinc-200"
+        >
+          <span>${translateText("player_panel.intel_gold")}</span>
+          <span translate="no" class="text-right tabular-nums font-semibold">
+            ${other.gold().toLocaleString()}
+          </span>
+          <span>${translateText("player_panel.intel_troops")}</span>
+          <span translate="no" class="text-right tabular-nums font-semibold">
+            ${Math.floor(other.troops()).toLocaleString()}
+          </span>
+          <span>${translateText("player_panel.intel_ready")}</span>
+          <span translate="no" class="text-right tabular-nums font-semibold">
+            🚀 ${silosReady} · 🛰 ${samsReady}
+          </span>
+        </div>
+        ${entry.stale
+          ? html`<span class="text-xs text-amber-300">
+              ${translateText("player_panel.intel_stale")}
+            </span>`
+          : ""}
+      </div>
+    `;
+  }
+
   /** GalloFront: "👑 Capital" or "No capital" for the displayed player. */
   private renderCapital(other: PlayerView) {
     const hasCapital = other.capitalTile() !== null;
@@ -1217,6 +1275,7 @@ export class PlayerPanel extends LitElement implements Controller {
                     <!-- Resources -->
                     ${this.renderResources(other)} ${this.renderTechs(other)}
                     ${this.renderCapital(other)}
+                    ${this.renderIntel(other, viewer)}
 
                     <!-- Rocket direction toggle -->
                     ${other === viewer && !isSpectator

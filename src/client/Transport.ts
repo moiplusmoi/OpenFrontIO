@@ -4,6 +4,7 @@ import {
   GameType,
   Gold,
   PlayerID,
+  SpyMission,
   TechId,
   Tick,
   UnitType,
@@ -145,6 +146,15 @@ export class SendResearchIntentEvent implements GameEvent {
 /** GalloFront: move the capital to the city on `tile`. */
 export class SendSetCapitalIntentEvent implements GameEvent {
   constructor(public readonly tile: TileRef) {}
+}
+
+/** GalloFront: send a spy against `targetID`; `unitId` is the structure to sabotage. */
+export class SendSpyIntentEvent implements GameEvent {
+  constructor(
+    public readonly targetID: PlayerID,
+    public readonly mission: SpyMission,
+    public readonly unitId?: number,
+  ) {}
 }
 
 export class SendTargetPlayerIntentEvent implements GameEvent {
@@ -346,6 +356,7 @@ export class Transport {
     this.subscribe(SendSetCapitalIntentEvent, (e) =>
       this.onSetCapitalIntent(e),
     );
+    this.subscribe(SendSpyIntentEvent, (e) => this.onSpyIntent(e));
 
     this.subscribe(PauseGameIntentEvent, (e) => this.onPauseGameIntent(e));
     this.subscribe(SendWinnerEvent, (e) => this.onSendWinnerEvent(e));
@@ -921,6 +932,15 @@ export class Transport {
     this.sendIntent({
       type: "set_capital",
       tile: event.tile,
+    });
+  }
+
+  private onSpyIntent(event: SendSpyIntentEvent) {
+    this.sendIntent({
+      type: "spy",
+      targetID: event.targetID,
+      mission: event.mission,
+      ...(event.unitId === undefined ? {} : { unitId: event.unitId }),
     });
   }
 

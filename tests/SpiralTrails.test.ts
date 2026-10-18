@@ -55,6 +55,7 @@ function makeUnit(
     samUpgradeStartRange: null,
     samUpgradeTargetLevel: null,
     samUpgradeDuration: null,
+    disabledUntil: -1,
   };
 }
 

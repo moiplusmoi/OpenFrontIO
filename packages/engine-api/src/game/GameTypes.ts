@@ -207,6 +207,20 @@ export enum UnitType {
   MIRVWarhead = "MIRV Warhead",
   Train = "Train",
   Factory = "Factory",
+  Spy = "Spy",
+}
+
+// GalloFront espionage
+export enum SpyMission {
+  Reveal = "reveal",
+  Sabotage = "sabotage",
+  Steal = "steal",
+}
+/** Intel a player holds on another (smallID) until a tick; stale = 30 s old data. */
+export interface IntelEntry {
+  target: number;
+  until: Tick;
+  stale: boolean;
 }
 
 // ---- GalloFront: technologies ----
@@ -365,6 +379,7 @@ export const BuildMenus = unitTypeGroup([
 export const PlayerBuildable = unitTypeGroup([
   ...BuildMenus.types,
   UnitType.TransportShip,
+  UnitType.Spy,
 ] as const);
 
 export type PlayerBuildableUnitType = (typeof PlayerBuildable.types)[number];
@@ -590,6 +605,11 @@ export enum MessageType {
   // GalloFront: a technology finished researching.
   RESEARCH_COMPLETE,
   CAPITAL_FALLEN,
+  SPY_SUCCESS,
+  SPY_CAPTURED,
+  SPY_FOILED,
+  SABOTAGED,
+  GOLD_STOLEN,
 }
 
 // Message categories used for filtering events in the EventsDisplay
@@ -627,6 +647,11 @@ export const MESSAGE_TYPE_CATEGORIES: Record<MessageType, MessageCategory> = {
   [MessageType.CHAT]: MessageCategory.CHAT,
   [MessageType.RESEARCH_COMPLETE]: MessageCategory.TRADE,
   [MessageType.CAPITAL_FALLEN]: MessageCategory.ATTACK,
+  [MessageType.SPY_SUCCESS]: MessageCategory.ATTACK,
+  [MessageType.SPY_CAPTURED]: MessageCategory.ATTACK,
+  [MessageType.SPY_FOILED]: MessageCategory.ATTACK,
+  [MessageType.SABOTAGED]: MessageCategory.ATTACK,
+  [MessageType.GOLD_STOLEN]: MessageCategory.ATTACK,
 } as const;
 
 /**

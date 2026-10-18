@@ -18,6 +18,7 @@ import {
   WarshipState,
   TechId,
   ResearchState,
+  IntelEntry,
 } from "./GameTypes";
 
 export interface GameUpdateViewData {
@@ -210,6 +211,8 @@ export interface UnitUpdate {
   underConstruction?: boolean;
   missileTimerQueue: number[];
   level: number;
+  /** GalloFront: sabotaged until this tick (-1 = not sabotaged). */
+  disabledUntil?: number;
   hasTrainStation: boolean;
   trainType?: TrainType; // Only for trains
   loaded?: boolean; // Only for trains
@@ -287,6 +290,8 @@ export interface PlayerUpdate {
   research?: ResearchState | null;
   /** GalloFront: capital city tile, null when none. */
   capitalTile?: TileRef | null;
+  /** GalloFront: intel held on other players (sent when it changes). */
+  intel?: IntelEntry[];
 }
 
 export interface AllianceView {

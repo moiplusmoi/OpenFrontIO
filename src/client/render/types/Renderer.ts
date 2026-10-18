@@ -1,5 +1,6 @@
 import type { TileRef } from "@openfront/engine-api/game/GameMap";
 import type {
+  IntelEntry,
   ResearchState,
   TechId,
 } from "@openfront/engine-api/game/GameTypes";
@@ -103,6 +104,8 @@ export interface PlayerState {
   research: ResearchState | null;
   /** GalloFront: tile of the capital city, or null when none. */
   capitalTile: TileRef | null;
+  /** GalloFront: intel this player holds on others (owner-only). */
+  intel: IntelEntry[];
 }
 
 export interface UnitState {
@@ -134,6 +137,8 @@ export interface UnitState {
   samUpgradeStartRange: number | null;
   samUpgradeTargetLevel: number | null;
   samUpgradeDuration: number | null;
+  /** GalloFront: sabotaged until this tick (-1 = not sabotaged). */
+  disabledUntil: number;
 }
 
 /** Minimal dead-unit data needed by the FX pass. */

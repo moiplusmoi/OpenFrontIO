@@ -399,6 +399,8 @@ export class GameView implements GameLike {
       }
     }
     gu.updates[GameUpdateType.Unit].forEach((update) => {
+      // GalloFront: other players' spies never reach the view (invisible).
+      if (!this.isUnitVisible(update.unitType, update.ownerID)) return;
       let unit = this._units.get(update.id);
       const isStructure = STRUCTURE_TYPES.has(update.unitType);
       if (unit !== undefined) {
@@ -592,7 +594,7 @@ export class GameView implements GameLike {
     ev.bonusEvents.length = 0;
 
     for (const u of gu.updates[GameUpdateType.Unit] ?? []) {
-      if (u.isActive) continue;
+      if (u.isActive || u.unitType === UnitType.Spy) continue;
       ev.deadUnits.push({
         unitType: u.unitType,
         pos: u.pos,
@@ -713,6 +715,20 @@ export class GameView implements GameLike {
 
   myPlayer(): PlayerView | null {
     return this._myPlayer;
+  }
+
+  /**
+   * GalloFront: spies are invisible to everyone but their owner and the
+   * owner's teammates; every other unit is visible to all. Spectators (and
+   * the local player before they are known) see no spy.
+   */
+  isUnitVisible(unitType: UnitType | string, ownerSmallID: number): boolean {
+    if (unitType !== UnitType.Spy) return true;
+    const me = this._myPlayer;
+    if (me === null) return false;
+    if (ownerSmallID === me.smallID()) return true;
+    const myTeam = me.team();
+    return myTeam !== null && this._teams.get(ownerSmallID) === myTeam;
   }
 
   player(id: PlayerID): PlayerView {

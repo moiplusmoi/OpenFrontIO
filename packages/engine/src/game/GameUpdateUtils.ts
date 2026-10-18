@@ -76,7 +76,8 @@ export function diffPlayerUpdate(
     allianceArrayEqual(prev.alliances, next.alliances) &&
     prev.techs === next.techs &&
     prev.research === next.research &&
-    prev.capitalTile === next.capitalTile
+    prev.capitalTile === next.capitalTile &&
+    prev.intel === next.intel
   ) {
     return null;
   }
@@ -138,6 +139,7 @@ export function diffPlayerUpdate(
   setIfDifferent("techs", prev.techs === next.techs);
   setIfDifferent("research", prev.research === next.research);
   setIfDifferent("capitalTile", prev.capitalTile === next.capitalTile);
+  setIfDifferent("intel", prev.intel === next.intel);
   setIfDifferent("allies", numberArrayEqual(prev.allies, next.allies));
   setIfDifferent("targets", numberArrayEqual(prev.targets, next.targets));
   setIfDifferent(

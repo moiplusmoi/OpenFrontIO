@@ -1130,6 +1130,19 @@ export class HelpModal extends BaseModal {
                   </tr>
                   <tr class="bg-white/5 hover:bg-white/10 transition-colors">
                     <td class="py-3 ps-4 border-b border-white/5 font-medium">
+                      ${translateText("unit_type.spy")}
+                    </td>
+                    <td class="py-3 border-b border-white/5">
+                      <span class="text-2xl" aria-hidden="true">🕵</span>
+                    </td>
+                    <td
+                      class="py-3 border-b border-white/5 text-white/60 text-sm"
+                    >
+                      ${translateText("help_modal.spy")}
+                    </td>
+                  </tr>
+                  <tr class="bg-white/5 hover:bg-white/10 transition-colors">
+                    <td class="py-3 ps-4 border-b border-white/5 font-medium">
                       ${translateText("unit_type.atom_bomb")}
                     </td>
                     <td class="py-3 border-b border-white/5">

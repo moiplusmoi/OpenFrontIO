@@ -1,3 +1,4 @@
+import { SpyMission } from "@openfront/engine-api/game/GameTypes";
 import { EventBus } from "@openfront/shared/EventBus";
 import { ServerMessage } from "@openfront/shared/WireSchemas";
 import {
@@ -57,6 +58,7 @@ import {
   SendDonateGoldIntentEvent,
   SendHashEvent,
   SendSpawnIntentEvent,
+  SendSpyIntentEvent,
   SendWinnerEvent,
   Transport,
 } from "../../src/client/Transport";
@@ -198,6 +200,31 @@ describe("Transport send paths", () => {
         {
           type: "intent",
           intent: { type: "cancel_attack", attackID: "atk-1" },
+        },
+      ]);
+    });
+
+    // GalloFront: a spy intent carries the structure to sabotage only when
+    // there is one.
+    it("turns spy events into spy intent frames", () => {
+      const { eventBus, ws } = connected();
+      eventBus.emit(new SendSpyIntentEvent("player01", SpyMission.Reveal));
+      eventBus.emit(
+        new SendSpyIntentEvent("player01", SpyMission.Sabotage, 42),
+      );
+      expect(decodeFrames(ws)).toEqual([
+        {
+          type: "intent",
+          intent: { type: "spy", targetID: "player01", mission: "reveal" },
+        },
+        {
+          type: "intent",
+          intent: {
+            type: "spy",
+            targetID: "player01",
+            mission: "sabotage",
+            unitId: 42,
+          },
         },
       ]);
     });

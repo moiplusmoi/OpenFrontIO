@@ -5,6 +5,7 @@ import {
   Cell,
   EmojiMessage,
   Gold,
+  IntelEntry,
   NameViewData,
   PlayerActions,
   PlayerBorderTiles,
@@ -651,6 +652,22 @@ export class PlayerView implements PlayerLike {
   /** Tile of the capital city, or null when the player has none. */
   capitalTile(): TileRef | null {
     return this.state.capitalTile;
+  }
+
+  // ---- GalloFront espionage ----
+
+  /** Intel this player holds on others (only known for the local player). */
+  intel(): readonly IntelEntry[] {
+    return this.state.intel;
+  }
+
+  /** The intel still valid on `smallID`, or null. */
+  intelOn(smallID: number): IntelEntry | null {
+    const ticks = this.game.ticks();
+    for (const entry of this.state.intel) {
+      if (entry.target === smallID && entry.until > ticks) return entry;
+    }
+    return null;
   }
 
   deleteUnitCooldown(): number {

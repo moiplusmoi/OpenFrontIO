@@ -59,6 +59,7 @@ function ps(overrides: Partial<PlayerState> = {}): PlayerState {
     techs: [],
     research: null,
     capitalTile: null,
+    intel: [],
     ...overrides,
   };
 }
@@ -93,6 +94,7 @@ function nuke(overrides: Partial<UnitState> = {}): UnitState {
     samUpgradeStartRange: null,
     samUpgradeTargetLevel: null,
     samUpgradeDuration: null,
+    disabledUntil: -1,
     ...overrides,
   };
 }

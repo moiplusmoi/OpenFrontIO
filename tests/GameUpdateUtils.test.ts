@@ -46,6 +46,7 @@ function makePlayerState(overrides: Partial<PlayerState> = {}): PlayerState {
     techs: [],
     research: null,
     capitalTile: null,
+    intel: [],
     ...overrides,
   };
 }

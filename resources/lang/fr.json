@@ -846,7 +846,16 @@
     "research_complete": "Recherche terminée : {tech}",
     "capital_lost": "Votre capitale est tombée aux mains de {name} ! Vous perdez 25 % de vos troupes et de votre or, et vos territoires éloignés se révoltent.",
     "capital_destroyed": "Votre capitale a été détruite ! Vous perdez 25 % de vos troupes et de votre or, et vos territoires éloignés se révoltent.",
-    "capital_captured": "Vous avez pris la capitale de {name} et saisi {gold} d'or !"
+    "capital_captured": "Vous avez pris la capitale de {name} et saisi {gold} d'or !",
+    "spy_reveal": "Votre espion a percé les secrets de {name}",
+    "spy_sabotage": "Votre espion a saboté {unit} de {name}",
+    "spy_steal": "Votre espion a volé {gold} d'or à {name}",
+    "spy_captured": "Vous avez capturé un espion envoyé par {name} !",
+    "spy_foiled": "Une tentative d'espionnage contre vous a été déjouée",
+    "spy_lost": "Votre espion a été capturé par {name}",
+    "spy_failed": "Votre espion a échoué chez {name}",
+    "sabotaged": "Votre {unit} a été saboté !",
+    "gold_stolen": "Un espion vous a volé {gold} d'or !"
   },
   "featured_stream": {
     "expand": "Agrandir",
@@ -1196,7 +1205,8 @@
     "video_tutorial_title": "Tutoriel OpenFront.io",
     "action_quick_chat": "Ouvrir le chat rapide",
     "action_tech_panel": "Ouvrir le panneau des technologies",
-    "capital": "Votre première ville devient votre capitale 👑 : +10 % de troupes max et défense ×1,5 dans un rayon de 30 cases. Si elle est capturée ou détruite, vous perdez 25 % de vos troupes et de votre or (l'or va au conquérant), les territoires à plus de 60 cases de toute ville restante se révoltent, et votre plus grande ville restante devient la nouvelle capitale. Vous pouvez déplacer la capitale vers une autre ville depuis son menu (3 min de recharge)."
+    "capital": "Votre première ville devient votre capitale 👑 : +10 % de troupes max et défense ×1,5 dans un rayon de 30 cases. Si elle est capturée ou détruite, vous perdez 25 % de vos troupes et de votre or (l'or va au conquérant), les territoires à plus de 60 cases de toute ville restante se révoltent, et votre plus grande ville restante devient la nouvelle capitale. Vous pouvez déplacer la capitale vers une autre ville depuis son menu (3 min de recharge).",
+    "spy": "Avec la technologie Renseignement (déf 3), envoyez un espion 🕵 chez un ennemi depuis son menu (300k d'or, 3 en vol max, 20 s entre deux). Personne d'autre ne le voit. Révéler montre son or, ses troupes et ses silos/SAM prêts pendant 60 s (85 %) ; Voler prend 8 % de son or, 2M max (65 %) ; Saboter arrête un SAM ou un silo 60 s, ou retire un niveau à une ville, un port, une usine ou un poste défensif (55 %). Votre déf 4 ajoute 10 points ; la déf 3 de la cible en retire 15 et sa déf 4 encore 35 (et rend les données révélées vieilles de 30 s). Un espion qui échoue a une chance sur deux d'être capturé, ce qui révèle à la victime qui l'a envoyé."
   },
   "host_modal": {
     "anonymous_players": "Joueurs anonymes",
@@ -1713,7 +1723,12 @@
     "stop_trade_enemies": "Arrêter de commercer avec les ennemis",
     "techs": "Technologies",
     "capital": "Capitale",
-    "no_capital": "Pas de capitale"
+    "no_capital": "Pas de capitale",
+    "intel": "Renseignement ({seconds}s restantes)",
+    "intel_stale": "Données périmées (30 s)",
+    "intel_gold": "Or exact",
+    "intel_troops": "Troupes exactes",
+    "intel_ready": "Silos / SAM prêts"
   },
   "player_profile": {
     "loading": "Chargement du profil...",
@@ -1898,7 +1913,15 @@
     "delete_unit_title": "Supprimer une unité",
     "upgrade_x": "Améliorer x{amount}",
     "set_capital": "Capitale",
-    "set_capital_desc": "Faire de cette ville votre capitale : +10 % de troupes max et défense renforcée dans un rayon de 30 cases. 3 min de recharge entre deux déplacements."
+    "set_capital_desc": "Faire de cette ville votre capitale : +10 % de troupes max et défense renforcée dans un rayon de 30 cases. 3 min de recharge entre deux déplacements.",
+    "spy": "Espion",
+    "spy_desc": "Envoyer un espion chez ce joueur : révéler, voler ou saboter. Nécessite Renseignement (déf 3), 300k d'or, 3 espions en vol max, 20 s entre deux.",
+    "spy_reveal": "Révéler",
+    "spy_reveal_desc": "Renseignement sur ce joueur pendant 60 s : or et troupes exacts, silos et SAM prêts. 85 % de réussite. 300k d'or.",
+    "spy_steal": "Voler",
+    "spy_steal_desc": "Voler 8 % de l'or de ce joueur (2M max). 65 % de réussite. 300k d'or.",
+    "spy_sabotage": "Saboter",
+    "spy_sabotage_desc": "Saboter la structure la plus proche : un SAM ou un silo s'arrête 60 s, une ville, un port, une usine ou un poste défensif perd un niveau. 55 % de réussite. 300k d'or."
   },
   "relation": {
     "default": "Défaut",
@@ -2257,7 +2280,8 @@
     "missile_silo": "Silo à missiles",
     "port": "Port",
     "sam_launcher": "Lanceur de SAM",
-    "warship": "Navire de guerre"
+    "warship": "Navire de guerre",
+    "spy": "Espion"
   },
   "update_available": {
     "desktop": "Une nouvelle version d’OpenFront est disponible. Elle sera téléchargée en arrière-plan ; une fois prête, rechargez la page depuis la barre de mise à jour.",

@@ -26,6 +26,7 @@ import {
   TechBranch,
   ResearchState,
   techLevelOf,
+  IntelEntry,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   AllianceView,
@@ -143,6 +144,9 @@ export class PlayerImpl implements Player {
   // GalloFront capital
   private _capitalTile: TileRef | null = null;
   private _capitalMovedTick: number = -1;
+  // GalloFront espionage (intel replaced, never mutated: identity diff)
+  private _lastSpyTick: number = -1;
+  private _intel: IntelEntry[] = [];
   public _lastTileChange: number = 0;
   // Bumped on every ownership change of one of this player's tiles (several
   // can happen within one tick, so the tick alone is not a cache key).
@@ -430,6 +434,7 @@ export class PlayerImpl implements Player {
       techs: this._techs,
       research: this._research,
       capitalTile: this._capitalTile,
+      intel: this._intel,
     };
   }
 
@@ -1636,6 +1641,8 @@ export class PlayerImpl implements Player {
         return this.tradeShipSpawn(targetTile);
       case UnitType.Train:
         return this.landBasedUnitSpawn(targetTile);
+      case UnitType.Spy:
+        return targetTile;
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
       case UnitType.SAMLauncher:
@@ -1918,6 +1925,24 @@ export class PlayerImpl implements Player {
   lastCapitalMoveTick(): number {
     return this._capitalMovedTick;
   }
+
+  // ---- GalloFront espionage ----
+  lastSpyTick(): number {
+    return this._lastSpyTick;
+  }
+  setLastSpyTick(tick: number): void {
+    this._lastSpyTick = tick;
+  }
+  intel(): readonly IntelEntry[] {
+    return this._intel;
+  }
+  addIntel(targetSmallID: number, until: number, stale: boolean): void {
+    const now = this.mg.ticks();
+    this._intel = [
+      ...this._intel.filter((e) => e.until > now && e.target !== targetSmallID),
+      { target: targetSmallID, until, stale },
+    ];
+  }
   toString(): string {
     return `Player:{name:${this.info().name},clientID:${
       this.info().clientID
@@ -2098,6 +2123,8 @@ export class PlayerImpl implements Player {
       research: this._research === null ? null : { ...this._research },
       capitalTile: this._capitalTile,
       capitalMovedTick: this._capitalMovedTick,
+      lastSpyTick: this._lastSpyTick,
+      intel: this._intel.map((e) => ({ ...e })),
     };
   }
 
@@ -2176,12 +2203,14 @@ export class PlayerImpl implements Player {
     this._research = s.research === null ? null : { ...s.research };
     this._capitalTile = s.capitalTile;
     this._capitalMovedTick = s.capitalMovedTick;
+    this._lastSpyTick = s.lastSpyTick;
+    this._intel = s.intel.map((e) => ({ ...e }));
   }
 }
 
 export const PlayerSnapshot = snapshotType({
   name: "Player",
-  version: 3,
+  version: 4,
   schema: z.object({
     smallID: zInt(),
     info: PlayerInfoSchema,
@@ -2253,10 +2282,16 @@ export const PlayerSnapshot = snapshotType({
     // v3 (GalloFront): capital
     capitalTile: zTile().nullable(),
     capitalMovedTick: zInt(),
+    // v4 (GalloFront): espionage
+    lastSpyTick: zInt(),
+    intel: z.array(
+      z.object({ target: zInt(), until: zInt(), stale: z.boolean() }),
+    ),
   }),
   migrations: {
     1: (d: object) => ({ ...d, techs: [], research: null }),
     2: (d: object) => ({ ...d, capitalTile: null, capitalMovedTick: -1 }),
+    3: (d: object) => ({ ...d, lastSpyTick: -1, intel: [] }),
   },
 });
 export type PlayerState = z.infer<typeof PlayerSnapshot.schema>;

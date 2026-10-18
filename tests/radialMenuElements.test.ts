@@ -213,3 +213,149 @@ describe("RadialMenuElements set capital", () => {
     expect(params.closeMenu).toHaveBeenCalled();
   });
 });
+
+// ─── GalloFront: spy ────────────────────────────────────────────────────────
+
+import { SendSpyIntentEvent } from "../src/client/Transport";
+
+const makeStructure = (id: number, type: string, tile: number) => ({
+  id: () => id,
+  type: () => type,
+  tile: () => tile,
+  isUnderConstruction: () => false,
+  markedForDeletion: () => false as const,
+});
+
+const makeEnemyParams = (opts: {
+  def3?: boolean;
+  gold?: bigint;
+  spies?: number;
+  structures?: ReturnType<typeof makeStructure>[];
+  alive?: boolean;
+  friendly?: boolean;
+}) => {
+  const myPlayer = {
+    ...makePlayer("p1"),
+    isAlliedWith: () => false,
+    hasTech: (id: string) => (opts.def3 ?? true) && id === "def_3",
+    gold: () => opts.gold ?? 1_000_000n,
+    units: (...types: string[]) =>
+      types.includes("Spy") ? new Array(opts.spies ?? 0).fill({}) : [],
+  };
+  const enemy = {
+    ...makePlayer("p2"),
+    isPlayer: () => true,
+    isAlliedWith: () => false,
+    isAlive: () => opts.alive ?? true,
+    isFriendly: () => opts.friendly ?? false,
+    units: (...types: string[]) =>
+      (opts.structures ?? []).filter((s) => types.includes(s.type())),
+  };
+  const emit = vi.fn();
+  const params = makeParams({
+    myPlayer: myPlayer as any,
+    selected: enemy as any,
+  });
+  params.tile = 100 as any;
+  params.game = {
+    inSpawnPhase: () => false,
+    isLand: () => true,
+    owner: () => enemy,
+    myPlayer: () => myPlayer,
+    manhattanDist: (a: number, b: number) => Math.abs(a - b),
+    config: () => ({ maxSpies: () => 3 }),
+  } as any;
+  params.playerActions = {
+    canAttack: true,
+    buildableUnits: [{ type: "Spy", cost: 300_000n, canBuild: false }],
+    interaction: {
+      canBreakAlliance: false,
+      canSendAllianceRequest: true,
+      canEmbargo: true,
+    },
+  } as any;
+  params.eventBus = { emit } as any;
+  return { params, emit };
+};
+
+const findSpy = (items: any[]) => items.find((i) => i && i.id === "spy");
+
+describe("RadialMenuElements spy", () => {
+  test("is absent on allies, the dead and on the legacy stubs", () => {
+    expect(findSpy(rootMenuElement.subMenu!(makeParams()))).toBeUndefined();
+    const ally = makeEnemyParams({ friendly: true });
+    expect(findSpy(rootMenuElement.subMenu!(ally.params))).toBeUndefined();
+    const dead = makeEnemyParams({ alive: false });
+    expect(findSpy(rootMenuElement.subMenu!(dead.params))).toBeUndefined();
+  });
+
+  test("is offered on a living enemy with three missions", () => {
+    const { params } = makeEnemyParams({});
+    const spy = findSpy(rootMenuElement.subMenu!(params));
+    expect(spy).toBeDefined();
+    expect(spy.disabled(params)).toBe(false);
+    const missions = spy.subMenu(params).map((m: any) => m.id);
+    expect(missions).toEqual(["spy_reveal", "spy_steal", "spy_sabotage"]);
+  });
+
+  test("is disabled without def_3, without 300k gold or with 3 spies out", () => {
+    for (const opts of [{ def3: false }, { gold: 200_000n }, { spies: 3 }]) {
+      const { params } = makeEnemyParams(opts);
+      const spy = findSpy(rootMenuElement.subMenu!(params));
+      expect(spy.disabled(params)).toBe(true);
+      expect(spy.color(params)).toBe(COLORS.disabled);
+    }
+  });
+
+  test("reveal and steal send a spy intent without a unit and close", () => {
+    const { params, emit } = makeEnemyParams({});
+    const [reveal, steal] = findSpy(rootMenuElement.subMenu!(params)).subMenu(
+      params,
+    );
+    reveal.action(params);
+    steal.action(params);
+    expect(emit).toHaveBeenCalledTimes(2);
+    expect(emit.mock.calls[0][0]).toBeInstanceOf(SendSpyIntentEvent);
+    expect(emit.mock.calls[0][0]).toMatchObject({
+      targetID: "p2",
+      mission: "reveal",
+      unitId: undefined,
+    });
+    expect(emit.mock.calls[1][0]).toMatchObject({
+      targetID: "p2",
+      mission: "steal",
+    });
+    expect(params.closeMenu).toHaveBeenCalledTimes(2);
+  });
+
+  test("sabotage needs a structure within reach and targets the closest", () => {
+    const none = makeEnemyParams({
+      structures: [makeStructure(1, "SAM Launcher", 120)],
+    });
+    const far = findSpy(rootMenuElement.subMenu!(none.params)).subMenu(
+      none.params,
+    )[2];
+    expect(far.disabled(none.params)).toBe(true);
+    far.action(none.params);
+    expect(none.emit).not.toHaveBeenCalled();
+
+    const { params, emit } = makeEnemyParams({
+      structures: [
+        makeStructure(1, "SAM Launcher", 104),
+        makeStructure(2, "City", 101),
+        makeStructure(3, "Warship", 100),
+      ],
+    });
+    const sabotage = findSpy(rootMenuElement.subMenu!(params)).subMenu(
+      params,
+    )[2];
+    expect(sabotage.disabled(params)).toBe(false);
+    sabotage.action(params);
+    expect(emit).toHaveBeenCalledTimes(1);
+    expect(emit.mock.calls[0][0]).toMatchObject({
+      targetID: "p2",
+      mission: "sabotage",
+      unitId: 2,
+    });
+  });
+});

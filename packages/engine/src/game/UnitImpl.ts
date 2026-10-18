@@ -192,6 +192,7 @@ export class UnitImpl implements Unit {
       targetTile: this.targetTile() ?? undefined,
       missileTimerQueue: this._missileTimerQueue,
       level: this.level(),
+      disabledUntil: this._disabledUntil,
       hasTrainStation: this._hasTrainStation,
       trainType: this._trainType,
       loaded: this._loaded,
@@ -276,6 +277,19 @@ export class UnitImpl implements Unit {
     this._owner._myUnitsVersion++;
     this.mg.bumpUnitsVersion();
     this.mg.addUpdate(this.toUpdate());
+  }
+
+  // ---- GalloFront sabotage ----
+  private _disabledUntil: number = -1;
+  disable(untilTick: number): void {
+    this._disabledUntil = untilTick;
+    this.mg.addUpdate(this.toUpdate());
+  }
+  isDisabled(): boolean {
+    return this._disabledUntil > this.mg.ticks();
+  }
+  disabledUntil(): number {
+    return this._disabledUntil;
   }
 
   maxHealth(): number {
@@ -805,6 +819,7 @@ export class UnitImpl implements Unit {
     const nuke = this._nukeState;
     return {
       id: this._id,
+      disabledUntil: this._disabledUntil,
       type: this._type,
       owner: w.player(this._owner),
       tile: this._tile,
@@ -911,6 +926,7 @@ export class UnitImpl implements Unit {
     this._missileTimerQueue = [...s.missileTimerQueue];
     this._hasTrainStation = s.hasTrainStation;
     this._level = s.level;
+    this._disabledUntil = s.disabledUntil;
     this._targetable = s.targetable;
     this._loaded = s.loaded ?? undefined;
     this._trainType = s.trainType ?? undefined;
@@ -923,7 +939,7 @@ export class UnitImpl implements Unit {
 
 export const UnitSnapshot = snapshotType({
   name: "Unit",
-  version: 1,
+  version: 2,
   schema: z.object({
     id: zInt(),
     type: UnitTypeSchema,
@@ -968,6 +984,8 @@ export const UnitSnapshot = snapshotType({
     missileTimerQueue: z.array(zInt()),
     hasTrainStation: z.boolean(),
     level: zInt(),
+    // v2 (GalloFront): sabotage
+    disabledUntil: zInt(),
     targetable: z.boolean(),
     loaded: z.boolean().nullable(),
     trainType: z.enum(TrainType).nullable(),
@@ -981,5 +999,8 @@ export const UnitSnapshot = snapshotType({
       })
       .nullable(),
   }),
+  migrations: {
+    1: (d: object) => ({ ...d, disabledUntil: -1 }),
+  },
 });
 export type UnitState = z.infer<typeof UnitSnapshot.schema>;

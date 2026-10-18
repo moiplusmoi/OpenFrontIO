@@ -28,6 +28,7 @@ import { PauseExecution } from "./PauseExecution";
 import { QuickChatExecution } from "./QuickChatExecution";
 import { ResearchExecution } from "./ResearchExecution";
 import { SetCapitalExecution } from "./SetCapitalExecution";
+import { SpyExecution } from "./SpyExecution";
 import { RetreatExecution } from "./RetreatExecution";
 import { SpawnExecution } from "./SpawnExecution";
 import { TargetPlayerExecution } from "./TargetPlayerExecution";
@@ -148,6 +149,13 @@ export class Executor {
         return new ResearchExecution(player, intent.tech);
       case "set_capital":
         return new SetCapitalExecution(player, intent.tile);
+      case "spy":
+        return new SpyExecution(
+          player,
+          intent.targetID,
+          intent.mission,
+          intent.unitId ?? null,
+        );
       case "toggle_pause":
         return new PauseExecution(player, intent.paused);
       default:

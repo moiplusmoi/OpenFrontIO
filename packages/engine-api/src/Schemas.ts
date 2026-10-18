@@ -16,6 +16,7 @@ import {
   Trios,
   TechId,
   UnitType,
+  SpyMission,
 } from "./game/GameTypes";
 import { PlayerStatsSchema } from "./StatsSchemas";
 
@@ -49,7 +50,8 @@ export type Intent =
   | UpdateGameConfigIntent
   | ToggleGameStartTimer
   | ResearchIntent
-  | SetCapitalIntent;
+  | SetCapitalIntent
+  | SpyIntent;
 
 export type AttackIntent = z.infer<typeof AttackIntentSchema>;
 export type CancelAttackIntent = z.infer<typeof CancelAttackIntentSchema>;
@@ -566,6 +568,15 @@ export const SetCapitalIntentSchema = z.object({
 });
 export type SetCapitalIntent = z.infer<typeof SetCapitalIntentSchema>;
 
+// GalloFront: send a spy against a player (unitId only for sabotage).
+export const SpyIntentSchema = z.object({
+  type: z.literal("spy"),
+  targetID: MappedID,
+  mission: z.enum(SpyMission),
+  unitId: zb.uint().optional(),
+});
+export type SpyIntent = z.infer<typeof SpyIntentSchema>;
+
 export const IntentSchema = z.discriminatedUnion("type", [
   AttackIntentSchema,
   CancelAttackIntentSchema,
@@ -594,6 +605,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   ToggleGameStartTimerIntentSchema,
   ResearchIntentSchema,
   SetCapitalIntentSchema,
+  SpyIntentSchema,
 ]);
 
 // StampedIntent = Intent with server-stamped clientID (used in turns and execution)

@@ -20,16 +20,14 @@
 
 import type { TileRef } from "@openfront/engine-api/game/GameMap";
 import {
+  type IntelEntry,
   type ResearchState,
   TechBranch,
   TechId,
   techLevelOf,
-} from "@openfront/engine-api/game/GameTypes";
-import type {
-  PlayerType,
-  Team,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
+import type { PlayerType, Team } from "@openfront/engine-api/game/GameTypes";
 import { GameUpdateType } from "@openfront/engine-api/game/GameUpdates";
 import type { Config } from "@openfront/engine-lib/configuration/Config";
 import { OWNER_MASK } from "../render/gl/utils/TileCodec";
@@ -83,6 +81,13 @@ export class ReplayUnitView {
   }
   missileTimerQueue(): number[] {
     return this.state.missileTimerQueue;
+  }
+  // GalloFront sabotage.
+  disabledUntil(): number {
+    return this.state.disabledUntil;
+  }
+  isDisabled(ticks: number = this.game.ticks()): boolean {
+    return this.state.disabledUntil > ticks;
   }
   tile(): TileRef {
     return this.state.pos as TileRef;
@@ -232,6 +237,17 @@ export class ReplayPlayerView {
   capitalTile(): TileRef | null {
     return this.state?.capitalTile ?? null;
   }
+  // GalloFront espionage.
+  intel(): readonly IntelEntry[] {
+    return this.state?.intel ?? [];
+  }
+  intelOn(smallID: number): IntelEntry | null {
+    const ticks = this.game.ticks();
+    for (const entry of this.intel()) {
+      if (entry.target === smallID && entry.until > ticks) return entry;
+    }
+    return null;
+  }
   gold(): bigint {
     return BigInt(Math.round(this.state?.gold ?? 0));
   }
@@ -304,8 +320,8 @@ export class ReplayGameView {
   private spawnPhase = true;
   /** Land tiles now (water nukes sink some, see ReplayTerrain). */
   private landTiles: number;
-  /** The player being followed, or null. */
-  focus: ReplayPlayerView | null = null;
+  /** The player being followed, or null (see the accessor below). */
+  private _focus: ReplayPlayerView | null = null;
   /** Whether emojis are shown (the "emojis" user setting). */
   showEmojis: () => boolean = () => true;
   /** Events since the HUD last asked, by GameUpdateType. */
@@ -323,6 +339,30 @@ export class ReplayGameView {
   ) {
     this.landTiles = startLandTiles;
     this.addPlayers(players);
+  }
+
+  /** The player being followed, or null. */
+  get focus(): ReplayPlayerView | null {
+    return this._focus;
+  }
+  set focus(player: ReplayPlayerView | null) {
+    if (player === this._focus) return;
+    this._focus = player;
+    // Which spies are visible depends on who is followed.
+    this.stale = true;
+  }
+
+  /**
+   * GalloFront: spies are invisible to everyone but their owner and the
+   * owner's teammates. In a replay "me" is the followed player.
+   */
+  private isUnitVisible(unit: UnitState): boolean {
+    if (unit.unitType !== UnitType.Spy) return true;
+    const focus = this._focus;
+    if (focus === null) return false;
+    if (unit.ownerID === focus.smallID()) return true;
+    const owner = this.bySmallID.get(unit.ownerID);
+    return owner !== undefined && focus.isOnSameTeam(owner);
   }
 
   /** Players seen for the first time (a game that's still being processed). */
@@ -380,7 +420,7 @@ export class ReplayGameView {
       view.ownUnits = [];
     }
     for (const unit of frame.units.values() as Iterable<UnitState>) {
-      if (!unit.isActive) continue;
+      if (!unit.isActive || !this.isUnitVisible(unit)) continue;
       const owner = this.bySmallID.get(unit.ownerID);
       if (owner === undefined) continue;
       owner.ownUnits.push(new ReplayUnitView(unit, this));
@@ -415,7 +455,9 @@ export class ReplayGameView {
   }
   unit(id: number): ReplayUnitView | undefined {
     const state = this.frame?.units.get(id);
-    return state === undefined ? undefined : new ReplayUnitView(state, this);
+    return state === undefined || !this.isUnitVisible(state)
+      ? undefined
+      : new ReplayUnitView(state, this);
   }
   /** Events since the HUD last asked, in the shape the HUD expects. */
   updatesSinceLastTick(): Record<number, unknown[]> {

@@ -21,6 +21,9 @@ export const UT_SAM_MISSILE = "SAMMissile" as const;
 export const UT_SHELL = "Shell" as const;
 export const UT_MIRV_WARHEAD = "MIRV Warhead" as const;
 export const UT_TRAIN = "Train" as const;
+/** GalloFront: a spy. Never drawn by the WebGL passes (no atlas column);
+ *  the owner's spies are drawn by SpyLayer (Canvas 2D). */
+export const UT_SPY = "Spy" as const;
 
 // Structures
 export const UT_CITY = "City" as const;
@@ -99,4 +102,5 @@ export const ALL_UNIT_TYPES = [
   UT_SAM_LAUNCHER,
   UT_MISSILE_SILO,
   UT_TRAIN,
+  UT_SPY,
 ] as const;

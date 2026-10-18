@@ -21,7 +21,9 @@ import type {
  */
 // 2: GalloFront technologies (techs, research) appended to PLAYER_FIELDS.
 // 3: GalloFront capital (capitalTile) appended to PLAYER_FIELDS.
-export const REPLAY_VERSION = 3;
+// 4: GalloFront espionage: intel appended to PLAYER_FIELDS, disabledUntil
+//    to UNIT_FIELDS.
+export const REPLAY_VERSION = 4;
 
 /**
  * Frames per chunk. Each chunk starts with a keyframe, and keyframes are

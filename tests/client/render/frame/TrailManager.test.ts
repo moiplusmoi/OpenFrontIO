@@ -50,6 +50,7 @@ function unit(overrides: Partial<UnitState> = {}): UnitState {
     samUpgradeStartRange: null,
     samUpgradeTargetLevel: null,
     samUpgradeDuration: null,
+    disabledUntil: -1,
     ...overrides,
   };
 }

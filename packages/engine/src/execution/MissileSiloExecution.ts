@@ -31,6 +31,7 @@ export class MissileSiloExecution implements Execution {
       return;
     }
 
+    if (this.silo.isDisabled()) return; // GalloFront: sabotaged
     // frontTime is the time the earliest missile fired.
     const frontTime = this.silo.missileTimerQueue()[0];
     if (frontTime === undefined) {

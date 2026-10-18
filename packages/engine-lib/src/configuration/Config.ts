@@ -9,6 +9,7 @@ import {
   TechId,
   techDef,
   Gold,
+  SpyMission,
 } from "@openfront/engine-api/game/GameTypes";
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { GameConfig } from "@openfront/engine-api/Schemas";
@@ -199,8 +200,48 @@ export class Config {
     return durations[techDef(id).level - 1];
   }
   /** Tech required to build a unit type, or null (none of the base units need one). */
-  unitRequiredTech(_type: UnitType): TechId | null {
-    return null;
+  unitRequiredTech(type: UnitType): TechId | null {
+    return type === UnitType.Spy ? TechId.Def3 : null;
+  }
+
+  // ---- GalloFront espionage ----
+  spySpeed(): number {
+    return 2;
+  }
+  maxSpies(): number {
+    return 3;
+  }
+  spyCooldown(): Tick {
+    return 200;
+  }
+  spyIntelDuration(): Tick {
+    return 600;
+  }
+  spySabotageDuration(): Tick {
+    return 600;
+  }
+  spyStealPct(): number {
+    return 8;
+  }
+  spyStealCap(): Gold {
+    return 2_000_000n;
+  }
+  /** Success chance in percent, from the mission and both Defense tech levels. */
+  spySuccessChance(
+    mission: SpyMission,
+    attackerDefenseTech: number,
+    defenderDefenseTech: number,
+  ): number {
+    let pct =
+      mission === SpyMission.Reveal
+        ? 85
+        : mission === SpyMission.Steal
+          ? 65
+          : 55;
+    if (attackerDefenseTech >= 4) pct += 10;
+    if (defenderDefenseTech >= 3) pct -= 15;
+    if (defenderDefenseTech >= 4) pct -= 35;
+    return Math.max(5, Math.min(95, pct));
   }
   techGoldMult(player: PlayerLike): number {
     const lvl = this.techLevelOf(player, TechBranch.Economy);
@@ -356,6 +397,7 @@ export class Config {
       case UnitType.MIRVWarhead:
       case UnitType.TradeShip:
       case UnitType.Train:
+      case UnitType.Spy:
         info = {};
         break;
       default:

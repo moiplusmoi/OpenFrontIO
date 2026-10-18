@@ -399,6 +399,8 @@ export class EngineConfig extends Config {
           UnitType.Factory,
           UnitType.Port,
         );
+      case UnitType.Spy:
+        return this.costWrapper(() => 300_000, UnitType.Spy);
       case UnitType.TransportShip:
       case UnitType.Shell:
       case UnitType.SAMMissile:

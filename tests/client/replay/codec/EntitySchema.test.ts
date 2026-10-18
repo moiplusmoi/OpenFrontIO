@@ -67,6 +67,7 @@ const basePlayer: PlayerState = {
   techs: [],
   research: null,
   capitalTile: null,
+  intel: [],
 };
 
 const playerAlternatives: { [K in keyof PlayerFields]: PlayerFields[K] } = {
@@ -122,6 +123,10 @@ const playerAlternatives: { [K in keyof PlayerFields]: PlayerFields[K] } = {
   techs: [TechId.Eco1, TechId.Mil2],
   research: { tech: TechId.Def1, startTick: 1200, endTick: 1500 },
   capitalTile: 4242,
+  intel: [
+    { target: 3, until: 6000, stale: true },
+    { target: 5, until: 6500, stale: false },
+  ],
 };
 
 const baseUnit: UnitState = {
@@ -153,6 +158,7 @@ const baseUnit: UnitState = {
   samUpgradeStartRange: null,
   samUpgradeTargetLevel: null,
   samUpgradeDuration: null,
+  disabledUntil: -1,
 };
 
 const unitAlternatives: { [K in keyof UnitFields]: UnitFields[K] } = {
@@ -182,6 +188,7 @@ const unitAlternatives: { [K in keyof UnitFields]: UnitFields[K] } = {
   samUpgradeStartRange: 70.5,
   samUpgradeTargetLevel: 2,
   samUpgradeDuration: 150,
+  disabledUntil: 9_600,
 };
 
 function roundTripFull<T>(

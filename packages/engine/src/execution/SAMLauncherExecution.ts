@@ -355,6 +355,7 @@ export class SAMLauncherExecution implements Execution {
       this.player = this.sam.owner();
     }
 
+    if (this.sam.isDisabled()) return; // GalloFront: sabotaged
     while (this.sam.missileTimerQueue().length > 0) {
       const frontTime = this.sam.missileTimerQueue()[0];
       const cooldown =

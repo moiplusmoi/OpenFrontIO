@@ -12,6 +12,7 @@
  */
 
 import type {
+  IntelEntry,
   ResearchState,
   TechId,
 } from "@openfront/engine-api/game/GameTypes";
@@ -267,6 +268,13 @@ const RESEARCH = struct<ResearchState>({
   endTick: U32,
 });
 
+/** GalloFront: an intel entry (target smallID, expiry tick, stale flag). */
+const INTEL = struct<IntelEntry>({
+  target: U16,
+  until: U32,
+  stale: BOOL,
+});
+
 const ALL_PLAYERS_RECIPIENT = 0xffff;
 const EMOJI_RECIPIENT: ValueCodec<number | "AllPlayers"> = {
   write: (w, v) => w.writeU16(v === "AllPlayers" ? ALL_PLAYERS_RECIPIENT : v),
@@ -409,6 +417,8 @@ export const PLAYER_FIELDS: readonly FieldDef<PlayerFields>[] = [
   field(["research", maybe(RESEARCH, null)]),
   // GalloFront capital (REPLAY_VERSION 3).
   field(["capitalTile", maybe(U32, null)]),
+  // GalloFront espionage (REPLAY_VERSION 4).
+  field(["intel", list(INTEL)]),
 ];
 
 export const UNIT_FIELDS: readonly FieldDef<UnitFields>[] = [
@@ -438,6 +448,8 @@ export const UNIT_FIELDS: readonly FieldDef<UnitFields>[] = [
     ["samUpgradeTargetLevel", maybe(F64, null)],
     ["samUpgradeDuration", maybe(F64, null)],
   ),
+  // GalloFront sabotage (REPLAY_VERSION 4).
+  field(["disabledUntil", I32]),
 ];
 
 for (const [name, schema] of [

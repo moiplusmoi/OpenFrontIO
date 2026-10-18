@@ -1,4 +1,8 @@
-import { AllPlayers, MessageType } from "@openfront/engine-api/game/GameTypes";
+import {
+  AllPlayers,
+  MessageType,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import {
   AllianceExpiredUpdate,
   AllianceRequestReplyUpdate,
@@ -60,7 +64,27 @@ const TIER_1_TYPES: ReadonlySet<MessageType> = new Set([
   MessageType.DONATION_RECEIVED,
   MessageType.RESEARCH_COMPLETE,
   MessageType.CAPITAL_FALLEN,
+  // GalloFront espionage
+  MessageType.SPY_SUCCESS,
+  MessageType.SPY_CAPTURED,
+  MessageType.SPY_FOILED,
+  MessageType.SABOTAGED,
+  MessageType.GOLD_STOLEN,
 ]);
+
+/**
+ * GalloFront: the engine names a sabotaged structure by its raw UnitType
+ * ("SAM Launcher"); shown through the unit_type.* keys, like intercepted
+ * nukes.
+ */
+const SABOTAGED_UNIT_TRANSLATION_KEYS: Readonly<Record<string, string>> = {
+  [UnitType.SAMLauncher]: "unit_type.sam_launcher",
+  [UnitType.MissileSilo]: "unit_type.missile_silo",
+  [UnitType.City]: "unit_type.city",
+  [UnitType.Port]: "unit_type.port",
+  [UnitType.Factory]: "unit_type.factory",
+  [UnitType.DefensePost]: "unit_type.defense_post",
+};
 
 /**
  * GalloFront: CAPITAL_FALLEN carries two messages — red for the victim,
@@ -298,6 +322,23 @@ export class EventsDisplay extends LitElement implements Controller {
       event.goldAmount !== undefined
     ) {
       params = { ...params, gold: renderNumber(event.goldAmount) };
+    }
+    // GalloFront espionage: stolen gold travels as goldAmount, and a
+    // sabotaged structure as its raw UnitType.
+    if (
+      (event.message === "events_display.spy_steal" ||
+        event.message === "events_display.gold_stolen") &&
+      event.goldAmount !== undefined
+    ) {
+      params = { ...params, gold: renderNumber(event.goldAmount) };
+    }
+    if (
+      (event.message === "events_display.spy_sabotage" ||
+        event.message === "events_display.sabotaged") &&
+      typeof params.unit === "string"
+    ) {
+      const key = SABOTAGED_UNIT_TRANSLATION_KEYS[params.unit];
+      if (key !== undefined) params = { ...params, unit: translateText(key) };
     }
 
     if (params.name === undefined || event.focusPlayerID === undefined) {

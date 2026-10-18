@@ -29,6 +29,7 @@ import {
   WarshipState,
   TechId,
   ResearchState,
+  IntelEntry,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdate,
@@ -63,6 +64,10 @@ export interface UnitParamsMap {
 
   [UnitType.Warship]: {
     patrolTile: TileRef;
+  };
+
+  [UnitType.Spy]: {
+    targetTile: TileRef;
   };
 
   [UnitType.Shell]: Record<string, never>;
@@ -290,6 +295,11 @@ export interface Unit extends UnitLike {
   isUnderConstruction(): boolean;
   setUnderConstruction(underConstruction: boolean): void;
 
+  // GalloFront sabotage: a disabled SAM/silo does nothing until the tick.
+  disable(untilTick: Tick): void;
+  isDisabled(): boolean;
+  disabledUntil(): Tick;
+
   // Upgradable Structures
   level(): number;
   increaseLevel(): void;
@@ -424,6 +434,11 @@ export interface Player extends PlayerLike {
   // GalloFront capital
   setCapital(tile: TileRef | null): void;
   lastCapitalMoveTick(): Tick;
+  // GalloFront espionage
+  lastSpyTick(): Tick;
+  setLastSpyTick(tick: Tick): void;
+  intel(): readonly IntelEntry[];
+  addIntel(targetSmallID: number, until: Tick, stale: boolean): void;
 
   findUnitToUpgrade(type: UnitType, targetTile: TileRef): Unit | false;
   canUpgradeUnit(unit: Unit): boolean;

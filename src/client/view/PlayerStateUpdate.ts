@@ -59,4 +59,6 @@ export function applyStateUpdate(target: PlayerState, pu: PlayerUpdate): void {
   if (pu.research !== undefined) target.research = pu.research;
   // GalloFront capital: emitted when it changes (null = none).
   if (pu.capitalTile !== undefined) target.capitalTile = pu.capitalTile;
+  // GalloFront espionage: intel entries, emitted to the owner when they change.
+  if (pu.intel !== undefined) target.intel = pu.intel.slice();
 }

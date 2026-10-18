@@ -27,6 +27,7 @@ import { AlertFrame } from "./layers/AlertFrame";
 import { AttacksDisplay } from "./layers/AttacksDisplay";
 import { BuildMenu } from "./layers/BuildMenu";
 import { CapitalLayer } from "./layers/CapitalLayer";
+import { SpyLayer } from "./layers/SpyLayer";
 import { ChatDisplay } from "./layers/ChatDisplay";
 import { ChatModal } from "./layers/ChatModal";
 import { ControlPanel } from "./layers/ControlPanel";
@@ -346,6 +347,7 @@ export function createRenderer(
     new SoundEffectController(game, eventBus),
     new AmbienceController(game, eventBus, transformHandler),
     new CapitalLayer(game, transformHandler, inputEl),
+    new SpyLayer(game, transformHandler, inputEl),
     ...(mapLayerController ? [mapLayerController] : []),
     eventsDisplay,
     actionableEvents,
