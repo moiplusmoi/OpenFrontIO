@@ -45,6 +45,8 @@ export interface AttackLogicInput {
   attackerMilitaryTech?: number;
   /** GalloFront: defender's Defense tech level (0 when absent). */
   defenderDefenseTech?: number;
+  /** GalloFront: the tile lies within the defender's capital influence. */
+  defenderHasCapital?: boolean;
 }
 
 export interface AttackLogicResult {
@@ -514,12 +516,21 @@ export class EngineConfig extends Config {
   minDistanceBetweenPlayers(): number {
     return 30;
   }
+  private techLevelSafe(player: PlayerLike, branch: TechBranch): number {
+    return typeof player.techLevel === "function"
+      ? player.techLevel(branch)
+      : 0;
+  }
+
   boatMaxNumber(player?: PlayerLike): number {
     if (this.isUnitDisabled(UnitType.TransportShip)) {
       return 0;
     }
     // mil_2 Offensive doctrine: one more boat at sea.
-    if (player !== undefined && player.techLevel(TechBranch.Military) >= 2) {
+    if (
+      player !== undefined &&
+      this.techLevelSafe(player, TechBranch.Military) >= 2
+    ) {
       return 4;
     }
     return 3;
@@ -548,6 +559,10 @@ export class EngineConfig extends Config {
     if (defender !== null && input.defenderHasDefensePost) {
       mag *= this.defensePostDefenseBonus();
       tileCost *= this.defensePostSpeedBonus();
+    }
+    if (defender !== null && input.defenderHasCapital === true) {
+      mag *= this.capitalDefenseBonus();
+      tileCost *= this.capitalSpeedBonus();
     }
     if (input.falloutRatio !== null) {
       const fallout = this.falloutDefenseModifier(input.falloutRatio);
@@ -733,7 +748,7 @@ export class EngineConfig extends Config {
 
   dynamicSamRange(sam: Unit, currentTick: number): number {
     const state = sam.samLauncherState();
-    const defTech = sam.owner().techLevel(TechBranch.Defense);
+    const defTech = this.techLevelSafe(sam.owner(), TechBranch.Defense);
     if (state === undefined || state.upgradeStartTick === undefined) {
       return this.samRange(sam.level(), defTech);
     }

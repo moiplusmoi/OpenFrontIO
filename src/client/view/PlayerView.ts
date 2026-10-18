@@ -646,6 +646,13 @@ export class PlayerView implements PlayerLike {
     return this.state.research;
   }
 
+  // ---- GalloFront capital ----
+
+  /** Tile of the capital city, or null when the player has none. */
+  capitalTile(): TileRef | null {
+    return this.state.capitalTile;
+  }
+
   deleteUnitCooldown(): number {
     return (
       Math.max(

@@ -171,12 +171,25 @@ export class Config {
   }
   SAMCooldown(player?: PlayerLike): number {
     // def_2 Radar: faster reload.
-    return player !== undefined && player.techLevel(TechBranch.Defense) >= 2
+    return player !== undefined &&
+      this.techLevelOf(player, TechBranch.Defense) >= 2
       ? 70
       : 90;
   }
 
   // ---- GalloFront technologies (see GameTypes.TECH_TREE) ----
+  // Test doubles and partial views may not implement the GalloFront members;
+  // treat them as "no tech / no capital" rather than throwing.
+  private techLevelOf(player: PlayerLike, branch: TechBranch): number {
+    return typeof player.techLevel === "function"
+      ? player.techLevel(branch)
+      : 0;
+  }
+  private hasCapital(player: PlayerLike): boolean {
+    return (
+      typeof player.capitalTile === "function" && player.capitalTile() !== null
+    );
+  }
   techCost(id: TechId): Gold {
     const costs: readonly Gold[] = [250_000n, 750_000n, 2_000_000n, 5_000_000n];
     return costs[techDef(id).level - 1];
@@ -190,24 +203,24 @@ export class Config {
     return null;
   }
   techGoldMult(player: PlayerLike): number {
-    const lvl = player.techLevel(TechBranch.Economy);
+    const lvl = this.techLevelOf(player, TechBranch.Economy);
     return lvl >= 4 ? 1.3 : lvl >= 1 ? 1.15 : 1;
   }
   techTradeMult(player: PlayerLike): number {
-    const lvl = player.techLevel(TechBranch.Economy);
+    const lvl = this.techLevelOf(player, TechBranch.Economy);
     return lvl >= 4 ? 1.4 : lvl >= 2 ? 1.2 : 1;
   }
   techTroopCapMult(player: PlayerLike): number {
-    return player.techLevel(TechBranch.Economy) >= 3 ? 1.1 : 1;
+    return this.techLevelOf(player, TechBranch.Economy) >= 3 ? 1.1 : 1;
   }
   techStructureCostMult(player: PlayerLike): number {
-    return player.techLevel(TechBranch.Economy) >= 3 ? 0.85 : 1;
+    return this.techLevelOf(player, TechBranch.Economy) >= 3 ? 0.85 : 1;
   }
   techConstructionMult(player: PlayerLike): number {
-    return player.techLevel(TechBranch.Economy) >= 3 ? 0.5 : 1;
+    return this.techLevelOf(player, TechBranch.Economy) >= 3 ? 0.5 : 1;
   }
   techGrowthMult(player: PlayerLike): number {
-    return player.techLevel(TechBranch.Military) >= 1 ? 1.15 : 1;
+    return this.techLevelOf(player, TechBranch.Military) >= 1 ? 1.15 : 1;
   }
   techAttackerLossMult(militaryLevel: number): number {
     return militaryLevel >= 2 ? 0.88 : 1;
@@ -222,7 +235,39 @@ export class Config {
     return defenseLevel >= 2 ? 1.15 : 1;
   }
   techWarshipHealthMult(player: PlayerLike): number {
-    return player.techLevel(TechBranch.Military) >= 2 ? 1.2 : 1;
+    return this.techLevelOf(player, TechBranch.Military) >= 2 ? 1.2 : 1;
+  }
+
+  // ---- GalloFront capital ----
+  /** Troop cap bonus while the player holds a capital. */
+  capitalTroopCapMult(player: PlayerLike): number {
+    return this.hasCapital(player) ? 1.1 : 1;
+  }
+  /** Attacker losses are multiplied by this near the defender's capital. */
+  capitalDefenseBonus(): number {
+    return 1.5;
+  }
+  /** Tile cost (attack slowness) multiplier near the defender's capital. */
+  capitalSpeedBonus(): number {
+    return 1.25;
+  }
+  /** Radius (manhattan) of the capital's defensive influence. */
+  capitalRange(): number {
+    return this.defensePostRange();
+  }
+  /** Ticks between two capital moves. */
+  capitalMoveCooldown(): Tick {
+    return 1800;
+  }
+  /** Fraction of troops and gold lost when the capital falls (percent). */
+  capitalFallLossPct(): number {
+    return 25;
+  }
+  /** Tiles farther than this (manhattan) from any remaining city revolt. */
+  capitalRevoltRange(): number {
+    // > trainStationMaxRange * 1.4142 / 2: no rail tile is ever farther than
+    // this from one of its two stations, so a revolt never cuts a railroad.
+    return 80;
   }
   SiloCooldown(): number {
     return 90;
@@ -400,7 +445,8 @@ export class Config {
       player.type() === PlayerType.Human && this.hasInfiniteTroopsFor(player)
         ? 1_000_000_000
         : (2 * (pow(player.numTilesOwned(), 0.6) * 1000 + 50000) + cityTroops) *
-          this.techTroopCapMult(player);
+          this.techTroopCapMult(player) *
+          this.capitalTroopCapMult(player);
 
     if (player.type() === PlayerType.Bot) {
       return maxTroops / 3;

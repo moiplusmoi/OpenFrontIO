@@ -228,6 +228,10 @@ export class ReplayPlayerView {
   research(): ResearchState | null {
     return this.state?.research ?? null;
   }
+  // GalloFront capital.
+  capitalTile(): TileRef | null {
+    return this.state?.capitalTile ?? null;
+  }
   gold(): bigint {
     return BigInt(Math.round(this.state?.gold ?? 0));
   }

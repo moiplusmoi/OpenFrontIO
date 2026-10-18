@@ -27,6 +27,7 @@ import { NoOpExecution } from "./NoOpExecution";
 import { PauseExecution } from "./PauseExecution";
 import { QuickChatExecution } from "./QuickChatExecution";
 import { ResearchExecution } from "./ResearchExecution";
+import { SetCapitalExecution } from "./SetCapitalExecution";
 import { RetreatExecution } from "./RetreatExecution";
 import { SpawnExecution } from "./SpawnExecution";
 import { TargetPlayerExecution } from "./TargetPlayerExecution";
@@ -145,6 +146,8 @@ export class Executor {
         return new MarkDisconnectedExecution(player, intent.isDisconnected);
       case "research":
         return new ResearchExecution(player, intent.tech);
+      case "set_capital":
+        return new SetCapitalExecution(player, intent.tile);
       case "toggle_pause":
         return new PauseExecution(player, intent.paused);
       default:

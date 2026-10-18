@@ -183,6 +183,21 @@ export function scriptedTurn(game: Game): Turn {
       }
     }
   }
+  if (!game.inSpawnPhase() && tick % 40 === 15) {
+    const p = game.playerByClientID(SCRIPTED_HUMANS[1]);
+    if (p !== null && p.isAlive()) {
+      const city = p
+        .units(UnitType.City)
+        .find((c) => !c.isUnderConstruction() && c.tile() !== p.capitalTile());
+      if (city !== undefined) {
+        intents.push({
+          type: "set_capital",
+          tile: city.tile(),
+          clientID: SCRIPTED_HUMANS[1],
+        });
+      }
+    }
+  }
   if (tick === 21) {
     // From a client that is not in the game: becomes a NoOpExecution.
     intents.push({

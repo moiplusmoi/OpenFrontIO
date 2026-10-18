@@ -737,6 +737,26 @@ export class PlayerPanel extends LitElement implements Controller {
     `;
   }
 
+  /** GalloFront: "👑 Capital" or "No capital" for the displayed player. */
+  private renderCapital(other: PlayerView) {
+    const hasCapital = other.capitalTile() !== null;
+    return html`
+      <div
+        class="mb-1 flex items-center gap-1.5 rounded-lg bg-white/4 px-3 py-1.5 ${hasCapital
+          ? "text-white"
+          : "text-zinc-400"}"
+        data-capital
+      >
+        <span class="mr-0.5">👑</span>
+        <span class="whitespace-nowrap">
+          ${translateText(
+            hasCapital ? "player_panel.capital" : "player_panel.no_capital",
+          )}
+        </span>
+      </div>
+    `;
+  }
+
   private renderRocketDirectionToggle() {
     return html`
       <ui-divider></ui-divider>
@@ -1196,6 +1216,7 @@ export class PlayerPanel extends LitElement implements Controller {
 
                     <!-- Resources -->
                     ${this.renderResources(other)} ${this.renderTechs(other)}
+                    ${this.renderCapital(other)}
 
                     <!-- Rocket direction toggle -->
                     ${other === viewer && !isSpectator

@@ -58,6 +58,7 @@ function ps(overrides: Partial<PlayerState> = {}): PlayerState {
     outgoingEmojis: [],
     techs: [],
     research: null,
+    capitalTile: null,
     ...overrides,
   };
 }

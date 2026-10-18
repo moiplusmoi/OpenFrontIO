@@ -66,6 +66,7 @@ const basePlayer: PlayerState = {
   outgoingEmojis: [],
   techs: [],
   research: null,
+  capitalTile: null,
 };
 
 const playerAlternatives: { [K in keyof PlayerFields]: PlayerFields[K] } = {
@@ -120,6 +121,7 @@ const playerAlternatives: { [K in keyof PlayerFields]: PlayerFields[K] } = {
   ],
   techs: [TechId.Eco1, TechId.Mil2],
   research: { tech: TechId.Def1, startTick: 1200, endTick: 1500 },
+  capitalTile: 4242,
 };
 
 const baseUnit: UnitState = {

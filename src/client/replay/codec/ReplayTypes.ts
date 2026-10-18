@@ -20,7 +20,8 @@ import type {
  * builds, which all share "DEV".
  */
 // 2: GalloFront technologies (techs, research) appended to PLAYER_FIELDS.
-export const REPLAY_VERSION = 2;
+// 3: GalloFront capital (capitalTile) appended to PLAYER_FIELDS.
+export const REPLAY_VERSION = 3;
 
 /**
  * Frames per chunk. Each chunk starts with a keyframe, and keyframes are

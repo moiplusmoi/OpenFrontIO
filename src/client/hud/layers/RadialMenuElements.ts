@@ -29,6 +29,7 @@ import { TooltipItem } from "./RadialMenu";
 import { EventBus } from "@openfront/shared/EventBus";
 import {
   BuildUnitIntentEvent,
+  SendSetCapitalIntentEvent,
   SendUpgradeStructureIntentEvent,
 } from "../../Transport";
 const allianceIcon = assetUrl("images/AllianceIconWhite.svg");
@@ -696,6 +697,64 @@ export const deleteUnitElement: MenuElement = {
   },
 };
 
+// GalloFront capital: the player's closest finished city within this many
+// tiles of the clicked tile (same reach as the delete button).
+const CAPITAL_SELECTION_RADIUS = 5;
+
+export function cityNearTile(params: MenuElementParams) {
+  const cities = params.myPlayer
+    .units(UnitType.City)
+    .filter(
+      (unit) =>
+        !unit.isUnderConstruction() &&
+        unit.markedForDeletion() === false &&
+        params.game.manhattanDist(unit.tile(), params.tile) <=
+          CAPITAL_SELECTION_RADIUS,
+    );
+  return (
+    findClosestBy(cities, (unit) =>
+      params.game.manhattanDist(unit.tile(), params.tile),
+    ) ?? null
+  );
+}
+
+/**
+ * GalloFront: make the city under the cursor the capital. Only offered on
+ * own territory with a city nearby; disabled when that city already is the
+ * capital. The 3-minute move cooldown is only known to the engine, which
+ * refuses silently.
+ */
+export const setCapitalElement: MenuElement = {
+  id: "set_capital",
+  name: "capital",
+  text: "👑",
+  fontSize: "22px",
+  color: COLORS.build,
+  disabled: (params: MenuElementParams) => {
+    if (params.game.inSpawnPhase()) return true;
+    const city = cityNearTile(params);
+    if (city === null) return true;
+    return params.myPlayer.capitalTile() === city.tile();
+  },
+  tooltipKeys: [
+    {
+      key: "radial_menu.set_capital",
+      className: "title",
+    },
+    {
+      key: "radial_menu.set_capital_desc",
+      className: "description",
+    },
+  ],
+  action: (params: MenuElementParams) => {
+    const city = cityNearTile(params);
+    if (city !== null && params.myPlayer.capitalTile() !== city.tile()) {
+      params.eventBus.emit(new SendSetCapitalIntentEvent(city.tile()));
+    }
+    params.closeMenu();
+  },
+};
+
 export const buildMenuElement: MenuElement = {
   id: Slot.Build,
   name: "build",
@@ -803,10 +862,18 @@ export const rootMenuElement: MenuElement = {
     const showDonateInsteadOfAttack =
       isFriendlyTarget(params) && !isDisconnected && !hasBuildableAttacks;
 
+    // GalloFront: a 5th slot on own territory when a city is under the cursor
+    const hasCityHere = isOwnTerritory && cityNearTile(params) !== null;
+
     const menuItems: (MenuElement | null)[] = [
       infoMenuElement,
       ...(isOwnTerritory
-        ? [deleteUnitElement, allyRequestElement, buildMenuElement]
+        ? [
+            deleteUnitElement,
+            allyRequestElement,
+            buildMenuElement,
+            ...(hasCityHere ? [setCapitalElement] : []),
+          ]
         : [
             isAllied && !isDisconnected ? allyBreakElement : boatMenuElement,
             inExtensionWindow ? allyExtendElement : allyRequestElement,

@@ -48,7 +48,8 @@ export type Intent =
   | TogglePauseIntent
   | UpdateGameConfigIntent
   | ToggleGameStartTimer
-  | ResearchIntent;
+  | ResearchIntent
+  | SetCapitalIntent;
 
 export type AttackIntent = z.infer<typeof AttackIntentSchema>;
 export type CancelAttackIntent = z.infer<typeof CancelAttackIntentSchema>;
@@ -558,6 +559,13 @@ export const ResearchIntentSchema = z.object({
 });
 export type ResearchIntent = z.infer<typeof ResearchIntentSchema>;
 
+// GalloFront: move the capital to one of the player's cities.
+export const SetCapitalIntentSchema = z.object({
+  type: z.literal("set_capital"),
+  tile: zb.uint(),
+});
+export type SetCapitalIntent = z.infer<typeof SetCapitalIntentSchema>;
+
 export const IntentSchema = z.discriminatedUnion("type", [
   AttackIntentSchema,
   CancelAttackIntentSchema,
@@ -585,6 +593,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   UpdateGameConfigIntentSchema,
   ToggleGameStartTimerIntentSchema,
   ResearchIntentSchema,
+  SetCapitalIntentSchema,
 ]);
 
 // StampedIntent = Intent with server-stamped clientID (used in turns and execution)

@@ -101,6 +101,8 @@ export interface PlayerState {
   techs: TechId[];
   /** GalloFront: research in progress, or null. */
   research: ResearchState | null;
+  /** GalloFront: tile of the capital city, or null when none. */
+  capitalTile: TileRef | null;
 }
 
 export interface UnitState {

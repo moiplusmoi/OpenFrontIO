@@ -57,4 +57,6 @@ export function applyStateUpdate(target: PlayerState, pu: PlayerUpdate): void {
   // GalloFront technologies: emitted on change only.
   if (pu.techs !== undefined) target.techs = pu.techs.slice();
   if (pu.research !== undefined) target.research = pu.research;
+  // GalloFront capital: emitted when it changes (null = none).
+  if (pu.capitalTile !== undefined) target.capitalTile = pu.capitalTile;
 }

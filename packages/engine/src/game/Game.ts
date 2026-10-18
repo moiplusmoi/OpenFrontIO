@@ -421,6 +421,9 @@ export interface Player extends PlayerLike {
   research(): ResearchState | null;
   startResearch(tech: TechId, endTick: Tick): void;
   completeResearch(): void;
+  // GalloFront capital
+  setCapital(tile: TileRef | null): void;
+  lastCapitalMoveTick(): Tick;
 
   findUnitToUpgrade(type: UnitType, targetTile: TileRef): Unit | false;
   canUpgradeUnit(unit: Unit): boolean;
@@ -657,6 +660,8 @@ export interface Game extends GameLike {
   /** Tick each player was last hit by a nation MIRV, shared by all nations. */
   nationMirvTargets(): Map<PlayerID, Tick>;
   conquerPlayer(conqueror: Player, conquered: Player): void;
+  /** GalloFront: the victim's capital city was captured (conqueror) or destroyed (null). */
+  capitalFallen(victim: Player, conqueror: Player | null): void;
   miniWaterHPA(): PathFinder<number> | null;
   miniWaterGraph(): AbstractGraph | null;
   getWaterComponent(tile: TileRef): number | null;

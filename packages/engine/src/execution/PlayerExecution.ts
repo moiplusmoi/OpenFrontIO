@@ -103,6 +103,13 @@ export class PlayerExecution implements Execution {
       if (u.type() === UnitType.DefensePost) {
         u.delete(true, captor);
       } else {
+        // GalloFront: capturing the capital city has consequences.
+        if (
+          u.type() === UnitType.City &&
+          u.tile() === this.player.capitalTile()
+        ) {
+          this.mg!.capitalFallen(this.player, captor);
+        }
         captor.captureUnit(u);
       }
     }

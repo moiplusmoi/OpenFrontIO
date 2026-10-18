@@ -58,6 +58,17 @@ import type { NationWarshipBehavior } from "../nation/NationWarshipBehavior";
 import { TransportShipExecution } from "../TransportShipExecution";
 import { closestTwoTiles } from "../Util";
 
+// GalloFront capital lure: an enemy whose capital lies within this many tiles
+// (manhattan) of one of our border tiles counts as 30% weaker when the
+// troop-sorted target groups are built, so it is picked ahead of an otherwise
+// equal neighbor. Capturing a capital takes 25% of the victim's troops and
+// gold, so it is worth the detour.
+const CAPITAL_LURE_RANGE = 40;
+const CAPITAL_LURE_TROOP_FACTOR = 0.7;
+// At most this many of our border tiles are checked per enemy (evenly spaced
+// over the set's deterministic insertion order), to keep the scan cheap.
+const CAPITAL_LURE_SAMPLES = 64;
+
 // Reusable neighbor buffer for hot loops; the simulation is single-threaded.
 const NEIGHBOR_SCRATCH: TileRef[] = [0, 0, 0, 0];
 
@@ -85,6 +96,8 @@ export class AiAttackBehavior {
   // Only set during a maybeAttack call: our land neighbors, and each boat route planned
   private landNeighbors: Set<Player> | null = null;
   private boatRoutes: Map<Player, BoatRoute | null> | null = null;
+  // Only set during a maybeAttack call: enemies whose capital is near our border
+  private capitalLures: Set<Player> | null = null;
 
   constructor(
     private random: PseudoRandom,
@@ -123,6 +136,9 @@ export class AiAttackBehavior {
     this.random = random;
     this.game = r.game;
     this.player = player;
+    // Transient (recomputed by chooseAttack); set so a restored shell matches
+    // a live instance in the snapshot graph diff.
+    this.capitalLures = null;
     this.allianceBehavior = allianceBehavior;
     this.emojiBehavior = emojiBehavior;
     this.warshipBehavior = warshipBehavior;
@@ -223,39 +239,90 @@ export class AiAttackBehavior {
     for (const n of playerNeighbors) {
       if (n.isPlayer()) borderingPlayerSet.add(n);
     }
-    const borderingPlayers = [...borderingPlayerSet].sort(
-      (a, b) => a.troops() - b.troops(),
-    );
-    const borderingFriends = borderingPlayers.filter(
-      (o) => this.player?.isFriendly(o) === true,
-    );
-    const borderingEnemies = borderingPlayers.filter(
-      (o) => this.player?.isFriendly(o) === false,
-    );
+    this.capitalLures = this.findCapitalLures(borderingPlayerSet);
+    // Transient for this decision only (like landNeighbors): cleared before
+    // the tick ends so snapshots never carry it.
+    try {
+      const borderingPlayers = [...borderingPlayerSet].sort(
+        (a, b) => this.targetTroops(a) - this.targetTroops(b),
+      );
+      const borderingFriends = borderingPlayers.filter(
+        (o) => this.player?.isFriendly(o) === true,
+      );
+      const borderingEnemies = borderingPlayers.filter(
+        (o) => this.player?.isFriendly(o) === false,
+      );
 
-    // Attack TerraNullius but not nuked territory (direct border or across a river)
-    const hasNonNukedTerraNullius =
-      borderHasNonNukedTerraNullius ||
-      playerNeighbors.some((n) => !n.isPlayer());
-    if (hasNonNukedTerraNullius) {
-      if (this.sendAttack(this.game.terraNullius())) return;
-    }
-
-    const holdBoats = this.holdsBoatsUnderAttack();
-    if (borderingEnemies.length === 0) {
-      if (!holdBoats && this.random.chance(5)) {
-        this.attackWithRandomBoat();
-      }
-    } else {
-      if (!holdBoats && this.random.chance(10)) {
-        this.attackWithRandomBoat(borderingEnemies);
-        return;
+      // Attack TerraNullius but not nuked territory (direct border or across a river)
+      const hasNonNukedTerraNullius =
+        borderHasNonNukedTerraNullius ||
+        playerNeighbors.some((n) => !n.isPlayer());
+      if (hasNonNukedTerraNullius) {
+        if (this.sendAttack(this.game.terraNullius())) return;
       }
 
-      this.allianceBehavior.maybeSendAllianceRequests(borderingEnemies);
-    }
+      const holdBoats = this.holdsBoatsUnderAttack();
+      if (borderingEnemies.length === 0) {
+        if (!holdBoats && this.random.chance(5)) {
+          this.attackWithRandomBoat();
+        }
+      } else {
+        if (!holdBoats && this.random.chance(10)) {
+          this.attackWithRandomBoat(borderingEnemies);
+          return;
+        }
 
-    this.attackBestTarget(borderingFriends, borderingEnemies);
+        this.allianceBehavior.maybeSendAllianceRequests(borderingEnemies);
+      }
+
+      this.attackBestTarget(borderingFriends, borderingEnemies);
+    } finally {
+      this.capitalLures = null;
+    }
+  }
+
+  /**
+   * GalloFront: a target's troops as the target-group sort sees them — 30%
+   * lower for an enemy whose capital is within reach of our border
+   * (`capitalLures`), so it sorts ahead of an equally strong neighbor. Every
+   * strategy that reads the sorted groups (weakest, veryWeak, victim, afk…)
+   * inherits the preference; the individual troop checks are unchanged.
+   */
+  private targetTroops(target: Player): number {
+    return this.capitalLures?.has(target)
+      ? target.troops() * CAPITAL_LURE_TROOP_FACTOR
+      : target.troops();
+  }
+
+  /** Non-friendly players among `candidates` whose capital is near our border. */
+  private findCapitalLures(candidates: Iterable<Player>): Set<Player> {
+    const lured = new Set<Player>();
+    const capitals: [Player, TileRef][] = [];
+    for (const p of candidates) {
+      if (this.player.isFriendly(p)) continue;
+      const capital = p.capitalTile();
+      if (capital !== null) capitals.push([p, capital]);
+    }
+    if (capitals.length === 0) return lured;
+
+    // Sample the border evenly in its (deterministic) iteration order.
+    const border = this.player.borderTiles();
+    const step = Math.max(1, Math.ceil(border.size / CAPITAL_LURE_SAMPLES));
+    const sample: TileRef[] = [];
+    let i = 0;
+    border.forEach((t) => {
+      if (i++ % step === 0) sample.push(t);
+    });
+
+    for (const [p, capital] of capitals) {
+      for (const t of sample) {
+        if (this.game.manhattanDist(t, capital) <= CAPITAL_LURE_RANGE) {
+          lured.add(p);
+          break;
+        }
+      }
+    }
+    return lured;
   }
 
   private attackWithRandomBoat(borderingEnemies: Player[] = []) {
@@ -443,7 +510,8 @@ export class AiAttackBehavior {
     let groups: Player[][] | null = null;
     const targetGroups = (): Player[][] => {
       if (groups !== null) return groups;
-      const byTroops = (a: Player, b: Player) => a.troops() - b.troops();
+      const byTroops = (a: Player, b: Player) =>
+        this.targetTroops(a) - this.targetTroops(b);
       const landFront = borderingEnemies.some((enemy) =>
         this.bordersByLand(enemy),
       );

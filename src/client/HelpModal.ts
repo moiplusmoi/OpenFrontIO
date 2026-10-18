@@ -1029,6 +1029,7 @@ export class HelpModal extends BaseModal {
                       class="py-3 border-b border-white/5 text-white/60 text-sm"
                     >
                       ${translateText("help_modal.build_city_desc")}
+                      ${translateText("help_modal.capital")}
                     </td>
                   </tr>
                   <tr class="bg-white/5 hover:bg-white/10 transition-colors">

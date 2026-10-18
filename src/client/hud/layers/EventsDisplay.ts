@@ -40,6 +40,8 @@ interface GameEvent {
   onDelete?: () => void;
   focusID?: number;
   unitView?: UnitView;
+  /** Overrides the colour derived from `type` (e.g. per-message severity). */
+  colorClasses?: string;
 }
 
 const TIER_1_TYPES: ReadonlySet<MessageType> = new Set([
@@ -57,7 +59,19 @@ const TIER_1_TYPES: ReadonlySet<MessageType> = new Set([
   MessageType.CHAT,
   MessageType.DONATION_RECEIVED,
   MessageType.RESEARCH_COMPLETE,
+  MessageType.CAPITAL_FALLEN,
 ]);
+
+/**
+ * GalloFront: CAPITAL_FALLEN carries two messages — red for the victim,
+ * green for the conqueror — so the colour depends on the message, not only
+ * on the type.
+ */
+const MESSAGE_COLORS: Readonly<Record<string, string>> = {
+  "events_display.capital_lost": "text-red-400",
+  "events_display.capital_destroyed": "text-red-400",
+  "events_display.capital_captured": "text-green-400",
+};
 
 const isTier1 = (type: MessageType): boolean => TIER_1_TYPES.has(type);
 
@@ -278,6 +292,14 @@ export class EventsDisplay extends LitElement implements Controller {
       params = { ...params, tech: translateText(key) };
     }
 
+    // GalloFront: the gold seized with a capital travels as goldAmount.
+    if (
+      event.message === "events_display.capital_captured" &&
+      event.goldAmount !== undefined
+    ) {
+      params = { ...params, gold: renderNumber(event.goldAmount) };
+    }
+
     if (params.name === undefined || event.focusPlayerID === undefined) {
       return params;
     }
@@ -303,9 +325,18 @@ export class EventsDisplay extends LitElement implements Controller {
       return;
     }
 
-    let description: string = event.message;
-    if (event.message.startsWith("events_display.")) {
-      description = translateText(event.message, this.resolveParams(event));
+    let message = event.message;
+    // GalloFront: a capital destroyed by a bomb has no conqueror (empty name).
+    if (
+      message === "events_display.capital_lost" &&
+      (event.params?.name === undefined || event.params.name === "")
+    ) {
+      message = "events_display.capital_destroyed";
+    }
+
+    let description: string = message;
+    if (message.startsWith("events_display.")) {
+      description = translateText(message, this.resolveParams(event));
     }
 
     const unitView =
@@ -318,6 +349,7 @@ export class EventsDisplay extends LitElement implements Controller {
       unsafeDescription: true,
       unitView: unitView,
       focusID: event.focusPlayerID,
+      colorClasses: MESSAGE_COLORS[message],
     });
   }
 
@@ -663,9 +695,8 @@ export class EventsDisplay extends LitElement implements Controller {
     return html`
       <tr>
         <td
-          class="lg:px-2 lg:py-1 p-1 text-left ${getMessageTypeClasses(
-            event.type,
-          )}"
+          class="lg:px-2 lg:py-1 p-1 text-left ${event.colorClasses ??
+          getMessageTypeClasses(event.type)}"
         >
           ${event.focusID
             ? this.renderButton({

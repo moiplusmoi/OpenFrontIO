@@ -163,6 +163,10 @@ export class ConstructionExecution implements Execution {
         );
         break;
       case UnitType.City:
+        // GalloFront: the first city becomes the capital.
+        if (player.capitalTile() === null) {
+          player.setCapital(this.structure!.tile());
+        }
         this.mg.addExecution(new CityExecution(this.structure!));
         break;
       case UnitType.Factory:

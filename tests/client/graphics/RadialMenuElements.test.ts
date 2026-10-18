@@ -97,6 +97,8 @@ describe("RadialMenuElements", () => {
       isPlayer: vi.fn(() => true),
       isTraitor: vi.fn(() => false),
       isDisconnected: vi.fn(() => false),
+      units: vi.fn(() => []),
+      capitalTile: vi.fn(() => null),
     } as unknown as PlayerView;
 
     mockGame = {

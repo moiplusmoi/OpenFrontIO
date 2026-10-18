@@ -142,6 +142,11 @@ export class SendResearchIntentEvent implements GameEvent {
   constructor(public readonly tech: TechId) {}
 }
 
+/** GalloFront: move the capital to the city on `tile`. */
+export class SendSetCapitalIntentEvent implements GameEvent {
+  constructor(public readonly tile: TileRef) {}
+}
+
 export class SendTargetPlayerIntentEvent implements GameEvent {
   constructor(public readonly targetID: PlayerID) {}
 }
@@ -338,6 +343,9 @@ export class Transport {
     );
     this.subscribe(BuildUnitIntentEvent, (e) => this.onBuildUnitIntent(e));
     this.subscribe(SendResearchIntentEvent, (e) => this.onResearchIntent(e));
+    this.subscribe(SendSetCapitalIntentEvent, (e) =>
+      this.onSetCapitalIntent(e),
+    );
 
     this.subscribe(PauseGameIntentEvent, (e) => this.onPauseGameIntent(e));
     this.subscribe(SendWinnerEvent, (e) => this.onSendWinnerEvent(e));
@@ -906,6 +914,13 @@ export class Transport {
     this.sendIntent({
       type: "research",
       tech: event.tech,
+    });
+  }
+
+  private onSetCapitalIntent(event: SendSetCapitalIntentEvent) {
+    this.sendIntent({
+      type: "set_capital",
+      tile: event.tile,
     });
   }
 

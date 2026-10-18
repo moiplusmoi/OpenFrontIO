@@ -285,6 +285,8 @@ export interface PlayerUpdate {
   techs?: TechId[];
   /** GalloFront: research in progress, null when idle. */
   research?: ResearchState | null;
+  /** GalloFront: capital city tile, null when none. */
+  capitalTile?: TileRef | null;
 }
 
 export interface AllianceView {

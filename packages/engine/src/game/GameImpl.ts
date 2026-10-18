@@ -1553,6 +1553,81 @@ export class GameImpl implements Game {
     );
   }
 
+  // GalloFront: the victim loses a quarter of its troops and gold (the gold
+  // goes to the conqueror), tiles far from any remaining city revolt to terra
+  // nullius, and the strongest remaining city becomes the new capital.
+  capitalFallen(victim: Player, conqueror: Player | null): void {
+    const fallen = victim.capitalTile();
+    if (fallen === null) return;
+    const pct = this._config.capitalFallLossPct();
+    victim.removeTroops(Math.floor((victim.troops() * pct) / 100));
+    const goldLost = (victim.gold() * BigInt(pct)) / 100n;
+    if (goldLost > 0n) {
+      victim.removeGold(goldLost);
+      if (conqueror !== null && conqueror !== victim) {
+        conqueror.addGold(goldLost);
+      }
+    }
+    const cities = victim
+      .units(UnitType.City)
+      .filter(
+        (c) => c.isActive() && !c.isUnderConstruction() && c.tile() !== fallen,
+      );
+    // Every station-bearing structure anchors the territory that stays loyal,
+    // so no railroad (at most ~1.4 x trainStationMaxRange long) is ever cut
+    // by a revolt: a split rail under a running train would desync replays.
+    const centers: TileRef[] = victim
+      .units([UnitType.City, UnitType.Port, UnitType.Factory])
+      .filter(
+        (c) => c.isActive() && !c.isUnderConstruction() && c.tile() !== fallen,
+      )
+      .map((c) => c.tile());
+    const spawn = victim.spawnTile();
+    if (centers.length === 0 && spawn !== undefined) centers.push(spawn);
+    if (centers.length > 0) {
+      const range = this._config.capitalRevoltRange();
+      const revolting: TileRef[] = [];
+      for (const tile of victim.tiles()) {
+        let near = false;
+        for (const c of centers) {
+          if (this.manhattanDist(tile, c) <= range) {
+            near = true;
+            break;
+          }
+        }
+        if (!near) revolting.push(tile);
+      }
+      for (const tile of revolting) this.relinquish(tile);
+    }
+    let next: Unit | null = null;
+    for (const c of cities) {
+      if (
+        next === null ||
+        c.level() > next.level() ||
+        (c.level() === next.level() && c.tile() < next.tile())
+      ) {
+        next = c;
+      }
+    }
+    victim.setCapital(next === null ? null : next.tile());
+    this.displayMessage(
+      "events_display.capital_lost",
+      MessageType.CAPITAL_FALLEN,
+      victim.id(),
+      undefined,
+      { name: conqueror === null ? "" : conqueror.displayName() },
+    );
+    if (conqueror !== null && conqueror !== victim) {
+      this.displayMessage(
+        "events_display.capital_captured",
+        MessageType.CAPITAL_FALLEN,
+        conqueror.id(),
+        goldLost,
+        { name: victim.displayName() },
+      );
+    }
+  }
+
   conquerPlayer(conqueror: Player, conquered: Player) {
     if (conquered.isDisconnected() && conqueror.isOnSameTeam(conquered)) {
       const ships = conquered

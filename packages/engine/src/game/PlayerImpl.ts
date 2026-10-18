@@ -140,6 +140,9 @@ export class PlayerImpl implements Player {
   // update diff can compare by identity.
   private _techs: TechId[] = [];
   private _research: ResearchState | null = null;
+  // GalloFront capital
+  private _capitalTile: TileRef | null = null;
+  private _capitalMovedTick: number = -1;
   public _lastTileChange: number = 0;
   // Bumped on every ownership change of one of this player's tiles (several
   // can happen within one tick, so the tick alone is not a cache key).
@@ -426,6 +429,7 @@ export class PlayerImpl implements Player {
       isLobbyCreator: this.isLobbyCreator(),
       techs: this._techs,
       research: this._research,
+      capitalTile: this._capitalTile,
     };
   }
 
@@ -1900,6 +1904,20 @@ export class PlayerImpl implements Player {
     if (!this._techs.includes(tech)) this._techs = [...this._techs, tech];
     this._research = null;
   }
+
+  // ---- GalloFront capital ----
+  capitalTile(): TileRef | null {
+    return this._capitalTile;
+  }
+  setCapital(tile: TileRef | null): void {
+    if (tile !== null && tile !== this._capitalTile) {
+      this._capitalMovedTick = this.mg.ticks();
+    }
+    this._capitalTile = tile;
+  }
+  lastCapitalMoveTick(): number {
+    return this._capitalMovedTick;
+  }
   toString(): string {
     return `Player:{name:${this.info().name},clientID:${
       this.info().clientID
@@ -2078,6 +2096,8 @@ export class PlayerImpl implements Player {
       ),
       techs: [...this._techs],
       research: this._research === null ? null : { ...this._research },
+      capitalTile: this._capitalTile,
+      capitalMovedTick: this._capitalMovedTick,
     };
   }
 
@@ -2154,12 +2174,14 @@ export class PlayerImpl implements Player {
     this.nearbyMemo = null;
     this._techs = [...s.techs];
     this._research = s.research === null ? null : { ...s.research };
+    this._capitalTile = s.capitalTile;
+    this._capitalMovedTick = s.capitalMovedTick;
   }
 }
 
 export const PlayerSnapshot = snapshotType({
   name: "Player",
-  version: 2,
+  version: 3,
   schema: z.object({
     smallID: zInt(),
     info: PlayerInfoSchema,
@@ -2228,9 +2250,13 @@ export const PlayerSnapshot = snapshotType({
     research: z
       .object({ tech: z.enum(TechId), startTick: zInt(), endTick: zInt() })
       .nullable(),
+    // v3 (GalloFront): capital
+    capitalTile: zTile().nullable(),
+    capitalMovedTick: zInt(),
   }),
   migrations: {
     1: (d: object) => ({ ...d, techs: [], research: null }),
+    2: (d: object) => ({ ...d, capitalTile: null, capitalMovedTick: -1 }),
   },
 });
 export type PlayerState = z.infer<typeof PlayerSnapshot.schema>;

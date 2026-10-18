@@ -18,6 +18,7 @@ import {
   rootMenuElement,
   type MenuElementParams,
 } from "../src/client/hud/layers/RadialMenuElements";
+import { SendSetCapitalIntentEvent } from "../src/client/Transport";
 
 // Minimal stubs to satisfy types used in rootMenuElement.subMenu and allyBreak actions
 const makePlayer = (
@@ -121,6 +122,94 @@ describe("RadialMenuElements ally break", () => {
       params.myPlayer,
       params.selected,
     );
+    expect(params.closeMenu).toHaveBeenCalled();
+  });
+});
+
+// ─── GalloFront: set capital ────────────────────────────────────────────────
+
+const makeCity = (tile: number) => ({
+  type: () => "City",
+  tile: () => tile,
+  isUnderConstruction: () => false,
+  markedForDeletion: () => false as const,
+});
+
+const makeOwnTerritoryParams = (opts: {
+  cities?: ReturnType<typeof makeCity>[];
+  capitalTile?: number | null;
+}) => {
+  const myPlayer = {
+    ...makePlayer("p1"),
+    isPlayer: () => true,
+    units: () => opts.cities ?? [],
+    capitalTile: () => opts.capitalTile ?? null,
+    deleteUnitCooldown: () => 0,
+  };
+  const emit = vi.fn();
+  const params = makeParams({
+    myPlayer: myPlayer as any,
+    selected: myPlayer as any,
+  });
+  params.tile = 100 as any;
+  params.game = {
+    inSpawnPhase: () => false,
+    isLand: () => true,
+    owner: () => myPlayer,
+    myPlayer: () => myPlayer,
+    manhattanDist: (a: number, b: number) => Math.abs(a - b),
+  } as any;
+  params.playerActions = {
+    canAttack: false,
+    buildableUnits: [],
+    interaction: {
+      canBreakAlliance: false,
+      canSendAllianceRequest: false,
+      canEmbargo: false,
+    },
+  } as any;
+  params.eventBus = { emit } as any;
+  return { params, emit };
+};
+
+const findSetCapital = (items: any[]) =>
+  items.find((i) => i && i.id === "set_capital");
+
+describe("RadialMenuElements set capital", () => {
+  test("is absent on own territory without a city nearby", () => {
+    const { params } = makeOwnTerritoryParams({ cities: [makeCity(200)] });
+    expect(findSetCapital(rootMenuElement.subMenu!(params))).toBeUndefined();
+  });
+
+  test("is offered and enabled on a city that isn't the capital", () => {
+    const { params } = makeOwnTerritoryParams({
+      cities: [makeCity(102)],
+      capitalTile: null,
+    });
+    const item = findSetCapital(rootMenuElement.subMenu!(params));
+    expect(item).toBeDefined();
+    expect(item.disabled(params)).toBe(false);
+  });
+
+  test("is disabled on the current capital", () => {
+    const { params } = makeOwnTerritoryParams({
+      cities: [makeCity(102)],
+      capitalTile: 102,
+    });
+    const item = findSetCapital(rootMenuElement.subMenu!(params));
+    expect(item.disabled(params)).toBe(true);
+  });
+
+  test("action sends a set_capital intent for the closest city and closes", () => {
+    const { params, emit } = makeOwnTerritoryParams({
+      cities: [makeCity(104), makeCity(101)],
+      capitalTile: 104,
+    });
+    const item = findSetCapital(rootMenuElement.subMenu!(params));
+    item.action(params);
+    expect(emit).toHaveBeenCalledTimes(1);
+    expect(emit.mock.calls[0][0]).toBeInstanceOf(SendSetCapitalIntentEvent);
+    expect(emit.mock.calls[0][0].tile).toBe(101);
     expect(params.closeMenu).toHaveBeenCalled();
   });
 });

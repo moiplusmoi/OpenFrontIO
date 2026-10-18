@@ -876,6 +876,9 @@
     "betrayal_debuff_ends": "{time} seconds left until betrayal debuff ends",
     "betrayal_description": "You broke your alliance with {name}, making you a TRAITOR ({malusPercent}% defense debuff for {durationText})",
     "betrayed_you": "{name} broke their alliance with you",
+    "capital_captured": "You captured {name}'s capital and seized {gold} gold!",
+    "capital_destroyed": "Your capital was destroyed! You lose 25% of your troops and gold, and far-off territories revolt.",
+    "capital_lost": "Your capital fell to {name}! You lose 25% of your troops and gold, and far-off territories revolt.",
     "conquered_no_gold": "Conquered {name} (didn't play, no gold awarded)",
     "duration_second": "1 second",
     "duration_seconds_plural": "{seconds} seconds",
@@ -1195,6 +1198,7 @@
     "build_sam_desc": "Can intercept enemy missiles in its 100 pixel range. The SAM has a 7.5 second cooldown.",
     "build_silo_desc": "Allows launching missiles.",
     "build_warship_desc": "Patrols in an area, capturing enemy trade ships and destroying their Boats (transport ships) and Warships. Spawns from the nearest Port and patrols the area you first clicked to build it. You can control Warships by attack-clicking on them (see action Attack under Hotkeys) and then attack-clicking the new area you want them to move to. Warships can level up (max level 3) by capturing enemy trade ships and destroying their transport boats and Warships. Leveling up increases the Warship's damage and health.",
+    "capital": "Your first city becomes your capital 👑: +10% max troops and ×1.5 defense within 30 tiles of it. If it is captured or destroyed, you lose 25% of your troops and gold (the gold goes to the conqueror), territory more than 60 tiles from any remaining city revolts, and your largest remaining city becomes the new capital. You can move the capital to another city from its menu (3 min cooldown).",
     "drag": "drag",
     "exit_confirmation": "Are you sure you want to exit the game?",
     "game_id_tooltip": "Game ID",
@@ -1771,6 +1775,7 @@
     "arc_up": "Upward arc",
     "betrayals": "Betrayals",
     "break_alliance": "Break Alliance",
+    "capital": "Capital",
     "chat": "Chat",
     "cosmetic_get_label": "{name} (Get it in the store)",
     "cosmetics": "Equipped",
@@ -1781,6 +1786,7 @@
     "kick_confirm": "Kick {name}?\n\nThey won't be able to rejoin this game.",
     "kicked": "Already kicked",
     "moderation": "Moderation",
+    "no_capital": "No capital",
     "report": "Report",
     "report_reason_botting": "Botting",
     "report_reason_griefing": "Griefing",
@@ -2105,6 +2111,8 @@
   "radial_menu": {
     "delete_unit_description": "Click to delete the nearest unit",
     "delete_unit_title": "Delete Unit",
+    "set_capital": "Capital",
+    "set_capital_desc": "Make this city your capital: +10% max troops and stronger defense within 30 tiles. 3 min cooldown between moves.",
     "upgrade_x": "Upgrade x{amount}"
   },
   "relation": {
@@ -2466,7 +2474,6 @@
       "economy": "Eco",
       "military": "Mil"
     },
-    "cost": "Cost",
     "done": "Acquired",
     "duration": "{seconds}s",
     "level": "Level {level}",

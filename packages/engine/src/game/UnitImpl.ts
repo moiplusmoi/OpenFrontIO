@@ -352,11 +352,18 @@ export class UnitImpl implements Unit {
     this._wasDestroyedByEnemy = destroyer !== undefined;
     this._destroyer = destroyer ?? undefined;
 
+    // GalloFront: a destroyed capital city has consequences.
+    const wasCapital =
+      this._type === UnitType.City && this._owner.capitalTile() === this.tile();
+
     this._owner._units = this._owner._units.filter((b) => b !== this);
     this._owner._myUnitsVersion++;
     this._active = false;
     this.mg.addUpdate(this.toUpdate());
     this.mg.removeUnit(this);
+    if (wasCapital) {
+      this.mg.capitalFallen(this._owner, destroyer ?? null);
+    }
 
     // `displayMessage === false` is how a caller retires a unit that was not
     // destroyed: a boat that reached port or retreated, a shell that landed, a

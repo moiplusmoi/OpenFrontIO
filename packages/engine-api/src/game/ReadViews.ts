@@ -30,6 +30,8 @@ export interface PlayerLike {
   units(type: UnitType): readonly UnitLike[];
   /** GalloFront: highest researched level in a tech branch (0 = none). */
   techLevel(branch: TechBranch): number;
+  /** GalloFront: tile of the capital city, or null when the player has none. */
+  capitalTile(): TileRef | null;
 }
 
 export interface UnitLike {

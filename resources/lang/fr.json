@@ -843,7 +843,10 @@
     "mirv_inbound": "⚠️⚠️⚠️ {name} - MIRV EN APPROCHE ⚠️⚠️⚠️",
     "naval_invasion_inbound": "Invasion navale en approche depuis {name} ({troops})",
     "sent_emoji_all": "Envoyé à tous : {emoji}",
-    "research_complete": "Recherche terminée : {tech}"
+    "research_complete": "Recherche terminée : {tech}",
+    "capital_lost": "Votre capitale est tombée aux mains de {name} ! Vous perdez 25 % de vos troupes et de votre or, et vos territoires éloignés se révoltent.",
+    "capital_destroyed": "Votre capitale a été détruite ! Vous perdez 25 % de vos troupes et de votre or, et vos territoires éloignés se révoltent.",
+    "capital_captured": "Vous avez pris la capitale de {name} et saisi {gold} d'or !"
   },
   "featured_stream": {
     "expand": "Agrandir",
@@ -1192,7 +1195,8 @@
     "video_tutorial": "Tutoriel vidéo",
     "video_tutorial_title": "Tutoriel OpenFront.io",
     "action_quick_chat": "Ouvrir le chat rapide",
-    "action_tech_panel": "Ouvrir le panneau des technologies"
+    "action_tech_panel": "Ouvrir le panneau des technologies",
+    "capital": "Votre première ville devient votre capitale 👑 : +10 % de troupes max et défense ×1,5 dans un rayon de 30 cases. Si elle est capturée ou détruite, vous perdez 25 % de vos troupes et de votre or (l'or va au conquérant), les territoires à plus de 60 cases de toute ville restante se révoltent, et votre plus grande ville restante devient la nouvelle capitale. Vous pouvez déplacer la capitale vers une autre ville depuis son menu (3 min de recharge)."
   },
   "host_modal": {
     "anonymous_players": "Joueurs anonymes",
@@ -1707,7 +1711,9 @@
     "troops": "Troupes",
     "start_trade_enemies": "Commercer avec les ennemis",
     "stop_trade_enemies": "Arrêter de commercer avec les ennemis",
-    "techs": "Technologies"
+    "techs": "Technologies",
+    "capital": "Capitale",
+    "no_capital": "Pas de capitale"
   },
   "player_profile": {
     "loading": "Chargement du profil...",
@@ -1890,7 +1896,9 @@
   "radial_menu": {
     "delete_unit_description": "Cliquez pour supprimer l'unité la plus proche",
     "delete_unit_title": "Supprimer une unité",
-    "upgrade_x": "Améliorer x{amount}"
+    "upgrade_x": "Améliorer x{amount}",
+    "set_capital": "Capitale",
+    "set_capital_desc": "Faire de cette ville votre capitale : +10 % de troupes max et défense renforcée dans un rayon de 30 cases. 3 min de recharge entre deux déplacements."
   },
   "relation": {
     "default": "Défaut",
@@ -2581,7 +2589,6 @@
       "economy": "Éco",
       "military": "Mil"
     },
-    "cost": "Coût",
     "done": "Acquise",
     "duration": "{seconds} s",
     "level": "Niveau {level}",

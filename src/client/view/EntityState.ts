@@ -187,6 +187,7 @@ export function playerStateFromUpdate(pu: PlayerUpdate): PlayerState {
     outgoingEmojis: pu.outgoingEmojis!,
     techs: (pu.techs ?? []).slice(),
     research: pu.research ?? null,
+    capitalTile: pu.capitalTile ?? null,
   };
 }
 

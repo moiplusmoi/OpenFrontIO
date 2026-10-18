@@ -407,6 +407,8 @@ export const PLAYER_FIELDS: readonly FieldDef<PlayerFields>[] = [
   // GalloFront technologies (REPLAY_VERSION 2).
   field(["techs", list(TECH_ID)]),
   field(["research", maybe(RESEARCH, null)]),
+  // GalloFront capital (REPLAY_VERSION 3).
+  field(["capitalTile", maybe(U32, null)]),
 ];
 
 export const UNIT_FIELDS: readonly FieldDef<UnitFields>[] = [

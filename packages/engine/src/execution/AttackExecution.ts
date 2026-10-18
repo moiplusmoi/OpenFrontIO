@@ -397,6 +397,11 @@ export class AttackExecution implements Execution {
       attackerMilitaryTech: this._owner.techLevel(TechBranch.Military),
       defenderDefenseTech:
         defender === null ? 0 : defender.techLevel(TechBranch.Defense),
+      defenderHasCapital:
+        defender !== null &&
+        defender.capitalTile() !== null &&
+        this.mg.manhattanDist(tile, defender.capitalTile()!) <=
+          this.mg.config().capitalRange(),
       falloutRatio: this.mg.hasFallout(tile)
         ? this.mg.numTilesWithFallout() / this.mg.numLandTiles()
         : null,
