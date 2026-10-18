@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import type { NewsItem, StreamsFeed } from "@openfront/shared/ApiSchemas";
 import {
   ClaimAllRewardsResponse,
@@ -283,6 +284,7 @@ async function requestUserMe(): Promise<{
 }
 
 export async function getUserMe(): Promise<UserMeResponse | false> {
+  if (isStandalone()) return false;
   if (__userMe !== null) {
     return __userMe;
   }
@@ -2414,6 +2416,7 @@ export async function fetchTribeLeaderboard(): Promise<
 }
 
 export async function getNews(): Promise<NewsItem[]> {
+  if (isStandalone()) return [];
   try {
     const res = await fetch(`${getApiBase()}/news.json`, {
       headers: { Accept: "application/json" },
@@ -2444,6 +2447,7 @@ async function getServedConfig<T>(
   schema: z.ZodType<T>,
   fallback: unknown,
 ): Promise<T> {
+  if (isStandalone()) return schema.parse(fallback);
   try {
     const res = await fetch(`${getApiBase()}/${name}`, {
       headers: { Accept: "application/json" },

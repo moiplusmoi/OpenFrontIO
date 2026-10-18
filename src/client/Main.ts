@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import { GAME_ID_REGEX } from "@openfront/engine-api/Schemas";
 import {
   isRewardClaimable,
@@ -757,7 +758,10 @@ class Client {
       const isAdFree =
         userMeResponse !== false && userMeResponse.player?.adfree === true;
       window.adsEnabled =
-        !isAdFree && !gamePortal.isOnGamePortal() && !isDesktopShell();
+        !isAdFree &&
+        !gamePortal.isOnGamePortal() &&
+        !isDesktopShell() &&
+        !isStandalone();
       // Ad-eligible users only: paid/adfree users must never load Admiral (its
       // adblock popup fires autonomously once the payload runs). Start watching
       // adblock state; once a blocker is ever detected the in-game ad is
@@ -2259,7 +2263,9 @@ const bootstrap = () => {
   prefetchModals();
 
   // Hides every .no-game-portal element on CrazyGames and Poki (styles.css).
-  if (gamePortal.isOnGamePortal()) {
+  // GalloFront standalone reuses the portal CSS to hide the account-only UI
+  // (store, clans, tags, verified names) that has no API behind it.
+  if (gamePortal.isOnGamePortal() || isStandalone()) {
     document.documentElement.classList.add("game-portal");
   }
 

@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import { ClientEnv } from "./ClientEnv";
 
 // The account/shop API origin (api.<audience>). Lives apart from Api.ts so
@@ -5,6 +6,11 @@ import { ClientEnv } from "./ClientEnv";
 // import cycle; Api.ts re-exports both for its existing importers.
 
 export function getApiBase() {
+  // GalloFront standalone: the game server itself answers (archive reads for
+  // replays, 404 for everything else) at /standalone-api.
+  if (isStandalone()) {
+    return `${window.location.origin}/standalone-api`;
+  }
   const domainname = getAudience();
 
   if (domainname === "localhost") {

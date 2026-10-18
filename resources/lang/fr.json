@@ -199,7 +199,10 @@
       "build_warships": "Construis des navires de guerre !",
       "finish": "Finissons [P1] !",
       "focus": "Concentre l'attaque sur [P1] !",
-      "mirv": "Lance une MIRV sur [P1] !"
+      "mirv": "Lance une MIRV sur [P1] !",
+      "betray": "Trahis [P1] !",
+      "build_sams": "Construisez des SAM !",
+      "crown": "Attaquez la couronne !"
     },
     "cat": {
       "attack": "Attaque",
@@ -207,14 +210,16 @@
       "greet": "Salutations",
       "help": "Aide",
       "misc": "Divers",
-      "warnings": "Avertissements"
+      "warnings": "Avertissements",
+      "recent": "Récents"
     },
     "defend": {
       "ally": "[P1] est mon allié !",
       "build_posts": "Construis des Postes de Défense !",
       "defend": "Défend [P1] !",
       "defend_from": "Défend contre [P1] !",
-      "dont_attack": "N'attaque pas [P1] !"
+      "dont_attack": "N'attaque pas [P1] !",
+      "make_ally": "Allie-toi avec [P1] !"
     },
     "from": "De {user} : {msg}",
     "greet": {
@@ -243,7 +248,9 @@
       "sorry_attack": "Désolé, je ne voulais pas attaquer.",
       "trade_partners": "Soyons partenaires commerciaux !",
       "troops": "S'il te plaît, donne-moi des troupes !",
-      "troops_frontlines": "Envoyez des troupes sur la ligne de front !"
+      "troops_frontlines": "Envoyez des troupes sur la ligne de front !",
+      "send_gold_to": "Envoie de l'or à [P1] !",
+      "send_troops_to": "Envoie des troupes à [P1] !"
     },
     "misc": {
       "build_closer": "Construis plus près pour avoir des trains !",
@@ -252,7 +259,8 @@
       "go": "C'est parti !",
       "pr": "Quand est-ce que mon PR sera intégré...?",
       "strategy": "Bonne stratégie !",
-      "team_up": "Faisons équipe contre [P1] !"
+      "team_up": "Faisons équipe contre [P1] !",
+      "join_discord": "Rejoins le Discord d'OpenFront !"
     },
     "search": "Rechercher un joueur...",
     "title": "Discussion",
@@ -274,14 +282,42 @@
       "stop_trading_all": "S'il te plaît, arrête de commercer avec tout le monde !",
       "strong": "[P1] est fort·e.",
       "weak": "[P1] est faible.",
-      "number1_warning": "Le joueur #1 gagnera bientôt si nous ne faisons pas équipe !"
+      "number1_warning": "Le joueur #1 gagnera bientôt si nous ne faisons pas équipe !",
+      "disconnected": "[P1] s'est déconnecté !",
+      "pirating": "[P1] pirate tout notre commerce !",
+      "stop_trading_enemies": "Arrêtez de commercer avec les ennemis, s'il vous plaît !"
     },
     "build": "Construire votre message...",
     "category": "Catégorie",
     "phrase": "Phrase",
     "player": "Joueur",
     "send": "Envoyer",
-    "sort_by_territory": "Trier par territoire"
+    "sort_by_territory": "Trier par territoire",
+    "all_phrases": "Toutes les phrases",
+    "no_phrases": "Aucune phrase trouvée",
+    "search_phrases": "Rechercher une phrase…",
+    "short": {
+      "greet": {
+        "ruining_games": "Ils gâchent nos parties"
+      },
+      "help": {
+        "sorry_attack": "Désolé pour l'attaque !",
+        "troops_frontlines": "Des troupes au front !"
+      },
+      "misc": {
+        "coastline": "Laisse-moi une côte",
+        "join_discord": "Rejoins le Discord !",
+        "pr": "Ma PR est fusionnée ?"
+      },
+      "warnings": {
+        "mirv_ready": "[P1] peut lancer un MIRV !",
+        "pirating": "[P1] pirate",
+        "saving_for_mirv": "[P1] économise pour un MIRV",
+        "snowballing": "[P1] fait boule de neige",
+        "stalemate": "La paix ? Impasse.",
+        "stop_trading_enemies": "Arrêtez de commercer avec l'ennemi !"
+      }
+    }
   },
   "clan_modal": {
     "applied": "Demande envoyée",
@@ -801,7 +837,12 @@
     "trade_ship_captured": "Votre bateau de commerce a été capturé par {name}",
     "unit_destroyed": "Votre {unit} a été détruit",
     "unit_voluntarily_deleted": "Unité volontairement supprimée",
-    "wants_to_renew_alliance": "{name} souhaite renouveler votre alliance"
+    "wants_to_renew_alliance": "{name} souhaite renouveler votre alliance",
+    "atom_bomb_inbound": "{name} - bombe atomique en approche",
+    "hydrogen_bomb_inbound": "{name} - bombe H en approche",
+    "mirv_inbound": "⚠️⚠️⚠️ {name} - MIRV EN APPROCHE ⚠️⚠️⚠️",
+    "naval_invasion_inbound": "Invasion navale en approche depuis {name} ({troops})",
+    "sent_emoji_all": "Envoyé à tous : {emoji}"
   },
   "featured_stream": {
     "expand": "Agrandir",
@@ -1148,7 +1189,8 @@
     "ui_wilderness": "Région sauvage",
     "ui_your_team": "Votre équipe :",
     "video_tutorial": "Tutoriel vidéo",
-    "video_tutorial_title": "Tutoriel OpenFront.io"
+    "video_tutorial_title": "Tutoriel OpenFront.io",
+    "action_quick_chat": "Ouvrir le chat rapide"
   },
   "host_modal": {
     "anonymous_players": "Joueurs anonymes",
@@ -1203,7 +1245,9 @@
     "visibility_private": "Privé",
     "visibility_public": "Public",
     "waiting": "En attente de joueurs...",
-    "teams_Humans Vs Nations": "Humains vs Nations"
+    "teams_Humans Vs Nations": "Humains vs Nations",
+    "player_limit": "Limite de joueurs",
+    "player_limit_placeholder": "Joueurs"
   },
   "inventory": {
     "equipped": "Équipé",
@@ -1481,7 +1525,10 @@
     "worldinverted": "Monde inversé",
     "yangtzeriver": "Yangtsé",
     "yellowsea": "Mer Jaune",
-    "yenisei": "Ienisseï"
+    "yenisei": "Ienisseï",
+    "benelux": "Benelux",
+    "brainrot": "Brain Rot",
+    "ommatrypta": "Ommatrypta"
   },
   "map_categories": {
     "africa": "Afrique",
@@ -1553,7 +1600,8 @@
     "teams_count": "{teamCount} équipes",
     "teams_of": " {teamCount} équipes de {playersPerTeam}",
     "teams_title": "Équipes",
-    "coming_soon": "À venir"
+    "coming_soon": "À venir",
+    "teams_preset": "{preset} ({teams})"
   },
   "multi_tab": {
     "detected": "Plusieurs onglets de jeu ouverts détectés.",
@@ -1654,7 +1702,9 @@
     "target": "Cibler",
     "trading": "Commerce",
     "traitor": "Traître",
-    "troops": "Troupes"
+    "troops": "Troupes",
+    "start_trade_enemies": "Commercer avec les ennemis",
+    "stop_trade_enemies": "Arrêter de commercer avec les ennemis"
   },
   "player_profile": {
     "loading": "Chargement du profil...",
@@ -2380,7 +2430,20 @@
     "zoom_in": "Zoom avant",
     "zoom_in_desc": "Zoom sur la carte",
     "zoom_out": "Zoom arrière",
-    "zoom_out_desc": "Dézoom de la carte"
+    "zoom_out_desc": "Dézoom de la carte",
+    "emoji_menu": "Menu des emojis",
+    "emoji_menu_desc": "Ouvre le menu des emojis pour le joueur dont la tuile est sous le curseur.",
+    "halloween_theme_desc": "Affiche le thème d'Halloween sur la page d'accueil.",
+    "halloween_theme_label": "Thème d'Halloween",
+    "hud_opacity_desc": "Règle l'opacité des fonds de panneaux sans atténuer le texte ni les icônes. 100 % conserve l'apparence d'origine.",
+    "hud_opacity_label": "Opacité des fonds du HUD",
+    "modifiers": "Modificateurs",
+    "quick_chat": "Chat rapide",
+    "quick_chat_desc": "Ouvre le chat rapide pour le joueur dont la tuile est sous le curseur.",
+    "snap_build_preview_desc": "Déplace l'aperçu de construction sur la tuile où la structure sera réellement bâtie",
+    "snap_build_preview_label": "Aperçu de construction aimanté",
+    "target_player": "Cibler un joueur",
+    "target_player_desc": "Marque le joueur dont la tuile est sous le curseur comme cible pour toi et tes alliés."
   },
   "username": {
     "account_invalid_chars": "Les pseudonymes peuvent uniquement contenir des lettres, chiffres, tirets et espaces.",
@@ -2437,5 +2500,17 @@
     "you_won": "Vous avez gagné !",
     "your_team": "Votre équipe a gagné !",
     "youtube_tutorial": "Besoin d'aide ?"
+  },
+  "emoji_table": {
+    "diplomacy": "Diplomatie",
+    "directions": "Directions",
+    "faces": "Visages",
+    "favorite_remove_hint": "Glisser hors de la zone pour retirer",
+    "favorites": "Favoris",
+    "favorites_hint": "Glisse des emojis ici pour leur donner un raccourci",
+    "favorites_hint_touch": "Glisse des emojis ici pour les garder sous la main",
+    "gestures": "Gestes",
+    "ranks": "Rangs",
+    "things": "Objets"
   }
 }

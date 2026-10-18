@@ -19,6 +19,7 @@ import {
   coordinatorUrl,
   LobbyCoordinatorClient,
 } from "./LobbyCoordinatorClient";
+import { readLocalGameRecord } from "./Archive";
 import { logger } from "./Logger";
 import { MapPlaylist } from "./MapPlaylist";
 import { fetchMapWeights, MAP_WEIGHTS_POLL_MS } from "./MapWeights";
@@ -281,6 +282,20 @@ export async function startMaster() {
       playlist.setWeightOverrides(await fetchMapWeights());
     }, MAP_WEIGHTS_POLL_MS);
   }
+}
+
+// GalloFront standalone: the client points getApiBase() here instead of
+// api.<domain>. Only the archive read (replays) is served; everything else
+// answers 404 fast so callers fall back without waiting on a timeout.
+if (ServerEnv.standalone()) {
+  app.get("/standalone-api/game/:id", async (req, res) => {
+    const record = await readLocalGameRecord(req.params.id);
+    if (record === null) return res.status(404).json({ error: "not found" });
+    res.json(record);
+  });
+  app.all("/standalone-api/{*splat}", (_req, res) => {
+    res.status(404).json({ error: "standalone" });
+  });
 }
 
 app.get("/api/health", (_req, res) => {

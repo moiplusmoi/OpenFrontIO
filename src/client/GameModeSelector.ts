@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import { GameMapType, GameType } from "@openfront/engine-api/game/GameTypes";
 import { UserMeResponse } from "@openfront/shared/ApiSchemas";
 import { PublicGameInfo, PublicGames } from "@openfront/shared/WireSchemas";
@@ -691,7 +692,11 @@ export class GameModeSelector extends LitElement {
               </div>`
             : nothing}
         </div>
-        <div class="grid grid-cols-3 gap-4 h-14 sm:col-span-2 sm:row-start-4">
+        <div
+          class="grid ${isStandalone()
+            ? "grid-cols-2"
+            : "grid-cols-3"} gap-4 h-14 sm:col-span-2 sm:row-start-4"
+        >
           ${this.renderSmallActionCard(
             translateText("main.create"),
             this.openHostLobby,
@@ -699,7 +704,9 @@ export class GameModeSelector extends LitElement {
             undefined,
             true,
           )}
-          ${this.renderSmallActionCard(
+          ${isStandalone()
+            ? nothing
+            : this.renderSmallActionCard(
             translateText("mode_selector.ranked_title"),
             this.openRankedMenu,
             SECONDARY_ACTION,

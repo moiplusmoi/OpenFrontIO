@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import { GameID } from "@openfront/engine-api/Schemas";
 import {
   commitsMatch,
@@ -439,6 +440,7 @@ function fetchOnce(): Promise<ServerList | null> {
  */
 export function startServerListPolling(): void {
   if (polling) return;
+  if (isStandalone()) return;
   try {
     if (safeSite() === undefined) return;
     if (isReplayShellHost(window.location.hostname)) return;

@@ -167,6 +167,7 @@ export class ClientEnv {
       numWorkers: bc.numWorkers,
       turnstileSiteKey: bc.turnstileSiteKey,
       jwtAudience: bc.jwtAudience,
+      standalone: bc.standalone === true,
       // Optional: a deployment without a key (or a desktop shell, which
       // buys on Steam) omits it, and the inline Stripe flow stays off.
       stripePublishableKey: bc.stripePublishableKey,
@@ -231,6 +232,11 @@ export class ClientEnv {
   }
   static instanceLetter(): string | undefined {
     return ClientEnv.get().instanceLetter;
+  }
+  // GalloFront: true on a self-hosted page without any account/matchmaking
+  // API. Callers skip every api.<domain> request instead of timing out.
+  static standalone(): boolean {
+    return ClientEnv.get().standalone;
   }
   static turnstileSiteKey(): string {
     return ClientEnv.get().turnstileSiteKey;
@@ -667,6 +673,7 @@ export interface ClientEnvValues {
   numWorkers?: number;
   turnstileSiteKey: string;
   jwtAudience: string;
+  standalone: boolean;
   // Optional: absent when the deployment carries no Stripe key (dev, desktop
   // shells). Environment-scoped like turnstileSiteKey, so a static page
   // carries it too.

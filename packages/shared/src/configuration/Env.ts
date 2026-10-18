@@ -26,6 +26,8 @@ declare global {
       numWorkers?: number;
       turnstileSiteKey?: string;
       jwtAudience?: string;
+      // GalloFront: self-hosted page with no account API (see ServerEnv.standalone).
+      standalone?: boolean;
       // Environment-scoped like turnstileSiteKey, but optional: a deployment
       // without one (dev, desktop shells) just keeps the inline Stripe flow
       // off.

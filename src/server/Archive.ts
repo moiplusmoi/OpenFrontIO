@@ -5,6 +5,9 @@ import {
   GameRecordSchema,
   PartialGameRecord,
 } from "@openfront/shared/WireSchemas";
+import { promises as fs } from "fs";
+import path from "path";
+import { gunzipSync, gzipSync } from "zlib";
 import z from "zod";
 import { registeredSite } from "./ClusterCheckin";
 import { logger } from "./Logger";
@@ -19,6 +22,10 @@ export async function archive(gameRecord: GameRecord) {
       log.error(`invalid game record: ${z.prettifyError(parsed.error)}`, {
         gameID: gameRecord.info.gameID,
       });
+      return;
+    }
+    if (ServerEnv.standalone()) {
+      await archiveLocally(gameRecord);
       return;
     }
     const url = `${ServerEnv.jwtIssuer()}/game/${gameRecord.info.gameID}`;
@@ -52,6 +59,7 @@ export async function readGameRecord(
       log.error(`invalid game ID: ${gameId}`);
       return null;
     }
+    if (ServerEnv.standalone()) return readLocalGameRecord(gameId);
     const url = `${ServerEnv.jwtIssuer()}/game/${gameId}`;
     const response = await fetch(url, {
       method: "GET",
@@ -86,4 +94,30 @@ export function finalizeGameRecord(
     domain: ServerEnv.domain(),
     site: registeredSite(),
   };
+}
+
+// ---- GalloFront standalone archive: <ARCHIVE_DIR>/<gameID>.json.gz ----
+function archivePath(gameId: string): string {
+  return path.join(ServerEnv.archiveDir(), `${gameId}.json.gz`);
+}
+
+async function archiveLocally(gameRecord: GameRecord): Promise<void> {
+  const dir = ServerEnv.archiveDir();
+  await fs.mkdir(dir, { recursive: true });
+  const tmp = archivePath(gameRecord.info.gameID) + ".tmp";
+  await fs.writeFile(tmp, gzipSync(JSON.stringify(gameRecord, replacer)));
+  await fs.rename(tmp, archivePath(gameRecord.info.gameID));
+  log.info(`archived game locally`, { gameID: gameRecord.info.gameID });
+}
+
+export async function readLocalGameRecord(
+  gameId: GameID,
+): Promise<GameRecord | null> {
+  if (!ID.safeParse(gameId).success) return null;
+  try {
+    const buf = await fs.readFile(archivePath(gameId));
+    return GameRecordSchema.parse(JSON.parse(gunzipSync(buf).toString("utf8")));
+  } catch {
+    return null;
+  }
 }

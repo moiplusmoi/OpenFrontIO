@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import { TokenPayload, TokenPayloadSchema } from "@openfront/shared/ApiSchemas";
 import { base64urlToUuid } from "@openfront/shared/Base64";
 import { decodeJwt } from "jose";
@@ -393,6 +394,7 @@ export function isSessionActive(sub: string): boolean {
 export async function userAuth(
   shouldRefresh: boolean = true,
 ): Promise<UserAuth> {
+  if (isStandalone()) return false;
   try {
     const jwt = __jwt;
     if (!jwt) {
@@ -484,6 +486,7 @@ function settlePendingSession(): void {
 }
 
 async function refreshJwt(): Promise<void> {
+  if (isStandalone()) return;
   if (__refreshPromise) {
     return __refreshPromise;
   }

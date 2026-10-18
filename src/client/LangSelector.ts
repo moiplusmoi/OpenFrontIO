@@ -1,3 +1,4 @@
+import { isStandalone } from "./Standalone";
 import { assetUrl } from "@openfront/shared/AssetUrls";
 import { LitElement, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
@@ -126,7 +127,11 @@ export class LangSelector extends LitElement {
     // changes their Steam language sees the game follow.
     const browserLocale = this.defaultLocale();
     const savedLang = localStorage.getItem("lang");
-    const userLang = this.getClosestSupportedLang(savedLang ?? browserLocale);
+    // GalloFront: French by default on the self-hosted site, unless the
+    // player saved another choice.
+    const userLang = this.getClosestSupportedLang(
+      savedLang ?? (isStandalone() ? "fr" : browserLocale),
+    );
 
     const [defaultTranslations, translations] = await Promise.all([
       this.loadLanguage("en"),

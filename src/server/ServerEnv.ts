@@ -325,6 +325,15 @@ export class ServerEnv {
   static otelAuthHeader(): string {
     return process.env.OTEL_AUTH_HEADER ?? "";
   }
+  // GalloFront: self-hosted deployment with no account/matchmaking API at
+  // all. Every call to api.<DOMAIN> is skipped (no polling, no JWKS, no
+  // archive POST) and games are archived to ARCHIVE_DIR instead.
+  static standalone(): boolean {
+    return process.env.STANDALONE === "1";
+  }
+  static archiveDir(): string {
+    return process.env.ARCHIVE_DIR ?? "data/archive";
+  }
   static gitCommit(): string {
     const v = process.env.GIT_COMMIT;
     if (!v) {

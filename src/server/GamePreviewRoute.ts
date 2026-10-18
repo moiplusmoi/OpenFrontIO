@@ -49,6 +49,7 @@ export function registerGamePreviewRoute(opts: {
     gameID: string,
   ): Promise<ExternalGameInfo | null> => {
     if (!gameIDSchema.safeParse(gameID).success) return null;
+    if (ServerEnv.standalone()) return null;
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1500);

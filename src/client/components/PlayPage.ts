@@ -90,7 +90,7 @@ export class PlayPage extends LitElement {
 
           <!-- Left column: news banner + identity row, stacked tight. -->
           <div class="flex flex-col gap-2 min-w-0">
-            <news-box></news-box>
+            <news-box class="no-game-portal"></news-box>
 
             <!-- Identity row: username over the currently selected cosmetic background. -->
             <div
@@ -122,7 +122,7 @@ export class PlayPage extends LitElement {
         <!-- Desktop gets the compact footer button instead. -->
         <steam-wishlist
           campaign="home_mobile"
-          class="block px-2 pb-4 lg:hidden"
+          class="no-game-portal block px-2 pb-4 lg:hidden"
         ></steam-wishlist>
       </div>
     `;

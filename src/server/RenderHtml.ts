@@ -89,6 +89,7 @@ export async function renderHtmlContent(
     gameEnv: JSON.stringify(ServerEnv.gameEnvName()),
     turnstileSiteKey: JSON.stringify(ServerEnv.turnstileSiteKey()),
     jwtAudience: JSON.stringify(ServerEnv.jwtAudience()),
+    standalone: ServerEnv.standalone() ? "true" : undefined,
     // Environment-scoped like the two above (so the static per-version page
     // carries it too), but optional: absent when the deployment has no key,
     // and the guarded template line then drops out entirely.
