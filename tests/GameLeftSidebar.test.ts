@@ -54,6 +54,8 @@ describe("GameLeftSidebar", () => {
       isAlive: () => true,
       isOnSameTeam: () => false,
       team: () => null,
+      techLevel: () => 0,
+      capitalTile: () => null,
     } as unknown as PlayerView;
     const game = {
       config: () => ({

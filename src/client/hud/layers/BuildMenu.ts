@@ -28,6 +28,8 @@ import {
 } from "../../Transport";
 import { UIState } from "../../UIState";
 import { GameView } from "../../view";
+import { missingTech, requiresTechLabel } from "./TechLock";
+import { ShowTechPanelEvent } from "./TechPanelEvents";
 const warshipIcon = assetUrl("images/BattleshipIconWhite.svg");
 const cityIcon = assetUrl("images/CityIconWhite.svg");
 const factoryIcon = assetUrl("images/FactoryIconWhite.svg");
@@ -124,7 +126,7 @@ export const buildTable: BuildItemDisplay[][] = [
       key: "unit_type.factory",
       countable: true,
     },
-    // GalloFront aviation (mil_3; fighters mil_4)
+    // GalloFront aviation (gated by Config.unitRequiredTech)
     {
       unitType: UnitType.Airport,
       icon: airportIcon,
@@ -192,9 +194,20 @@ export class BuildMenu extends LitElement implements Controller {
     }
   }
 
+  /**
+   * Gold moves every tick, but re-rendering a dozen buttons at 10 Hz on a
+   * phone is what kept the menu "shivering"; twice a second is plenty.
+   */
+  getTickIntervalMs() {
+    return 500;
+  }
+
   static styles = css`
     :host {
       display: block;
+    }
+    * {
+      box-sizing: border-box;
     }
     .build-menu {
       position: fixed;
@@ -211,7 +224,10 @@ export class BuildMenu extends LitElement implements Controller {
       align-items: center;
       max-width: 95vw;
       max-height: 95vh;
+      /* Never horizontal: a scrollbar that comes and goes resizes the rows. */
+      overflow-x: hidden;
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
     .build-description {
       font-size: 0.6rem;
@@ -239,15 +255,35 @@ export class BuildMenu extends LitElement implements Controller {
       margin: 8px;
       padding: 10px;
       gap: 5px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
-    .build-button:not(:disabled):hover {
-      background-color: #3a3a3a;
-      transform: scale(1.05);
-      border-color: #666;
+    /* Hover effects only where hovering exists: on a phone the tap leaves a
+       sticky :hover behind, and the scale transition read as a jitter. */
+    @media (hover: hover) {
+      .build-button:not(:disabled):hover {
+        background-color: #3a3a3a;
+        transform: scale(1.05);
+        border-color: #666;
+      }
     }
     .build-button:not(:disabled):active {
       background-color: #4a4a4a;
       transform: scale(0.95);
+    }
+    .build-button.locked {
+      border-style: dashed;
+      border-color: #b45309;
+      background-color: #1a1a1a;
+    }
+    .build-button.locked img {
+      opacity: 0.5;
+    }
+    .build-lock {
+      font-size: 11px;
+      line-height: 1.2;
+      color: #fbbf24;
+      text-align: center;
     }
     .build-button:disabled {
       background-color: #1a1a1a;
@@ -292,9 +328,11 @@ export class BuildMenu extends LitElement implements Controller {
       align-content: center;
       border: 1px solid #444;
     }
-    .build-button:not(:disabled):hover > .build-count-chip {
-      background-color: #3a3a3a;
-      border-color: #666;
+    @media (hover: hover) {
+      .build-button:not(:disabled):hover > .build-count-chip {
+        background-color: #3a3a3a;
+        border-color: #666;
+      }
     }
     .build-button:not(:disabled):active > .build-count-chip {
       background-color: #4a4a4a;
@@ -438,7 +476,10 @@ export class BuildMenu extends LitElement implements Controller {
 
   private canBuildFighter(bu: BuildableUnit): boolean {
     const me = this.game?.myPlayer();
-    if (!me || !me.hasTech(TechId.Mil4) || me.gold() < bu.cost) return false;
+    if (!me || me.gold() < bu.cost) return false;
+    if (missingTech(this.game.config(), me, UnitType.Fighter) !== null) {
+      return false;
+    }
     return this.fighterHome() !== null;
   }
 
@@ -486,6 +527,36 @@ export class BuildMenu extends LitElement implements Controller {
                 );
                 if (buildableUnit === undefined) {
                   return html``;
+                }
+                // GalloFront: a unit behind a technology says which one and
+                // taps through to the technologies panel instead of sitting
+                // greyed out with a cost nobody can pay yet.
+                const locked = missingTech(
+                  this.game?.config(),
+                  this.game?.myPlayer(),
+                  item.unitType,
+                );
+                if (locked !== null) {
+                  return html`
+                    <button
+                      class="build-button locked"
+                      @click=${() => this.openTechPanel(locked)}
+                      title=${translateText("build_menu.requires_tech_tap")}
+                    >
+                      <img
+                        src=${item.icon}
+                        alt="${item.unitType}"
+                        width="40"
+                        height="40"
+                      />
+                      <span class="build-name">
+                        ${item.key && translateText(item.key)}
+                      </span>
+                      <span class="build-lock"
+                        >${requiresTechLabel(locked)}</span
+                      >
+                    </button>
+                  `;
                 }
                 const enabled =
                   item.unitType === UnitType.Fighter
@@ -545,6 +616,12 @@ export class BuildMenu extends LitElement implements Controller {
   hideMenu() {
     this._hidden = true;
     this.requestUpdate();
+  }
+
+  /** A locked item was tapped: close and open Technologies on its tech. */
+  private openTechPanel(tech: TechId) {
+    this.hideMenu();
+    this.eventBus?.emit(new ShowTechPanelEvent(true, tech));
   }
 
   showMenu(clickedTile: TileRef) {

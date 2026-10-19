@@ -3,17 +3,29 @@ import {
   BrokeAllianceUpdate,
   GameUpdateType,
 } from "@openfront/engine-api/game/GameUpdates";
+import { renderTroops } from "@openfront/engine-lib/Format";
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { Controller } from "../../Controller";
+import { haptic } from "../../Haptics";
 import { UserSettings } from "../../UserSettings";
+import { translateText } from "../../Utils";
 import { GameView, PlayerView } from "../../view";
+import {
+  GAME_ALERT_FRAME_EVENT,
+  type GameAlertKind,
+  raiseGameAlert,
+} from "./GameAlerts";
 
 // Parameters for the alert animation
-const ALERT_SPEED = 1.6;
+const ALERT_SPEED = 1;
 const ALERT_COUNT = 2;
 const RETALIATION_WINDOW_TICKS = 15 * 10; // 15 seconds
-const ALERT_COOLDOWN_TICKS = 15 * 10; // 15 seconds
+// GalloFront: one frame pulse per 5 s at most (was 15 s), matching the toast
+// cooldown in GameAlerts.
+const ALERT_COOLDOWN_TICKS = 5 * 10;
+
+type AlertType = "betrayal" | "land-attack" | "inbound";
 
 @customElement("alert-frame")
 export class AlertFrame extends LitElement implements Controller {
@@ -23,7 +35,7 @@ export class AlertFrame extends LitElement implements Controller {
   @state()
   private isActive = false;
   @state()
-  private alertType: "betrayal" | "land-attack" = "betrayal";
+  private alertType: AlertType = "betrayal";
 
   private animationTimeout: number | null = null;
   private seenAttackIds: Set<string> = new Set();
@@ -45,12 +57,13 @@ export class AlertFrame extends LitElement implements Controller {
       opacity: 0;
     }
 
-    .alert-border.betrayal {
+    .alert-border.betrayal,
+    .alert-border.land-attack {
       border-color: #ee0000;
     }
 
-    .alert-border.land-attack {
-      border-color: #ffa500;
+    .alert-border.inbound {
+      border-color: #fbbf24;
     }
 
     .alert-border.animate {
@@ -83,6 +96,31 @@ export class AlertFrame extends LitElement implements Controller {
   createRenderRoot() {
     return this;
   }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(
+      GAME_ALERT_FRAME_EVENT,
+      this.onGameAlert as EventListener,
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener(
+      GAME_ALERT_FRAME_EVENT,
+      this.onGameAlert as EventListener,
+    );
+  }
+
+  // GalloFront: alerts raised elsewhere (EventsDisplay's inbound warnings)
+  // pulse the border too. GameAlerts already rate-limits them.
+  private onGameAlert = (event: CustomEvent<GameAlertKind>): void => {
+    if (!this.userSettings.alertFrame()) return;
+    this.alertType = event.detail === "attack" ? "land-attack" : "inbound";
+    this.isActive = true;
+    this.requestUpdate();
+  };
 
   init() {
     // Listen for BrokeAllianceUpdate events directly from game updates
@@ -184,7 +222,7 @@ export class AlertFrame extends LitElement implements Controller {
     const incomingAttacks = myPlayer.incomingAttacks();
     const currentTick = this.game.ticks();
 
-    // Check if we're in cooldown (within 10 seconds of last alert)
+    // Check if we're in cooldown (within 5 seconds of last alert)
     const inCooldown =
       this.lastAlertTick !== -1 &&
       currentTick - this.lastAlertTick < ALERT_COOLDOWN_TICKS;
@@ -196,8 +234,10 @@ export class AlertFrame extends LitElement implements Controller {
     for (const attack of incomingAttacks) {
       // Only alert for non-retreating attacks
       if (!attack.retreating && !this.seenAttackIds.has(attack.id)) {
-        const attacker = this.game.playerBySmallID(attack.attackerID);
-        if ((attacker as PlayerView).type() === PlayerType.Bot) {
+        const attacker = this.game.playerBySmallID(
+          attack.attackerID,
+        ) as PlayerView;
+        if (attacker.type() === PlayerType.Bot) {
           this.seenAttackIds.add(attack.id);
           continue;
         }
@@ -219,6 +259,15 @@ export class AlertFrame extends LitElement implements Controller {
           this.seenAttackIds.add(attack.id);
           this.alertType = "land-attack";
           this.activateAlert();
+          // GalloFront: the phone also buzzes and shows who is attacking.
+          haptic("attack");
+          raiseGameAlert(
+            "attack",
+            translateText("heads_up_message.attacked", {
+              name: attacker.displayName(),
+              troops: renderTroops(attack.troops),
+            }),
+          );
         } else {
           // Still mark as seen so we don't alert later
           this.seenAttackIds.add(attack.id);

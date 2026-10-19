@@ -18,6 +18,7 @@ import {
   rootMenuElement,
   type MenuElementParams,
 } from "../src/client/hud/layers/RadialMenuElements";
+import { ShowTechPanelEvent } from "../src/client/hud/layers/TechPanelEvents";
 import { SendSetCapitalIntentEvent } from "../src/client/Transport";
 
 // Minimal stubs to satisfy types used in rootMenuElement.subMenu and allyBreak actions
@@ -227,7 +228,7 @@ const makeStructure = (id: number, type: string, tile: number) => ({
 });
 
 const makeEnemyParams = (opts: {
-  def3?: boolean;
+  def2?: boolean;
   gold?: bigint;
   spies?: number;
   structures?: ReturnType<typeof makeStructure>[];
@@ -237,7 +238,7 @@ const makeEnemyParams = (opts: {
   const myPlayer = {
     ...makePlayer("p1"),
     isAlliedWith: () => false,
-    hasTech: (id: string) => (opts.def3 ?? true) && id === "def_3",
+    hasTech: (id: string) => (opts.def2 ?? true) && id === "def_2",
     gold: () => opts.gold ?? 1_000_000n,
     units: (...types: string[]) =>
       types.includes("Spy") ? new Array(opts.spies ?? 0).fill({}) : [],
@@ -263,7 +264,7 @@ const makeEnemyParams = (opts: {
     owner: () => enemy,
     myPlayer: () => myPlayer,
     manhattanDist: (a: number, b: number) => Math.abs(a - b),
-    config: () => ({ maxSpies: () => 3 }),
+    config: () => ({ maxSpies: () => 3, unitRequiredTech: () => "def_2" }),
   } as any;
   params.playerActions = {
     canAttack: true,
@@ -350,13 +351,32 @@ describe("RadialMenuElements spy", () => {
     expect(missions).toEqual(["spy_reveal", "spy_steal", "spy_sabotage"]);
   });
 
-  test("is disabled without def_3, without 300k gold or with 3 spies out", () => {
-    for (const opts of [{ def3: false }, { gold: 200_000n }, { spies: 3 }]) {
+  test("is disabled without 300k gold or with 3 spies out", () => {
+    for (const opts of [{ gold: 200_000n }, { spies: 3 }]) {
       const { params } = makeEnemyParams(opts);
       const spy = findSpy(rootMenuElement.subMenu!(params));
       expect(spy.disabled(params)).toBe(true);
       expect(spy.color(params)).toBe(COLORS.disabled);
     }
+  });
+
+  test("without the spy's tech (def_2) it is a locked item that opens the tech panel", () => {
+    const { params, emit } = makeEnemyParams({ def2: false });
+    const spy = findSpy(rootMenuElement.subMenu!(params));
+    expect(spy.disabled(params)).toBe(false);
+    expect(spy.color).toBe(COLORS.disabled);
+    expect(spy.subMenu).toBeUndefined();
+    expect(spy.tooltipItems.map((t: any) => t.text)).toContain(
+      "build_menu.requires_tech",
+    );
+    spy.action(params);
+    expect(emit).toHaveBeenCalledTimes(1);
+    expect(emit.mock.calls[0][0]).toBeInstanceOf(ShowTechPanelEvent);
+    expect(emit.mock.calls[0][0]).toMatchObject({
+      visible: true,
+      highlight: "def_2",
+    });
+    expect(params.closeMenu).toHaveBeenCalledTimes(1);
   });
 
   test("reveal and steal send a spy intent without a unit and close", () => {

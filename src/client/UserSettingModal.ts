@@ -404,6 +404,12 @@ export class UserSettingModal extends BaseModal {
     );
   }
 
+  private toggleHaptics() {
+    this.userSettings.toggleHaptics();
+
+    console.log("📳 Haptics:", this.userSettings.haptics() ? "ON" : "OFF");
+  }
+
   private toggleCursorCostLabel() {
     this.userSettings.toggleCursorCostLabel();
 
@@ -553,6 +559,10 @@ export class UserSettingModal extends BaseModal {
       "Help messages:",
       this.userSettings.helpMessages() ? "ON" : "OFF",
     );
+  }
+
+  private toggleCoachHints() {
+    this.userSettings.toggleCoachHints();
   }
 
   private toggleAttackingTroopsOverlay() {
@@ -1874,6 +1884,15 @@ export class UserSettingModal extends BaseModal {
         @change=${this.toggleAlertFrame}
       ></setting-toggle>
 
+      <!-- 📳 Haptics (GalloFront) -->
+      <setting-toggle
+        label="${translateText("user_setting.haptics_label")}"
+        description="${translateText("user_setting.haptics_desc")}"
+        id="haptics-toggle"
+        .checked=${this.userSettings.haptics()}
+        @change=${this.toggleHaptics}
+      ></setting-toggle>
+
       <!-- 💰 Cursor Price Pill -->
       <setting-toggle
         label="${translateText("user_setting.cursor_cost_label_label")}"
@@ -1975,6 +1994,15 @@ export class UserSettingModal extends BaseModal {
         id="help-messages-toggle"
         .checked=${this.userSettings.helpMessages()}
         @change=${this.toggleHelpMessages}
+      ></setting-toggle>
+
+      <!-- GalloFront: one-shot coaching hints for a first game -->
+      <setting-toggle
+        label="${translateText("user_setting.coach_hints_label")}"
+        description="${translateText("user_setting.coach_hints_desc")}"
+        id="coach-hints-toggle"
+        .checked=${this.userSettings.coachHints()}
+        @change=${this.toggleCoachHints}
       ></setting-toggle>
 
       <!-- Attacking troops overlay (moved here from the in-game menu) -->

@@ -1,5 +1,19 @@
-import { GameType, RankedType } from "@openfront/engine-api/game/GameTypes";
+import {
+  GameType,
+  RankedType,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { GameUpdateType } from "@openfront/engine-api/game/GameUpdates";
+import type { AllPlayersStats } from "@openfront/engine-api/Schemas";
+import {
+  ATTACK_INDEX_RECV,
+  ATTACK_INDEX_SENT,
+  BOMB_INDEX_LAUNCH,
+  OTHER_INDEX_BUILT,
+  type PlayerStats,
+  TILE_INDEX_PEAK,
+} from "@openfront/engine-api/StatsSchemas";
+import { renderNumber, renderTroops } from "@openfront/engine-lib/Format";
 import type { GameXpEligible, Progress } from "@openfront/shared/ApiSchemas";
 import { Pattern } from "@openfront/shared/CosmeticSchemas";
 import { EventBus } from "@openfront/shared/EventBus";
@@ -128,6 +142,12 @@ export class WinModal extends LitElement implements Controller {
 
   private rand = Math.random();
 
+  // GalloFront: the player's own figures for the "Your game" block, from
+  // the Win update. At death (the game goes on) the block falls back to what
+  // the PlayerView knows and fills in once the game ends.
+  @state()
+  private myStats: PlayerStats | null = null;
+
   // Override to prevent shadow DOM creation
   createRenderRoot() {
     return this;
@@ -156,7 +176,7 @@ export class WinModal extends LitElement implements Controller {
             .gameType=${this.game?.config().gameConfig().gameType ?? null}
             @xp-legend=${this.onXpLegend}
           ></game-xp-panel>
-          ${this.innerHtml()}
+          ${this.renderYourGame()} ${this.innerHtml()}
         </div>
         <!-- Leaving is the quieter action, on the left; staying in the game
              is the main one, on the right. Sharing a milestone sits between
@@ -176,7 +196,12 @@ export class WinModal extends LitElement implements Controller {
                 () => this._handleRequeue(),
                 "requeue",
               )
-            : null}
+            : this.actionButton(
+                "main",
+                translateText("win_modal.play_again"),
+                () => this._handleExit(),
+                "play-again",
+              )}
           ${this.actionButton(
             "main",
             this.game?.myPlayer()?.isAlive()
@@ -401,6 +426,127 @@ export class WinModal extends LitElement implements Controller {
         }
       }
     </style>`;
+  }
+
+  // GalloFront: "Your game" — duration, peak territory, gold, techs, cities,
+  // troops sent/received and nukes launched. Each line is skipped when its
+  // figure isn't there (a spectator, a replay, an older record).
+  private renderYourGame(): TemplateResult | null {
+    const game = this.game;
+    const me = game?.myPlayer();
+    if (!game || !me) return null;
+    const stats = this.myStats;
+    const safe = <T>(read: () => T): T | null => {
+      try {
+        return read();
+      } catch {
+        return null;
+      }
+    };
+    const stat = (index: number, values?: readonly bigint[]) =>
+      values !== undefined && values.length > index ? values[index] : null;
+    const sum = (values?: readonly bigint[]) =>
+      values === undefined ? null : values.reduce((a, b) => a + b, 0n);
+
+    const rows: { label: string; value: string }[] = [];
+    const push = (label: string, value: string | null) => {
+      if (value !== null) rows.push({ label, value });
+    };
+
+    push(
+      translateText("win_modal.stat_duration"),
+      safe(() => {
+        const seconds = Math.max(0, Math.floor(game.elapsedGameSeconds()));
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, "0")}`;
+      }),
+    );
+    push(
+      translateText("win_modal.stat_territory"),
+      safe(() => {
+        const peak = stat(TILE_INDEX_PEAK, stats?.tiles);
+        const land = game.numLandTiles();
+        if (peak === null || land <= 0) return null;
+        return `${((Number(peak) / land) * 100).toFixed(1)} %`;
+      }),
+    );
+    push(
+      translateText("win_modal.stat_gold"),
+      safe(() => {
+        const gold = sum(stats?.gold);
+        return renderNumber(gold ?? me.goldEarned());
+      }),
+    );
+    push(
+      translateText("win_modal.stat_techs"),
+      safe(() => {
+        const techs = me.techs();
+        if (techs.length === 0) return "0";
+        const names = techs.map((id) => translateText(`tech.${id}.name`));
+        return `${techs.length} · ${names.join(", ")}`;
+      }),
+    );
+    push(
+      translateText("win_modal.stat_cities"),
+      safe(() => {
+        const built = stat(OTHER_INDEX_BUILT, stats?.units?.city);
+        return renderNumber(built ?? me.totalUnitLevels(UnitType.City));
+      }),
+    );
+    push(
+      translateText("win_modal.stat_attacks_sent"),
+      safe(() => {
+        const sent = stat(ATTACK_INDEX_SENT, stats?.attacks);
+        return sent === null ? null : renderTroops(Number(sent));
+      }),
+    );
+    push(
+      translateText("win_modal.stat_attacks_received"),
+      safe(() => {
+        const recv = stat(ATTACK_INDEX_RECV, stats?.attacks);
+        return recv === null ? null : renderTroops(Number(recv));
+      }),
+    );
+    push(
+      translateText("win_modal.stat_nukes"),
+      safe(() => {
+        if (stats?.bombs === undefined) return null;
+        let launched = 0n;
+        for (const values of Object.values(stats.bombs)) {
+          launched += stat(BOMB_INDEX_LAUNCH, values) ?? 0n;
+        }
+        return renderNumber(launched);
+      }),
+    );
+    if (rows.length === 0) return null;
+
+    return html`
+      <div
+        data-win-your-game
+        class="text-left mb-4 bg-black/30 p-2.5 rounded-sm text-sm"
+      >
+        <h3 class="text-lg font-semibold text-white mb-2 text-center">
+          ${translateText("win_modal.your_game")}
+        </h3>
+        <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+          ${rows.map(
+            (row) => html`
+              <dt class="text-gray-300 whitespace-nowrap">${row.label}</dt>
+              <dd translate="no" class="text-white font-semibold tabular-nums">
+                ${row.value}
+              </dd>
+            `,
+          )}
+        </dl>
+      </div>
+    `;
+  }
+
+  private captureMyStats(all: AllPlayersStats): void {
+    const clientID = this.game.myPlayer()?.clientID();
+    if (!clientID) return;
+    this.myStats = all[clientID] ?? null;
   }
 
   innerHtml() {
@@ -841,6 +987,7 @@ export class WinModal extends LitElement implements Controller {
     const winUpdates = updates?.[GameUpdateType.Win] ?? [];
     if (winUpdates.length > 0) void this.updateXp(true);
     winUpdates.forEach((wu) => {
+      this.captureMyStats(wu.allPlayersStats);
       if (wu.winner === undefined) {
         // Match cancelled (e.g. a ranked 2v2 that didn't fill or fully
         // spawn): the game ends with no winner. Still vote the result to the

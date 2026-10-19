@@ -27,6 +27,8 @@ import { EmojiTable } from "./EmojiTable";
 import { PlayerActionHandler } from "./PlayerActionHandler";
 import { PlayerPanel } from "./PlayerPanel";
 import { TooltipItem } from "./RadialMenu";
+import { missingTech, requiresTechLabel } from "./TechLock";
+import { ShowTechPanelEvent } from "./TechPanelEvents";
 
 import { EventBus } from "@openfront/shared/EventBus";
 import {
@@ -426,6 +428,36 @@ function isAttackMenuUnit(type: PlayerBuildableUnitType): boolean {
   return BuildableAttacks.has(type) && type !== UnitType.Fighter;
 }
 
+/** The tech the local player still needs for `unit`, or null (see TechLock). */
+function lockedBehind(
+  params: MenuElementParams,
+  unit: UnitType,
+): TechId | null {
+  return missingTech(params.game.config?.(), params.myPlayer, unit);
+}
+
+/** Tooltip lines for a locked item: "🔒 Requires: X" and the tap hint. */
+function lockedTooltip(tech: TechId): TooltipItem[] {
+  return [
+    { text: requiresTechLabel(tech), className: "cost" },
+    {
+      text: translateText("build_menu.requires_tech_tap"),
+      className: "description",
+    },
+  ];
+}
+
+/**
+ * GalloFront: a locked item stays tappable — it is the shortcut to the
+ * technologies panel, opened on the tech it needs — rather than a muted
+ * price nobody can pay yet. Only the spawn phase disables it (RadialMenu's
+ * isItemDisabled handles that itself).
+ */
+function openTechPanel(params: MenuElementParams, tech: TechId) {
+  params.eventBus.emit(new ShowTechPanelEvent(true, tech));
+  params.closeMenu();
+}
+
 function createMenuElements(
   params: MenuElementParams,
   filterType: "attack" | "build",
@@ -445,6 +477,23 @@ function createMenuElements(
           : !isAttackMenuUnit(item.unitType)),
     )
     .map((item: BuildItemDisplay) => {
+      const locked = lockedBehind(params, item.unitType);
+      if (locked !== null) {
+        return {
+          id: `${elementIdPrefix}_${item.unitType}`,
+          name: item.key
+            ? item.key.replace("unit_type.", "")
+            : item.unitType.toString(),
+          disabled: () => false,
+          color: COLORS.disabled,
+          icon: item.icon,
+          tooltipItems: [
+            { text: translateText(item.key ?? ""), className: "title" },
+            ...lockedTooltip(locked),
+          ],
+          action: (p: MenuElementParams) => openTechPanel(p, locked),
+        };
+      }
       if (item.unitType === UnitType.Fighter) {
         return fighterBuildElement(item, params, `${elementIdPrefix}_`);
       }
@@ -620,7 +669,7 @@ export const attackMenuElement: MenuElement = {
     return [
       ...createMenuElements(params, "attack", "attack"),
       // GalloFront aviation: paradrop on land that isn't an ally's
-      ...(paradropOffered(params) ? [paradropMenuElement] : []),
+      ...(paradropOffered(params) ? [paradropElement(params)] : []),
     ];
   },
 };
@@ -677,9 +726,7 @@ function fighterBlocked(params: MenuElementParams): boolean {
   const airport = airportNearTile(params);
   if (airport === null) return true;
   const me = params.myPlayer;
-  if (typeof me.hasTech === "function" && !me.hasTech(TechId.Mil4)) {
-    return true;
-  }
+  if (lockedBehind(params, UnitType.Fighter) !== null) return true;
   if (me.gold() < fighterCost(params)) return true;
   return fightersStationed(params, airport.id()) >= airport.level();
 }
@@ -776,6 +823,28 @@ export const paradropMenuElement: MenuElement = {
     params.closeMenu();
   },
 };
+
+/**
+ * The paradrop entry, or — while the air transport is still behind its
+ * technology — a locked stand-in that taps through to that tech.
+ */
+function paradropElement(params: MenuElementParams): MenuElement {
+  const locked = lockedBehind(params, UnitType.AirTransport);
+  if (locked === null) return paradropMenuElement;
+  return {
+    id: "paradrop",
+    name: "paradrop",
+    text: "🪂",
+    fontSize: "22px",
+    color: COLORS.disabled,
+    disabled: () => false,
+    tooltipItems: [
+      { text: translateText("radial_menu.paradrop"), className: "title" },
+      ...lockedTooltip(locked),
+    ],
+    action: (p: MenuElementParams) => openTechPanel(p, locked),
+  };
+}
 
 const donateGoldRadialElement: MenuElement = {
   id: Slot.Attack,
@@ -995,7 +1064,7 @@ export function sabotageTargetNearTile(params: MenuElementParams) {
 function spyBlocked(params: MenuElementParams): boolean {
   const me = params.myPlayer;
   if (params.game.inSpawnPhase() || enemyTarget(params) === null) return true;
-  if (!me.hasTech(TechId.Def3)) return true;
+  if (lockedBehind(params, UnitType.Spy) !== null) return true;
   if (me.gold() < spyCost(params)) return true;
   return me.units(UnitType.Spy).length >= params.game.config().maxSpies();
 }
@@ -1044,8 +1113,9 @@ function spyMissionElement(
 
 /**
  * GalloFront: "🕵 Spy" submenu on an enemy player — reveal, steal or
- * sabotage. Needs the Intelligence technology (def_3), 300k gold and fewer
- * than three spies in flight; the engine also enforces a 20 s cooldown.
+ * sabotage. Needs the spy's technology (Config.unitRequiredTech: Radar,
+ * def_2), 300k gold and fewer than three spies in flight; the engine also
+ * enforces a 20 s cooldown.
  */
 export const spyMenuElement: MenuElement = {
   id: "spy",
@@ -1065,6 +1135,28 @@ export const spyMenuElement: MenuElement = {
     spyMissionElement(SpyMission.Sabotage, "spy_sabotage", "💣"),
   ],
 };
+
+/**
+ * The spy entry, or — before its technology — a locked stand-in that taps
+ * through to that tech instead of a submenu.
+ */
+function spyElement(params: MenuElementParams): MenuElement {
+  const locked = lockedBehind(params, UnitType.Spy);
+  if (locked === null) return spyMenuElement;
+  return {
+    id: "spy",
+    name: "spy",
+    text: "🕵",
+    fontSize: "22px",
+    color: COLORS.disabled,
+    disabled: () => false,
+    tooltipItems: [
+      { text: translateText("radial_menu.spy"), className: "title" },
+      ...lockedTooltip(locked),
+    ],
+    action: (p: MenuElementParams) => openTechPanel(p, locked),
+  };
+}
 
 export const buildMenuElement: MenuElement = {
   id: Slot.Build,
@@ -1193,7 +1285,7 @@ export const rootMenuElement: MenuElement = {
             showDonateInsteadOfAttack
               ? donateGoldRadialElement
               : attackMenuElement,
-            ...(canSpyOn ? [spyMenuElement] : []),
+            ...(canSpyOn ? [spyElement(params)] : []),
           ]),
     ];
 

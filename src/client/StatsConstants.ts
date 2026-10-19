@@ -26,13 +26,15 @@ export const COLUMN_IDS = [
   // Diplomacy.
   "allies",
   "betrayals",
+  // GalloFront: sum of the three tech branch levels.
+  "techs",
 ] as const;
 
 export type ColumnId = (typeof COLUMN_IDS)[number];
 
 export const DEFAULT_STATS_COLUMNS = {
-  player: ["clan", "tiles", "gold", "maxtroops"],
-  team: ["tiles", "gold", "maxtroops"],
+  player: ["clan", "tiles", "gold", "maxtroops", "techs"],
+  team: ["tiles", "gold", "maxtroops", "techs"],
 } as const satisfies Record<StatsTableKind, readonly ColumnId[]>;
 
 export type StatsTableKind = "player" | "team";

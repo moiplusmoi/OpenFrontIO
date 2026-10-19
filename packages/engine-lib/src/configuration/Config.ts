@@ -203,11 +203,16 @@ export class Config {
   /** Tech required to build a unit type, or null (none of the base units need one). */
   unitRequiredTech(type: UnitType): TechId | null {
     switch (type) {
+      // Spies open with Radar (def_2); Intelligence (def_3) and
+      // Counter-intelligence (def_4) improve the odds.
       case UnitType.Spy:
-        return TechId.Def3;
+        return TechId.Def2;
+      // Airports and paradrops open with Offensive Doctrine (mil_2), bombers
+      // with Aviation (mil_3), fighters with Air Supremacy (mil_4).
       case UnitType.Airport:
-      case UnitType.Bomber:
       case UnitType.AirTransport:
+        return TechId.Mil2;
+      case UnitType.Bomber:
         return TechId.Mil3;
       case UnitType.Fighter:
         return TechId.Mil4;
@@ -333,6 +338,7 @@ export class Config {
         : mission === SpyMission.Steal
           ? 65
           : 55;
+    if (attackerDefenseTech >= 3) pct += 10;
     if (attackerDefenseTech >= 4) pct += 10;
     if (defenderDefenseTech >= 3) pct -= 15;
     if (defenderDefenseTech >= 4) pct -= 35;
@@ -403,7 +409,12 @@ export class Config {
   capitalRevoltRange(): number {
     // > trainStationMaxRange * 1.4142 / 2: no rail tile is ever farther than
     // this from one of its two stations, so a revolt never cuts a railroad.
-    return 80;
+    // 120 keeps revolts to genuinely remote colonies.
+    return 120;
+  }
+  /** At most this share of the territory revolts when the capital falls. */
+  capitalRevoltMaxPct(): number {
+    return 25;
   }
   SiloCooldown(): number {
     return 90;

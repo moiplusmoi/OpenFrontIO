@@ -12,6 +12,13 @@ import { GameView } from "../../view";
 
 const COLLUSION_WARNING_CLOSED_KEY = "hasClosedCollusionWarning";
 
+// Toast tints: Tailwind green-500, red-500 and amber-400 (GalloFront alerts).
+const TOAST_RGB = {
+  green: "34,197,94",
+  red: "239,68,68",
+  yellow: "251,191,36",
+} as const;
+
 @customElement("heads-up-message")
 export class HeadsUpMessage extends LitElement implements Controller {
   public game: GameView;
@@ -43,7 +50,7 @@ export class HeadsUpMessage extends LitElement implements Controller {
   @state()
   private toastMessage: string | import("lit").TemplateResult | null = null;
   @state()
-  private toastColor: "green" | "red" = "green";
+  private toastColor: "green" | "red" | "yellow" = "green";
   private toastTimeout: number | null = null;
   private toastPointerId: number | null = null;
   private toastDragStart = { x: 0, y: 0 };
@@ -92,7 +99,8 @@ export class HeadsUpMessage extends LitElement implements Controller {
       (message && typeof message.values === "object")
     ) {
       this.toastMessage = message;
-      this.toastColor = color === "red" ? "red" : "green";
+      this.toastColor =
+        color === "red" ? "red" : color === "yellow" ? "yellow" : "green";
       this.toastPointerId = null;
       this.toastDragOffset = { x: 0, y: 0 };
       this.requestUpdate();
@@ -261,16 +269,12 @@ export class HeadsUpMessage extends LitElement implements Controller {
                   transition: ${this.toastPointerId === null
                     ? "transform 180ms cubic-bezier(0.4, 0, 0.2, 1)"
                     : "none"};
-                  background: ${this.toastColor === "red"
-                    ? "rgba(239,68,68,0.1)"
-                    : "rgba(34,197,94,0.1)"};
-                  border: 1px solid ${this.toastColor === "red"
-                    ? "rgba(239,68,68,0.5)"
-                    : "rgba(34,197,94,0.5)"};
+                  background: rgba(${TOAST_RGB[this.toastColor]},0.1);
+                  border: 1px solid rgba(${TOAST_RGB[this.toastColor]},0.5);
                   color: white;
-                  box-shadow: 0 0 30px 0 ${this.toastColor === "red"
-                    ? "rgba(239,68,68,0.3)"
-                    : "rgba(34,197,94,0.3)"};
+                  box-shadow: 0 0 30px 0 rgba(${TOAST_RGB[
+                    this.toastColor
+                  ]},0.3);
                   backdrop-filter: blur(12px);"
                 >
                   ${typeof this.toastMessage === "string"

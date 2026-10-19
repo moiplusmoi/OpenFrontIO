@@ -22,7 +22,12 @@ export class PlayerStats extends StatsTable {
       .filter((player) => player.isAlive())
       .map((player) => ({
         key: player.id(),
-        name: player.name(),
+        // GalloFront: a crown marks the players who hold a capital.
+        name:
+          typeof player.capitalTile === "function" &&
+          player.capitalTile() !== null
+            ? `👑 ${player.name()}`
+            : player.name(),
         clanTag: player.clanTag(),
         values: columnValues(player, game, columns),
         emphasized:

@@ -1,4 +1,8 @@
-import { PlayerType, UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  PlayerType,
+  TechBranch,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { renderNumber, renderTroops } from "@openfront/engine-lib/Format";
 import type { ColumnId, StatsTableKind } from "../../../StatsConstants";
 import { formatPercentage, translateText } from "../../../Utils";
@@ -297,7 +301,27 @@ export const COLUMN_DEFS: readonly ColumnDef[] = [
     value: (player) => player.betrayals(),
     cell: (row) => renderNumber(row.value),
   }),
+  // GalloFront: technology, as the sum of the three branch levels (0–12).
+  defineColumn({
+    id: "techs",
+    labelKey: "leaderboard.techs",
+    headerVisual: { kind: "text", text: "🔬" },
+    align: "center",
+    value: (player) => techScore(player),
+    cell: (row) => renderNumber(row.value),
+  }),
 ];
+
+/** GalloFront: sum of a player's tech levels over the three branches. */
+export function techScore(player: PlayerView): number {
+  // Test doubles may not implement techLevel.
+  if (typeof player.techLevel !== "function") return 0;
+  return (
+    player.techLevel(TechBranch.Economy) +
+    player.techLevel(TechBranch.Military) +
+    player.techLevel(TechBranch.Defense)
+  );
+}
 
 export function columnsFor(kind: StatsTableKind): readonly ColumnDef[] {
   return COLUMN_DEFS.filter((column) => column.kinds.includes(kind));

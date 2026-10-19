@@ -66,6 +66,37 @@ const TUTORIAL_ACTION =
 
 /** The Tutorial card shows beside Solo until the player has played this many games. */
 const TUTORIAL_CARD_MAX_GAMES = 5;
+/** GalloFront: the one-tap "Play now" hero button. */
+const PLAY_NOW_ACTION =
+  "bg-gradient-to-r from-malibu-blue to-aquarius hover:brightness-110 active:brightness-95 shadow-[var(--shadow-malibu-blue)] hover:scale-[1.01]";
+/** Quick solo: the Solo card's little sibling. */
+const QUICK_SOLO_ACTION =
+  "bg-malibu-blue/60 hover:bg-malibu-blue active:bg-malibu-blue/80";
+
+/**
+ * GalloFront: the public lobby that starts soonest — what "Play now" joins.
+ * Hosted lobbies are left out (a host controls those), as are lobbies the
+ * viewer could not join without a trusted account.
+ */
+export function soonestPublicLobby(
+  lobbies: PublicGames | null,
+  viewerTrusted: boolean,
+): PublicGameInfo | null {
+  if (lobbies === null) return null;
+  const candidates = (["ffa", "team", "special"] as const)
+    .flatMap((type) => lobbies.games?.[type] ?? [])
+    .filter((lobby) => canJoinTrustedLobby(lobby, viewerTrusted));
+  let best: PublicGameInfo | null = null;
+  for (const lobby of candidates) {
+    if (
+      best === null ||
+      (lobby.startsAt ?? Infinity) < (best.startsAt ?? Infinity)
+    ) {
+      best = lobby;
+    }
+  }
+  return best;
+}
 
 /**
  * THE REACHABILITY RULE (OPE-439). Stated once, here; every other call site
@@ -668,18 +699,29 @@ export class GameModeSelector extends LitElement {
     // reading-flow keeps focus order following the rows (Chromium only).
     return html`
       <div
-        class="flex flex-col gap-4 w-full px-4 pb-4 mx-auto sm:px-0 sm:pb-0 sm:grid sm:grid-cols-[2fr_1fr] sm:grid-rows-[auto_min(24rem,40vh)_auto_auto] desktop:sm:grid-rows-[auto_40vh_auto_auto] sm:[reading-flow:grid-rows]"
+        class="flex flex-col gap-4 w-full px-4 pb-4 mx-auto sm:px-0 sm:pb-0 sm:grid sm:grid-cols-[2fr_1fr] sm:grid-rows-[auto_min(24rem,40vh)_auto_auto_auto] desktop:sm:grid-rows-[auto_40vh_auto_auto_auto] sm:[reading-flow:grid-rows]"
       >
         <ios-add-to-home-screen-banner
           class="no-game-portal [&:empty]:hidden sm:col-span-2 sm:row-start-1"
         ></ios-add-to-home-screen-banner>
 
-        <div class="flex gap-4 h-14 sm:col-span-2 sm:row-start-3">
-          <div class="flex-[2]">
+        <!-- GalloFront: one tap into the next public game (phone first: the
+             lobby cards come after it in DOM order). -->
+        <div class="h-16 sm:col-span-2 sm:row-start-3">
+          ${this.renderPlayNow()}
+        </div>
+
+        <div class="flex gap-4 h-14 sm:col-span-2 sm:row-start-4">
+          <div class="flex-[2] grid grid-cols-[1fr_auto] gap-2">
             ${this.renderSmallActionCard(
               translateText("main.solo"),
               this.openSinglePlayerModal,
               PRIMARY_ACTION,
+            )}
+            ${this.renderSmallActionCard(
+              translateText("main.solo_quick"),
+              this.startQuickSolo,
+              QUICK_SOLO_ACTION,
             )}
           </div>
           ${getGamesPlayed() < TUTORIAL_CARD_MAX_GAMES
@@ -695,7 +737,7 @@ export class GameModeSelector extends LitElement {
         <div
           class="grid ${isStandalone()
             ? "grid-cols-2"
-            : "grid-cols-3"} gap-4 h-14 sm:col-span-2 sm:row-start-4"
+            : "grid-cols-3"} gap-4 h-14 sm:col-span-2 sm:row-start-5"
         >
           ${this.renderSmallActionCard(
             translateText("main.create"),
@@ -852,6 +894,88 @@ export class GameModeSelector extends LitElement {
       )?.open(),
     );
   };
+
+  /**
+   * GalloFront: a solo game on the last remembered settings, without the
+   * modal. Falls back to opening the modal on a build (or test stub) whose
+   * modal has no quick start.
+   */
+  private startQuickSolo = () => {
+    if (!this.validateUsername()) return;
+    whenModalLoaded("single-player-modal", () => {
+      const modal = document.querySelector(
+        "single-player-modal",
+      ) as SinglePlayerModal | null;
+      if (modal === null) return;
+      if (typeof modal.startQuick === "function") {
+        void modal.startQuick();
+      } else {
+        modal.open();
+      }
+    });
+  };
+
+  /**
+   * GalloFront: "Play now" — the same path as tapping the first lobby card
+   * (validateAndJoin on the lobby that starts soonest); with no lobby loaded,
+   * a quick solo game instead so the tap always lands somewhere.
+   */
+  private playNow = () => {
+    const lobby = soonestPublicLobby(this.lobbies, this.viewerTrusted);
+    if (lobby === null) {
+      this.startQuickSolo();
+      return;
+    }
+    this.validateAndJoin(lobby);
+  };
+
+  private renderPlayNow() {
+    const lobby = soonestPublicLobby(this.lobbies, this.viewerTrusted);
+    // Socket-sourced like the lobby card it stands in for: the desktop
+    // states dim it, a list-API outage never does (rule at the top).
+    const blocked =
+      lobby !== null &&
+      shouldBlockSocketSourcedAction(
+        this.desktopUpdateState,
+        this.desktopSessionState,
+      );
+    const secondsLeft =
+      lobby?.startsAt !== undefined
+        ? getSecondsUntilServerTimestamp(lobby.startsAt, this.serverTimeOffset)
+        : null;
+    const subtitle =
+      lobby === null
+        ? translateText("main.play_now_solo")
+        : secondsLeft !== null && secondsLeft > 0
+          ? translateText("main.play_now_in", {
+              mode: getGameModeLabel(lobby.gameConfig!),
+              time: renderDuration(secondsLeft),
+            })
+          : translateText("main.play_now_starting", {
+              mode: getGameModeLabel(lobby.gameConfig!),
+            });
+    return html`
+      <button
+        data-play-now
+        @click=${this.playNow}
+        ?disabled=${!this.inputValid}
+        aria-disabled=${blocked}
+        class="flex flex-col items-center justify-center w-full h-full rounded-xl ${PLAY_NOW_ACTION} transition-all duration-200 text-white text-center ${!this
+          .inputValid
+          ? DISABLED
+          : blocked
+            ? "opacity-50 cursor-not-allowed"
+            : ""}"
+      >
+        <span class="text-lg lg:text-xl font-bold uppercase tracking-widest"
+          >${translateText("main.play_now")}</span
+        >
+        <span class="text-xs font-medium text-white/80 truncate max-w-full px-2"
+          >${subtitle}</span
+        >
+      </button>
+    `;
+  }
 
   // Handled in Main, which also serves the help page's tutorial button.
   private startTutorial = () => {

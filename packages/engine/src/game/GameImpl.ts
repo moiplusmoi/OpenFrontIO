@@ -1591,18 +1591,24 @@ export class GameImpl implements Game {
     if (centers.length === 0 && spawn !== undefined) centers.push(spawn);
     if (centers.length > 0) {
       const range = this._config.capitalRevoltRange();
-      const revolting: TileRef[] = [];
+      // Farthest tiles first, capped to a share of the territory so a whole
+      // island colony never vanishes at once.
+      const revolting: [TileRef, number][] = [];
       for (const tile of victim.tiles()) {
-        let near = false;
+        let best = Infinity;
         for (const c of centers) {
-          if (this.manhattanDist(tile, c) <= range) {
-            near = true;
-            break;
-          }
+          const d = this.manhattanDist(tile, c);
+          if (d < best) best = d;
         }
-        if (!near) revolting.push(tile);
+        if (best > range) revolting.push([tile, best]);
       }
-      for (const tile of revolting) this.relinquish(tile);
+      revolting.sort((x, y) => y[1] - x[1] || x[0] - y[0]);
+      const cap = Math.floor(
+        (victim.numTilesOwned() * this._config.capitalRevoltMaxPct()) / 100,
+      );
+      for (let i = 0; i < revolting.length && i < cap; i++) {
+        this.relinquish(revolting[i][0]);
+      }
     }
     let next: Unit | null = null;
     for (const c of cities) {

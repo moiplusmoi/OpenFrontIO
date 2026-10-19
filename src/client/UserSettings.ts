@@ -16,6 +16,7 @@ import {
 // DesktopShell.ts imports nothing, so this cannot introduce an import cycle
 // (verified with madge: 58 cycles before and after, none involving it).
 import { isDesktopShell } from "./DesktopShell";
+import { Platform } from "./Platform";
 
 export function getDefaultKeybinds(isMac: boolean): Record<string, string> {
   return {
@@ -446,6 +447,16 @@ export class UserSettings {
     return this.getBool("settings.alertFrame", true);
   }
 
+  // GalloFront: vibrations on attacks, inbound bombs, lost capital… Only
+  // touch devices have a motor worth asking, so that is the default.
+  haptics() {
+    return this.getBool("settings.haptics", Platform.isTouch);
+  }
+
+  toggleHaptics() {
+    this.setBool("settings.haptics", !this.haptics());
+  }
+
   anonymousNames() {
     return this.getBool("settings.anonymousNames", false);
   }
@@ -554,6 +565,15 @@ export class UserSettings {
 
   tutorialDismissed() {
     return this.getBool("settings.tutorialDismissed", false);
+  }
+
+  /** GalloFront: the one-shot coaching hints of a first game (CoachHints). */
+  coachHints() {
+    return this.getBool("settings.coachHints", true);
+  }
+
+  toggleCoachHints() {
+    this.setBool("settings.coachHints", !this.coachHints());
   }
 
   setTutorialDismissed(value: boolean) {

@@ -190,7 +190,9 @@
     },
     "not_enough_money": "Pas assez d'argent",
     "upgrade_amount": "x{amount}",
-    "warship_shift_hint": "Maintenir la touche Maj et glisser le curseur pour sélectionner plusieurs navires de guerre à la fois"
+    "warship_shift_hint": "Maintenir la touche Maj et glisser le curseur pour sélectionner plusieurs navires de guerre à la fois",
+    "requires_tech": "🔒 Nécessite : {tech}",
+    "requires_tech_tap": "Touche pour ouvrir les Technologies"
   },
   "change_username_modal": {
     "title": "Changer le nom d'utilisateur",
@@ -864,7 +866,8 @@
     "air_raid_done": "Votre raid aérien a tué {pct} % des troupes de {name}",
     "paradrop_inbound": "Parachutage en approche !",
     "fighter_intercept": "Votre chasseur a abattu {unit}",
-    "aircraft_shot_down": "Un chasseur de {name} a abattu votre {unit}"
+    "aircraft_shot_down": "Un chasseur de {name} a abattu votre {unit}",
+    "more_events": "+{count} événements"
   },
   "featured_stream": {
     "expand": "Agrandir",
@@ -1115,7 +1118,9 @@
     "pvp_immunity_active": "Immunité des joueurs active pour {seconds}s",
     "random_spawn": "Le spawn aléatoire est activé. Sélection de l'emplacement de départ pour vous...",
     "random_spawn_spectator": "Apparition aléatoire activée",
-    "singleplayer_game_paused": "Jeu en pause"
+    "singleplayer_game_paused": "Jeu en pause",
+    "attacked": "⚔ Attaque de {name} : {troops}",
+    "inbound": "⚠ {unit} en approche ({name})"
   },
   "help_modal": {
     "action_attack_altclick": "Attaquer (quand le clic gauche est configuré pour ouvrir le menu)",
@@ -1217,11 +1222,17 @@
     "action_quick_chat": "Ouvrir le chat rapide",
     "action_tech_panel": "Ouvrir le panneau des technologies",
     "capital": "Votre première ville devient votre capitale 👑 : +10 % de troupes max et défense ×1,5 dans un rayon de 30 cases. Si elle est capturée ou détruite, vous perdez 25 % de vos troupes et de votre or (l'or va au conquérant), les territoires à plus de 60 cases de toute ville restante se révoltent, et votre plus grande ville restante devient la nouvelle capitale. Vous pouvez déplacer la capitale vers une autre ville depuis son menu (3 min de recharge).",
-    "spy": "Avec la technologie Renseignement (déf 3), envoyez un espion 🕵 chez un ennemi depuis son menu (300k d'or, 3 en vol max, 20 s entre deux). Personne d'autre ne le voit. Révéler montre son or, ses troupes et ses silos/SAM prêts pendant 60 s (85 %) ; Voler prend 8 % de son or, 2M max (65 %) ; Saboter arrête un SAM ou un silo 60 s, ou retire un niveau à une ville, un port, une usine ou un poste défensif (55 %). Votre déf 4 ajoute 10 points ; la déf 3 de la cible en retire 15 et sa déf 4 encore 35 (et rend les données révélées vieilles de 30 s). Un espion qui échoue a une chance sur deux d'être capturé, ce qui révèle à la victime qui l'a envoyé.",
-    "airport": "Avec Aviation (mil 3), construisez un aéroport (750k, puis +750k par niveau, 2M max). Chaque niveau est un créneau de sortie : un bombardier, un chasseur ou un parachutage en prend un, et il se recharge en 30 s. Sa portée est de 200 cases (+25 par niveau). Capturé avec le terrain, il garde son niveau ; ses chasseurs meurent avec lui.",
+    "spy": "Avec Radar (déf 2), envoyez un espion 🕵 chez un ennemi depuis son menu (300k d'or, 3 en vol max, 20 s entre deux). Personne d'autre ne le voit. Révéler montre son or, ses troupes et ses silos/SAM prêts pendant 60 s (85 %) ; Voler prend 8 % de son or, 2M max (65 %) ; Saboter arrête un SAM ou un silo 60 s, ou retire un niveau à une ville, un port, une usine ou un poste défensif (55 %). Votre déf 3 ajoute 10 points et la déf 4 encore 10 ; la déf 3 de la cible en retire 15 et sa déf 4 encore 35 (et rend les données révélées vieilles de 30 s). Un espion qui échoue a une chance sur deux d'être capturé, ce qui révèle à la victime qui l'a envoyé.",
+    "airport": "Avec Doctrine offensive (mil 2), construisez un aéroport (750k, puis +750k par niveau, 2M max). Chaque niveau est un créneau de sortie : un bombardier, un chasseur ou un parachutage en prend un, et il se recharge en 30 s. Sa portée est de 200 cases (+25 par niveau). Capturé avec le terrain, il garde son niveau ; ses chasseurs meurent avec lui.",
     "bomber": "400k d'or. Visez une case ennemie depuis le menu d'attaque : l'aéroport prêt le plus proche à portée le lance, il vole en ligne droite à 5 cases par tick, et à l'impact le défenseur perd jusqu'à 8 % de ses troupes (10 % avec mil 4), selon la part du souffle de 15 cases qui touche son terrain ; une structure dans un rayon de 8 perd un niveau. Aucun territoire ne change de mains, pas de retombées. Les SAM tirent dessus (80 % de leur portée) et les chasseurs ennemis l'interceptent 60 % du temps.",
     "fighter": "600k d'or, nécessite Supériorité aérienne (mil 4). Construit depuis votre territoire à côté d'un de vos aéroports (un chasseur par niveau d'aéroport), il patrouille à 60 cases autour et intercepte bombardiers et transports ennemis (60 %), bombes A (25 %) et bombes H (15 %), une tentative par cible. Il a 1 PV face aux SAM et disparaît avec son aéroport.",
-    "paradrop": "Depuis le menu d'attaque sur toute terre qui n'est pas à un allié, avec Aviation (mil 3) : un transport aérien (150k d'or) emporte le ratio d'attaque de vos troupes — 25 % max et 50k par niveau d'aéroport — depuis un aéroport à portée, à 4 cases par tick, et les fait atterrir en attaque locale. Atterrir sur le terrain d'un joueur coûte 20 % des troupes. Chasseurs et SAM peuvent l'abattre."
+    "paradrop": "Depuis le menu d'attaque sur toute terre qui n'est pas à un allié, avec Doctrine offensive (mil 2) : un transport aérien (150k d'or) emporte le ratio d'attaque de vos troupes — 25 % max et 50k par niveau d'aéroport — depuis un aéroport à portée, à 4 cases par tick, et les fait atterrir en attaque locale. Atterrir sur le terrain d'un joueur coûte 20 % des troupes. Chasseurs et SAM peuvent l'abattre.",
+    "gallofront_title": "Nouveautés GalloFront",
+    "gallofront_tech": "Technologies (T / 🔬) : trois branches de quatre niveaux (économie, militaire, défense), une recherche à la fois, payée en or.",
+    "gallofront_capital": "Capitale 👑 : ta première ville ; elle renforce troupes et défense autour d'elle, et la perdre coûte cher.",
+    "gallofront_spy": "Espions 🕵 (Radar, déf 2) : depuis le menu radial d'un ennemi, révèle, vole ou sabote ; Renseignement et Contre-espionnage améliorent les chances.",
+    "gallofront_aviation": "Aviation : Doctrine offensive (mil 2) ouvre aéroports (O) et parachutages, Aviation (mil 3) les bombardiers, Supériorité aérienne (mil 4) les chasseurs.",
+    "gallofront_seasons": "Saisons : toutes les 3 minutes la saison change et influe sur les constructions, l'or ou la croissance des troupes."
   },
   "host_modal": {
     "anonymous_players": "Joueurs anonymes",
@@ -1350,7 +1361,8 @@
     "trainTradeGoldPerMin": "Or des trains/min",
     "troops": "Troupes",
     "type": "Type",
-    "warships": "Navires de guerre"
+    "warships": "Navires de guerre",
+    "techs": "Technologies"
   },
   "leaderboard_modal": {
     "clan": "Clan",
@@ -1417,7 +1429,12 @@
     "troubleshooting": "Dépannage",
     "tutorial": "Tutoriel",
     "user_avatar_alt": "Avatar de {username}",
-    "wiki": "Wiki"
+    "wiki": "Wiki",
+    "play_now": "▶ Jouer maintenant",
+    "play_now_solo": "Aucune partie publique : solo rapide",
+    "play_now_in": "{mode} · départ dans {time}",
+    "play_now_starting": "{mode} · ça démarre",
+    "solo_quick": "Solo rapide"
   },
   "map": {
     "achiran": "Achiran",
@@ -1743,7 +1760,8 @@
     "intel_stale": "Données périmées (30 s)",
     "intel_gold": "Or exact",
     "intel_troops": "Troupes exactes",
-    "intel_ready": "Silos / SAM prêts"
+    "intel_ready": "Silos / SAM prêts",
+    "gallofront": "GalloFront"
   },
   "player_profile": {
     "loading": "Chargement du profil...",
@@ -1930,7 +1948,7 @@
     "set_capital": "Capitale",
     "set_capital_desc": "Faire de cette ville votre capitale : +10 % de troupes max et défense renforcée dans un rayon de 30 cases. 3 min de recharge entre deux déplacements.",
     "spy": "Espion",
-    "spy_desc": "Envoyer un espion chez ce joueur : révéler, voler ou saboter. Nécessite Renseignement (déf 3), 300k d'or, 3 espions en vol max, 20 s entre deux.",
+    "spy_desc": "Envoyer un espion chez ce joueur : révéler, voler ou saboter. Nécessite Radar (déf 2), 300k d'or, 3 espions en vol max, 20 s entre deux.",
     "spy_reveal": "Révéler",
     "spy_reveal_desc": "Renseignement sur ce joueur pendant 60 s : or et troupes exacts, silos et SAM prêts. 85 % de réussite. 300k d'or.",
     "spy_steal": "Voler",
@@ -1938,7 +1956,7 @@
     "spy_sabotage": "Saboter",
     "spy_sabotage_desc": "Saboter la structure la plus proche : un SAM ou un silo s'arrête 60 s, une ville, un port, une usine ou un poste défensif perd un niveau. 55 % de réussite. 300k d'or.",
     "paradrop": "Parachutage",
-    "paradrop_desc": "Envoyer le ratio d'attaque de vos troupes (25 % max, 50k par niveau d'aéroport) depuis un aéroport à portée et les faire atterrir ici en attaque. Atterrir chez un joueur coûte 20 %. 150k d'or, nécessite Aviation (mil 3)."
+    "paradrop_desc": "Envoyer le ratio d'attaque de vos troupes (25 % max, 50k par niveau d'aéroport) depuis un aéroport à portée et les faire atterrir ici en attaque. Atterrir chez un joueur coûte 20 %. 150k d'or, nécessite Doctrine offensive (mil 2)."
   },
   "relation": {
     "default": "Défaut",
@@ -2519,7 +2537,11 @@
     "tech_panel": "Panneau des technologies",
     "tech_panel_desc": "Ouvrir ou fermer le panneau des technologies.",
     "build_airport": "Construire un aéroport",
-    "build_airport_desc": "Construire un aéroport sous votre curseur."
+    "build_airport_desc": "Construire un aéroport sous votre curseur.",
+    "haptics_label": "Vibrations",
+    "haptics_desc": "Vibre quand tu es attaqué, qu'une bombe arrive, que ta capitale tombe ou qu'une recherche se termine (téléphone).",
+    "coach_hints_label": "Conseils du coach",
+    "coach_hints_desc": "Astuces affichées une seule fois lors de tes premières parties (ville, recherche, aéroports…)."
   },
   "username": {
     "account_invalid_chars": "Les pseudonymes peuvent uniquement contenir des lettres, chiffres, tirets et espaces.",
@@ -2575,7 +2597,17 @@
     "territory_pattern": "Achetez une décoration de territoire pour retirer les publicités !",
     "you_won": "Vous avez gagné !",
     "your_team": "Votre équipe a gagné !",
-    "youtube_tutorial": "Besoin d'aide ?"
+    "youtube_tutorial": "Besoin d'aide ?",
+    "your_game": "Ta partie",
+    "stat_duration": "Durée",
+    "stat_territory": "Territoire max",
+    "stat_gold": "Or gagné",
+    "stat_techs": "Technologies",
+    "stat_cities": "Villes construites",
+    "stat_attacks_sent": "Troupes envoyées",
+    "stat_attacks_received": "Troupes reçues",
+    "stat_nukes": "Nukes lancés",
+    "play_again": "Rejouer"
   },
   "emoji_table": {
     "diplomacy": "Diplomatie",
@@ -2595,15 +2627,15 @@
       "name": "Fortifications"
     },
     "def_2": {
-      "desc": "Portée SAM +15 %, rechargement SAM 90→70, portée des navires +15 %.",
+      "desc": "Portée SAM +15 %, rechargement SAM 90→70, portée des navires +15 %. Débloque les espions.",
       "name": "Radar"
     },
     "def_3": {
-      "desc": "Débloquera l'espionnage (à venir).",
+      "desc": "Tes espions +10 points de réussite ; espions ennemis contre toi −15.",
       "name": "Renseignement"
     },
     "def_4": {
-      "desc": "À venir.",
+      "desc": "Tes espions encore +10 points ; espions ennemis −35 et leurs infos ont 30 s de retard.",
       "name": "Contre-espionnage"
     },
     "eco_1": {
@@ -2627,11 +2659,11 @@
       "name": "Conscription"
     },
     "mil_2": {
-      "desc": "Pertes en attaque −12 %, attaques 8 % plus rapides, 4 bateaux, navires de guerre +20 % PV.",
+      "desc": "Pertes en attaque −12 %, attaques 8 % plus rapides, 4 bateaux, navires de guerre +20 % PV. Débloque aéroports et parachutages.",
       "name": "Doctrine offensive"
     },
     "mil_3": {
-      "desc": "Débloque aéroports, bombardiers et parachutages.",
+      "desc": "Débloque les bombardiers (400k) : un raid tue jusqu'à 8 % des troupes du défenseur.",
       "name": "Aviation"
     },
     "mil_4": {
@@ -2657,6 +2689,20 @@
     "requires": "Nécessite le niveau {level}",
     "research": "Rechercher",
     "researching": "Recherche en cours…",
-    "title": "Technologies"
+    "title": "Technologies",
+    "unlocks": "Débloque : {units}"
+  },
+  "coach": {
+    "title": "Conseil",
+    "close": "Fermer",
+    "hint": {
+      "spawn_done": "Attaque un voisin neutre : touche une tuile grise, le curseur règle la part de troupes envoyée.",
+      "first_city": "Construis une ville (appui long / bouton 🏙) : elle devient ta capitale 👑.",
+      "first_research": "Lance une recherche (T / 🔬) : +15 % d'or avec Fiscalité.",
+      "airport": "Tu peux construire un aéroport (O) et parachuter des troupes depuis le menu d'attaque.",
+      "bomber": "Bombardiers disponibles dans le menu d'attaque.",
+      "spy": "Espions : menu radial sur un ennemi.",
+      "attacked": "Tu es attaqué ! Un poste défensif (🛡) double la défense autour de lui."
+    }
   }
 }

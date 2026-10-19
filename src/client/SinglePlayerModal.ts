@@ -89,6 +89,39 @@ function withDeadline<T>(
   return Promise.race([work, deadline]).finally(() => clearTimeout(timer));
 }
 
+/**
+ * GalloFront: the settings of the last solo game, so the modal reopens on
+ * them and "Quick solo" / "Play now" (with no lobby) can start without it.
+ */
+const LAST_SOLO_KEY = "gallofront.solo.last";
+
+interface RememberedSolo {
+  selectedMap: GameMapType;
+  selectedDifficulty: Difficulty;
+  gameMode: GameMode;
+  teamCount: TeamCountConfig;
+  bots: number;
+  compactMap: boolean;
+  seasons: boolean;
+  useRandomMap: boolean;
+  infiniteGold: boolean;
+  infiniteTroops: boolean;
+  instantBuild: boolean;
+  randomSpawn: boolean;
+}
+
+function readRememberedSolo(): Partial<RememberedSolo> | null {
+  try {
+    const raw = localStorage.getItem(LAST_SOLO_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null) return null;
+    return parsed as Partial<RememberedSolo>;
+  } catch {
+    return null;
+  }
+}
+
 /** What a start has to wait for before it can dispatch join-lobby. */
 type StartPreparation = {
   resolvedName: ResolvedPlayerName;
@@ -670,7 +703,84 @@ export class SinglePlayerModal extends BaseModal {
     // A nation count of 0 means "nations disabled"; wait for the real one.
     await this.loadNationCount();
     new UserSettings().setTutorialDismissed(false);
+    // The tutorial's defaults are not "the player's last settings".
+    this.skipRemember = true;
+    try {
+      await this.startGame();
+    } finally {
+      this.skipRemember = false;
+    }
+  }
+
+  /**
+   * GalloFront: a solo game on the last remembered settings (defaults for a
+   * first game), without opening the modal — the "Quick solo" card and the
+   * fallback of "Play now" when no public lobby is loaded.
+   */
+  public async startQuick(): Promise<void> {
+    void prewarmCosmetics();
+    this.resetOptions();
+    this.applyRememberedOptions();
+    await this.loadNationCount();
     await this.startGame();
+  }
+
+  /** Overlay the remembered settings (if any, and only the valid ones). */
+  private applyRememberedOptions(): void {
+    const last = readRememberedSolo();
+    if (last === null) return;
+    const isOneOf = <T>(value: unknown, values: readonly T[]): value is T =>
+      values.includes(value as T);
+    if (isOneOf(last.selectedMap, Object.values(GameMapType))) {
+      this.selectedMap = last.selectedMap;
+    }
+    if (isOneOf(last.selectedDifficulty, Object.values(Difficulty))) {
+      this.selectedDifficulty = last.selectedDifficulty;
+    }
+    if (isOneOf(last.gameMode, Object.values(GameMode))) {
+      this.gameMode = last.gameMode;
+    }
+    if (last.teamCount !== undefined) this.teamCount = last.teamCount;
+    if (typeof last.bots === "number" && Number.isFinite(last.bots)) {
+      this.bots = Math.max(0, Math.min(400, Math.round(last.bots)));
+    }
+    for (const key of [
+      "compactMap",
+      "seasons",
+      "useRandomMap",
+      "infiniteGold",
+      "infiniteTroops",
+      "instantBuild",
+      "randomSpawn",
+    ] as const) {
+      if (typeof last[key] === "boolean") this[key] = last[key];
+    }
+    if (this.useRandomMap) this.selectedMap = getRandomMapType();
+  }
+
+  private skipRemember = false;
+
+  private rememberOptions(): void {
+    if (this.skipRemember) return;
+    const remembered: RememberedSolo = {
+      selectedMap: this.selectedMap,
+      selectedDifficulty: this.selectedDifficulty,
+      gameMode: this.gameMode,
+      teamCount: this.teamCount,
+      bots: this.bots,
+      compactMap: this.compactMap,
+      seasons: this.seasons,
+      useRandomMap: this.useRandomMap,
+      infiniteGold: this.infiniteGold,
+      infiniteTroops: this.infiniteTroops,
+      instantBuild: this.instantBuild,
+      randomSpawn: this.randomSpawn,
+    };
+    try {
+      localStorage.setItem(LAST_SOLO_KEY, JSON.stringify(remembered));
+    } catch {
+      // No storage: the next game simply starts on the defaults.
+    }
   }
 
   // Reset all transient form state to ensure clean slate
@@ -710,6 +820,8 @@ export class SinglePlayerModal extends BaseModal {
   }
 
   protected onOpen(): void {
+    // Reopen on the last game's settings rather than the defaults.
+    this.applyRememberedOptions();
     void this.loadNationCount();
     // Spend the cosmetics round trip while the player is picking a map, not
     // after they commit. startGame() still resolves cosmetics properly; this
@@ -1215,6 +1327,7 @@ export class SinglePlayerModal extends BaseModal {
           composed: true,
         }),
       );
+      this.rememberOptions();
       // The overlay is the join pipeline's now — GameRenderer or Main's
       // canPlay() refusal hides it. Disowning it keeps the close below (and
       // any later onClose) from taking it down mid game-load.

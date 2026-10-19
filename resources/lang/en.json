@@ -203,6 +203,8 @@
       "warship": "Captures trade ships, destroys ships and boats"
     },
     "not_enough_money": "Not enough money",
+    "requires_tech": "🔒 Requires: {tech}",
+    "requires_tech_tap": "Tap to open Technologies",
     "upgrade_amount": "x{amount}",
     "warship_shift_hint": "Hold Shift and drag to select multiple warships at once"
   },
@@ -575,6 +577,19 @@
     "unknown": "The server closed the connection.",
     "wrong_worker": "This connection reached the wrong server process. Please reload the page and try again."
   },
+  "coach": {
+    "close": "Dismiss",
+    "hint": {
+      "airport": "You can now build an airport (O) and paradrop troops from the attack menu.",
+      "attacked": "You're under attack! A defense post (🛡) doubles the defense around it.",
+      "bomber": "Bombers are available in the attack menu.",
+      "first_city": "Build a city (long press / 🏙 button): it becomes your capital 👑.",
+      "first_research": "Start a research (T / 🔬): Taxation gives +15% gold.",
+      "spawn_done": "Attack a neutral neighbor: tap a grey tile — the slider sets the share of troops you send.",
+      "spy": "Spies: open the radial menu on an enemy."
+    },
+    "title": "Tip"
+  },
   "common": {
     "available": "Available",
     "back": "Back",
@@ -897,6 +912,7 @@
     "ignore": "Ignore",
     "mirv_inbound": "⚠️⚠️⚠️ {name} - MIRV INBOUND ⚠️⚠️⚠️",
     "missile_intercepted": "SAM intercepted {unit}",
+    "more_events": "+{count} events",
     "naval_invasion_inbound": "Naval invasion incoming from {name} ({troops})",
     "no_boats_available": "No boats available, max {max}",
     "paradrop_inbound": "Paradrop inbound!",
@@ -1169,11 +1185,13 @@
     "territory_sat_label": "Territory saturation"
   },
   "heads_up_message": {
+    "attacked": "⚔ Attack from {name}: {troops}",
     "catching_up": "Catching up...",
     "choose_spawn": "Choose a starting location",
     "choose_spawn_spectator": "Players are choosing starting locations",
     "dont_show_again": "Don't show again",
     "ffa_collusion": "Reminder: teaming up before the game is not allowed in FFA",
+    "inbound": "⚠ {unit} inbound from {name}",
     "multiplayer_game_paused": "Game paused by Lobby Creator",
     "pvp_immunity_active": "PVP immunity active for {seconds}s",
     "random_spawn": "Random spawn is enabled. Selecting starting location for you...",
@@ -1198,7 +1216,7 @@
     "action_warship_multiselect": "Select multiple warships (drag to draw selection box)",
     "action_warship_selectall": "Select all your warships",
     "action_zoom": "Zoom out/in",
-    "airport": "With Aviation (mil 3), build an airport (750k, then +750k per level, 2M max). Each level is a sortie slot: a bomber, fighter or paradrop takes one, and it reloads in 30 s. Its range is 200 tiles (+25 per level). Captured with the land, it keeps its level; its fighters die with it.",
+    "airport": "With Offensive Doctrine (mil 2), build an airport (750k, then +750k per level, 2M max). Each level is a sortie slot: a bomber, fighter or paradrop takes one, and it reloads in 30 s. Its range is 200 tiles (+25 per level). Captured with the land, it keeps its level; its fighters die with it.",
     "ally_betray": "Betray your ally, ending the alliance, halting trade, and weakening your defense. Trading between you is paused for 5 minutes (or until you become allies again) and others may stop trading too. And unless the other player was a traitor themselves, you'll be marked a traitor for 30 seconds. During this time an icon will be above your name and you will have a 50% defense debuff. Tribes are less likely to ally with you and players will think twice before doing so.",
     "ally_donate": "Donate some of your troops to your ally. Used when they're low on troops and are being attacked, or when they need that extra power to crush an enemy.",
     "ally_donate_gold": "Donate some of your gold to your ally. Used when they're low on gold and need it for buildings, or when your team member is saving for that MIRV.",
@@ -1223,6 +1241,12 @@
     "drag": "drag",
     "exit_confirmation": "Are you sure you want to exit the game?",
     "fighter": "600k gold, needs Air Superiority (mil 4). Built from your own territory next to one of your airports (one fighter per airport level), it patrols 60 tiles around it and intercepts enemy bombers and air transports (60%), atom bombs (25%) and hydrogen bombs (15%), one try per target. It has 1 hit point against SAMs and is lost with its airport.",
+    "gallofront_aviation": "Aviation: Offensive Doctrine (mil 2) opens airports (O) and paradrops, Aviation (mil 3) bombers, Air Superiority (mil 4) fighters.",
+    "gallofront_capital": "Capital 👑: your first city; it boosts troops and defense around it, and losing it costs you.",
+    "gallofront_seasons": "Seasons: every 3 minutes the season changes and nudges building speed, gold or troop growth.",
+    "gallofront_spy": "Spies 🕵 (Radar, def 2): from an enemy's radial menu, reveal, steal or sabotage; Intelligence and Counter-intelligence raise the odds.",
+    "gallofront_tech": "Technologies (T / 🔬): three branches of four levels — economy, military, defense — researched one at a time, for gold.",
+    "gallofront_title": "What's new in GalloFront",
     "game_id_tooltip": "Game ID",
     "hotkeys": "Hotkeys",
     "icon_ally": "Handshake - Ally. This player is your ally.",
@@ -1251,7 +1275,7 @@
     "option_settings": "Settings - Open the settings menu. Inside you can toggle things like Alternate view, Emojis, Dark Mode, Hidden names, action on left click and more.",
     "option_speed": "Speed - Adjust the game speed. Unavailable in public games.",
     "option_timer": "Timer - Time passed since the start of the game.",
-    "paradrop": "From the attack menu on any land that is not an ally's, with Aviation (mil 3): an air transport (150k gold) carries the attack ratio of your troops — at most 25% of them and 50k per airport level — from an airport in range, at 4 tiles per tick, and lands them as a local attack. Landing on a player's land costs 20% of the troops. Fighters and SAMs can shoot it down.",
+    "paradrop": "From the attack menu on any land that is not an ally's, with Offensive Doctrine (mil 2): an air transport (150k gold) carries the attack ratio of your troops — at most 25% of them and 50k per airport level — from an airport in range, at 4 tiles per tick, and lands them as a local attack. Landing on a player's land costs 20% of the troops. Fighters and SAMs can shoot it down.",
     "player_icons": "Player icons",
     "radial_boat": "Send a Boat (transport ship) to attack at the selected location. Only available if you have access to water.",
     "radial_build": "Open the Build menu.",
@@ -1261,7 +1285,7 @@
     "radial_info": "Open the Info menu.",
     "radial_title": "Radial menu",
     "seasons": "Seasons - Under the timer: the season (3 minutes each, spring → summer → autumn → winter) and its effect. Spring: buildings go up 20% faster. Summer: workers earn 10% more gold. Autumn: trade ships bring 15% more gold. Winter: troops grow 30% slower. Can be turned off in private lobbies and solo.",
-    "spy": "With the Intelligence technology (def 3), send a spy 🕵 against an enemy from their menu (300k gold, 3 in flight at most, 20 s between two). Nobody else sees it. Reveal shows their exact gold, troops and ready silos/SAMs for 60 s (85%); Steal takes 8% of their gold, up to 2M (65%); Sabotage stops a SAM or silo for 60 s or takes a level off a city, port, factory or defense post (55%). Your def 4 adds 10 points; the target's def 3 removes 15 and def 4 another 35 (and makes revealed data 30 s old). A failed spy has one chance in two to be captured, which tells the victim who sent it.",
+    "spy": "With Radar (def 2), send a spy 🕵 against an enemy from their menu (300k gold, 3 in flight at most, 20 s between two). Nobody else sees it. Reveal shows their exact gold, troops and ready silos/SAMs for 60 s (85%); Steal takes 8% of their gold, up to 2M (65%); Sabotage stops a SAM or silo for 60 s or takes a level off a city, port, factory or defense post (55%). Your def 3 adds 10 points and def 4 another 10; the target's def 3 removes 15 and def 4 another 35 (and makes revealed data 30 s old). A failed spy has one chance in two to be captured, which tells the victim who sent it.",
     "table_action": "Action",
     "table_key": "Key",
     "troubleshooting_desc": "If you experience performance issues, crashes, or other problems while playing OpenFront, please visit our Troubleshooting page for help diagnosing and fixing common issues:",
@@ -1415,6 +1439,7 @@
     "sams": "SAMs",
     "shipTradeGoldPerMin": "Ship Trade Gold/min",
     "team": "Team",
+    "techs": "Technologies",
     "trainTradeGoldPerMin": "Train Trade Gold/min",
     "troops": "Troops",
     "type": "Type",
@@ -1481,11 +1506,16 @@
     "menu": "Menu",
     "news": "News",
     "play": "Play",
+    "play_now": "▶ Play now",
+    "play_now_in": "{mode} · starts in {time}",
+    "play_now_solo": "No public game right now: quick solo",
+    "play_now_starting": "{mode} · starting",
     "privacy_policy": "Privacy Policy",
     "quit": "Exit game",
     "settings": "Settings",
     "sign_in": "Sign in",
     "solo": "Solo",
+    "solo_quick": "Quick solo",
     "store": "Store",
     "terms_of_service": "Terms of Service",
     "title": "OpenFront (ALPHA)",
@@ -1806,6 +1836,7 @@
     "cosmetics": "Equipped",
     "emotes": "Emojis",
     "flip_rocket_trajectory": "Flip rocket trajectory",
+    "gallofront": "GalloFront",
     "gold": "Gold",
     "intel": "Intel ({seconds}s left)",
     "intel_gold": "Exact gold",
@@ -2142,11 +2173,11 @@
     "delete_unit_description": "Click to delete the nearest unit",
     "delete_unit_title": "Delete Unit",
     "paradrop": "Paradrop",
-    "paradrop_desc": "Fly the attack ratio of your troops (at most 25% of them, 50k per airport level) from an airport in range and land them here as an attack. Landing on a player costs 20%. 150k gold, needs Aviation (mil 3).",
+    "paradrop_desc": "Fly the attack ratio of your troops (at most 25% of them, 50k per airport level) from an airport in range and land them here as an attack. Landing on a player costs 20%. 150k gold, needs Offensive Doctrine (mil 2).",
     "set_capital": "Capital",
     "set_capital_desc": "Make this city your capital: +10% max troops and stronger defense within 30 tiles. 3 min cooldown between moves.",
     "spy": "Spy",
-    "spy_desc": "Send a spy against this player: reveal, steal or sabotage. Needs Intelligence (def 3), 300k gold, at most 3 spies in flight, 20 s between two.",
+    "spy_desc": "Send a spy against this player: reveal, steal or sabotage. Needs Radar (def 2), 300k gold, at most 3 spies in flight, 20 s between two.",
     "spy_reveal": "Reveal",
     "spy_reveal_desc": "Intel on this player for 60 s: exact gold and troops, ready silos and SAMs. 85% success. 300k gold.",
     "spy_sabotage": "Sabotage",
@@ -2473,15 +2504,15 @@
       "name": "Fortifications"
     },
     "def_2": {
-      "desc": "SAM range +15%, SAM reload 90→70, warship range +15%.",
+      "desc": "SAM range +15%, SAM reload 90→70, warship range +15%. Unlocks spies.",
       "name": "Radar"
     },
     "def_3": {
-      "desc": "Will unlock espionage (coming soon).",
+      "desc": "Your spies +10 points of success; enemy spies against you -15.",
       "name": "Intelligence"
     },
     "def_4": {
-      "desc": "Coming soon.",
+      "desc": "Your spies +10 more points; enemy spies -35 and their intel is 30 s old.",
       "name": "Counter-intelligence"
     },
     "eco_1": {
@@ -2505,11 +2536,11 @@
       "name": "Conscription"
     },
     "mil_2": {
-      "desc": "Attack losses -12%, attacks 8% faster, 4 boats, warships +20% HP.",
+      "desc": "Attack losses -12%, attacks 8% faster, 4 boats, warships +20% HP. Unlocks airports and paradrops.",
       "name": "Offensive Doctrine"
     },
     "mil_3": {
-      "desc": "Unlocks airports, bombers and paradrops.",
+      "desc": "Unlocks bombers (400k): a raid kills up to 8% of the defender's troops.",
       "name": "Aviation"
     },
     "mil_4": {
@@ -2535,7 +2566,8 @@
     "requires": "Requires level {level}",
     "research": "Research",
     "researching": "Researching…",
-    "title": "Technologies"
+    "title": "Technologies",
+    "unlocks": "Unlocks: {units}"
   },
   "territory_patterns": {
     "pattern": {
@@ -2724,6 +2756,8 @@
     "camera_movement": "Camera Movement",
     "center_camera": "Center Camera",
     "center_camera_desc": "Center camera on player",
+    "coach_hints_desc": "One-shot tips during your first games (build a city, start a research, airports…).",
+    "coach_hints_label": "Coach hints",
     "coordinate_grid_desc": "Toggle the alphanumeric grid overlay",
     "coordinate_grid_label": "Coordinate Grid",
     "cursor_cost_label_desc": "Show a cost pill under the build cursor icon",
@@ -2769,6 +2803,8 @@
     "ground_attack_desc": "Send a ground attack to the tile under your cursor.",
     "halloween_theme_desc": "Show the Halloween look on the home page.",
     "halloween_theme_label": "Halloween Theme",
+    "haptics_desc": "Buzz when you are attacked, a bomb is inbound, your capital falls or a research completes (phones).",
+    "haptics_label": "Vibrations",
     "help_messages_desc": "Show contextual tips and warnings during gameplay, such as army limit warnings and general gameplay advice.",
     "help_messages_label": "Help Messages",
     "highlight_glow_strength_label": "Highlight strength",
@@ -2901,11 +2937,21 @@
     "new_lobby": "New Lobby",
     "other_team": "{team} team has won!",
     "other_won": "{player} has won!",
+    "play_again": "Play again",
     "requeue": "Play Again",
     "spectate": "Spectate",
+    "stat_attacks_received": "Troops received",
+    "stat_attacks_sent": "Troops sent",
+    "stat_cities": "Cities built",
+    "stat_duration": "Duration",
+    "stat_gold": "Gold earned",
+    "stat_nukes": "Nukes launched",
+    "stat_techs": "Technologies",
+    "stat_territory": "Peak territory",
     "support_openfront": "Support OpenFront!",
     "territory_pattern": "Purchase a territory skin to go ad-free!",
     "you_won": "You Won!",
+    "your_game": "Your game",
     "your_team": "Your team won!",
     "youtube_tutorial": "Need some help?"
   }

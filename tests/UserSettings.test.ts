@@ -364,11 +364,13 @@ describe("UserSettings stats columns", () => {
       "tiles",
       "gold",
       "maxtroops",
+      "techs",
     ]);
     expect(new UserSettings().statsColumns("team")).toEqual([
       "tiles",
       "gold",
       "maxtroops",
+      "techs",
     ]);
   });
 
@@ -402,6 +404,7 @@ describe("UserSettings stats columns", () => {
       "tiles",
       "gold",
       "maxtroops",
+      "techs",
     ]);
   });
 
@@ -412,6 +415,7 @@ describe("UserSettings stats columns", () => {
       "tiles",
       "gold",
       "maxtroops",
+      "techs",
     ]);
   });
 

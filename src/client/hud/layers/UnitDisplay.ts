@@ -3,6 +3,7 @@ import {
   BuildMenus,
   Gold,
   PlayerBuildableUnitType,
+  TechId,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
 import { renderNumber } from "@openfront/engine-lib/Format";
@@ -11,6 +12,7 @@ import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import { Controller } from "../../Controller";
 import { ToggleStructureEvent } from "../../InputHandler";
+import { Platform } from "../../Platform";
 import { UIState } from "../../UIState";
 import { UserSettings } from "../../UserSettings";
 import { translateText } from "../../Utils";
@@ -30,6 +32,18 @@ import {
   warshipIcon,
 } from "../HotbarIcons";
 import { TutorialHighlight, TutorialHighlightEvent } from "../Tutorial";
+import { missingTech, requiresTechLabel, techName } from "./TechLock";
+import { ShowTechPanelEvent } from "./TechPanelEvents";
+
+/**
+ * Touch devices get no hover tooltip: a tap fires mouseenter, the tooltip
+ * appeared inside the scrolling row, the row grew a scrollbar, the item
+ * moved out from under the finger, mouseleave fired, and so on — the
+ * "shivering" build bar. The name and cost sit under the icon instead.
+ */
+function hoverTooltips(): boolean {
+  return !Platform.isTouch;
+}
 
 @customElement("unit-display")
 export class UnitDisplay extends LitElement implements Controller {
@@ -113,6 +127,11 @@ export class UnitDisplay extends LitElement implements Controller {
     }
   }
 
+  /** Counts and costs change slowly; 10 Hz re-renders only cost battery. */
+  getTickIntervalMs() {
+    return 250;
+  }
+
   tick() {
     const player = this.game?.myPlayer();
     if (!player) return;
@@ -144,10 +163,14 @@ export class UnitDisplay extends LitElement implements Controller {
       return null;
     }
 
+    // The one tooltip lives OUTSIDE the scrolling row (absolute, no
+    // pointer events, anchored to this wrapper), so showing it can never
+    // change the row's size or scrollbars.
     return html`
-      <div class="border-t border-white/10 p-0.5 w-full">
+      <div class="relative border-t border-white/10 p-0.5 w-full">
+        ${this.renderTooltip()}
         <div
-          class="grid grid-rows-1 grid-flow-col gap-1 lg:gap-0.5 w-fit max-w-full mx-auto overflow-x-auto"
+          class="grid grid-rows-1 grid-flow-col gap-1 lg:gap-0.5 w-fit max-w-full mx-auto overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           ${this.renderUnitItem(
             cityIcon,
@@ -231,6 +254,87 @@ export class UnitDisplay extends LitElement implements Controller {
     `;
   }
 
+  /** Which hotbar entry the tooltip describes: name, hotkey and cost. */
+  private readonly structureKeys = new Map<PlayerBuildableUnitType, string>();
+  private readonly hotkeys = new Map<PlayerBuildableUnitType, string>();
+
+  private renderTooltip() {
+    const unitType = this._hoveredUnit;
+    if (unitType === null || !hoverTooltips()) return null;
+    const structureKey = this.structureKeys.get(unitType) ?? "";
+    const hotkey = this.hotkeys.get(unitType) ?? "";
+    const locked = missingTech(
+      this.game?.config(),
+      this.game?.myPlayer(),
+      unitType,
+    );
+    return html`
+      <div
+        class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 text-gray-200 text-center w-max max-w-[90vw] text-xs bg-gray-800/90 backdrop-blur-xs rounded-sm p-1 z-[100] shadow-lg pointer-events-none"
+      >
+        <div class="font-bold text-sm mb-1">
+          ${translateText("unit_type." + structureKey)}${` [${hotkey}]`}
+        </div>
+        <div class="p-2">
+          ${translateText("build_menu.desc." + structureKey)}
+        </div>
+        ${unitType === UnitType.Warship
+          ? html`<div
+              class="mt-1 px-2 py-1 text-[10px] text-cyan-300 border-t border-white/10"
+            >
+              ⇧ ${translateText("build_menu.warship_shift_hint")}
+            </div>`
+          : null}
+        ${locked !== null
+          ? html`<div class="text-amber-300">
+              ${requiresTechLabel(locked)} ·
+              ${translateText("build_menu.requires_tech_tap")}
+            </div>`
+          : html`<div class="flex items-center justify-center gap-1">
+              <img src=${goldCoinIcon} width="13" height="13" />
+              <span class="text-yellow-300"
+                >${renderNumber(this.cost(unitType))}</span
+              >
+            </div>`}
+      </div>
+    `;
+  }
+
+  private onItemClick(
+    unitType: PlayerBuildableUnitType,
+    locked: TechId | null,
+  ) {
+    if (locked !== null) {
+      // A locked unit taps through to the technology that opens it.
+      this.uiState.ghostStructure = null;
+      this.eventBus?.emit(new ShowTechPanelEvent(true, locked));
+    } else if (this.uiState.ghostStructure === unitType) {
+      this.uiState.ghostStructure = null;
+    } else if (this.canBuild(unitType)) {
+      this.uiState.ghostStructure = unitType;
+    }
+    this.requestUpdate();
+  }
+
+  private highlightStructures(unitType: PlayerBuildableUnitType) {
+    switch (unitType) {
+      case UnitType.AtomBomb:
+      case UnitType.HydrogenBomb:
+        this.eventBus?.emit(
+          new ToggleStructureEvent([
+            UnitType.MissileSilo,
+            UnitType.SAMLauncher,
+          ]),
+        );
+        break;
+      case UnitType.Warship:
+        this.eventBus?.emit(new ToggleStructureEvent([UnitType.Port]));
+        break;
+      default:
+        this.eventBus?.emit(new ToggleStructureEvent([unitType]));
+    }
+  }
+
   private renderUnitItem(
     icon: string,
     number: number | null,
@@ -242,103 +346,90 @@ export class UnitDisplay extends LitElement implements Controller {
       return html``;
     }
     const selected = this.uiState.ghostStructure === unitType;
-    const hovered = this._hoveredUnit === unitType;
     const displayHotkey = hotkey
       .replace("Digit", "")
       .replace("Key", "")
       .toUpperCase();
+    this.structureKeys.set(unitType, structureKey);
+    this.hotkeys.set(unitType, displayHotkey);
+    const locked = missingTech(
+      this.game.config(),
+      this.game.myPlayer(),
+      unitType,
+    );
+    const hover = hoverTooltips();
+    // On touch the hover handlers are simply not attached: nothing runs on a
+    // tap except the click, so nothing can re-layout under the finger.
+    const onEnter = hover
+      ? () => {
+          this._hoveredUnit = unitType;
+          this.highlightStructures(unitType);
+          this.requestUpdate();
+        }
+      : null;
+    const onLeave = hover
+      ? () => {
+          this._hoveredUnit = null;
+          this.eventBus?.emit(new ToggleStructureEvent(null));
+          this.requestUpdate();
+        }
+      : null;
 
     return html`
       <div
-        class="flex flex-col items-center relative min-w-11 lg:min-w-0"
-        @mouseenter=${() => {
-          this._hoveredUnit = unitType;
-          this.requestUpdate();
-        }}
-        @mouseleave=${() => {
-          this._hoveredUnit = null;
-          this.requestUpdate();
-        }}
+        class="flex flex-col items-center min-w-11 lg:min-w-0 select-none"
+        @mouseenter=${onEnter}
+        @mouseleave=${onLeave}
       >
-        ${hovered
-          ? html`
-              <div
-                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 text-gray-200 text-center w-max text-xs bg-gray-800/90 backdrop-blur-xs rounded-sm p-1 z-[100] shadow-lg pointer-events-none"
-              >
-                <div class="font-bold text-sm mb-1">
-                  ${translateText(
-                    "unit_type." + structureKey,
-                  )}${` [${displayHotkey}]`}
-                </div>
-                <div class="p-2">
-                  ${translateText("build_menu.desc." + structureKey)}
-                </div>
-                ${unitType === UnitType.Warship
-                  ? html`<div
-                      class="mt-1 px-2 py-1 text-[10px] text-cyan-300 border-t border-white/10"
-                    >
-                      ⇧ ${translateText("build_menu.warship_shift_hint")}
-                    </div>`
-                  : null}
-                <div class="flex items-center justify-center gap-1">
-                  <img src=${goldCoinIcon} width="13" height="13" />
-                  <span class="text-yellow-300"
-                    >${renderNumber(this.cost(unitType))}</span
-                  >
-                </div>
-              </div>
-            `
-          : null}
         <div
-          class="${this.canBuild(unitType)
-            ? ""
-            : "opacity-40"} border border-slate-500 rounded-sm px-0.5 pb-0.5 flex items-center gap-0.5 cursor-pointer
-             ${selected ? "hover:bg-gray-400/10" : "hover:bg-gray-800"}
-             rounded-sm text-white ${selected ? "bg-slate-400/20" : ""}
+          class="${locked !== null
+            ? "opacity-70 border-dashed border-amber-600"
+            : this.canBuild(unitType)
+              ? "border-slate-500"
+              : "opacity-40 border-slate-500"} border rounded-sm px-0.5 pb-0.5 flex items-center gap-0.5 cursor-pointer
+             ${hover
+            ? selected
+              ? "hover:bg-gray-400/10"
+              : "hover:bg-gray-800"
+            : ""}
+             text-white ${selected ? "bg-slate-400/20" : ""}
              ${this.tutorialHighlight === unitType ? "tutorial-highlight" : ""}"
-          @click=${() => {
-            if (selected) {
-              this.uiState.ghostStructure = null;
-            } else if (this.canBuild(unitType)) {
-              this.uiState.ghostStructure = unitType;
-            }
-            this.requestUpdate();
-          }}
-          @mouseenter=${() => {
-            switch (unitType) {
-              case UnitType.AtomBomb:
-              case UnitType.HydrogenBomb:
-                this.eventBus?.emit(
-                  new ToggleStructureEvent([
-                    UnitType.MissileSilo,
-                    UnitType.SAMLauncher,
-                  ]),
-                );
-                break;
-              case UnitType.Warship:
-                this.eventBus?.emit(new ToggleStructureEvent([UnitType.Port]));
-                break;
-              default:
-                this.eventBus?.emit(new ToggleStructureEvent([unitType]));
-            }
-          }}
-          @mouseleave=${() =>
-            this.eventBus?.emit(new ToggleStructureEvent(null))}
+          title=${hover
+            ? ""
+            : locked !== null
+              ? requiresTechLabel(locked)
+              : translateText("unit_type." + structureKey)}
+          @click=${() => this.onItemClick(unitType, locked)}
         >
-          ${html`<div class="ml-0.5 text-[10px] relative -top-1 text-gray-400">
+          <div class="ml-0.5 text-[10px] relative -top-1 text-gray-400">
             ${displayHotkey}
-          </div>`}
+          </div>
           <div class="flex items-center gap-0.5 pt-0.5">
             <img
               src=${icon}
               alt=${structureKey}
               class="align-middle size-7 lg:size-5"
             />
-            ${number !== null
-              ? html`<span class="text-xs">${renderNumber(number)}</span>`
-              : null}
+            ${locked !== null
+              ? html`<span class="text-xs" aria-hidden="true">🔒</span>`
+              : number !== null
+                ? html`<span class="text-xs">${renderNumber(number)}</span>`
+                : null}
           </div>
         </div>
+        ${hover
+          ? null
+          : html`<div
+              class="h-3.5 max-w-12 truncate text-[9px] leading-[14px] tabular-nums ${locked !==
+              null
+                ? "text-amber-300"
+                : "text-yellow-300"}"
+              translate="no"
+            >
+              ${locked !== null
+                ? techName(locked)
+                : renderNumber(this.cost(unitType))}
+            </div>`}
       </div>
     `;
   }

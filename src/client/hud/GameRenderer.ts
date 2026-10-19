@@ -48,6 +48,7 @@ import { PlayerPanel } from "./layers/PlayerPanel";
 import { ReplayPanel } from "./layers/ReplayPanel";
 import { SettingsModal } from "./layers/SettingsModal";
 import { SpawnTimer } from "./layers/SpawnTimer";
+import { CoachHints } from "./layers/CoachHints";
 import { SeasonDisplay } from "./layers/SeasonDisplay";
 import { TechPanel } from "./layers/TechPanel";
 import { TutorialPanel } from "./layers/TutorialPanel";
@@ -207,6 +208,13 @@ export function createRenderer(
     console.error("season display not found");
   }
   seasonDisplay.game = game;
+
+  const coachHints = document.querySelector("coach-hints") as CoachHints;
+  if (!(coachHints instanceof CoachHints)) {
+    console.error("coach hints not found");
+  }
+  coachHints.game = game;
+  coachHints.eventBus = eventBus;
 
   const settingsModal = document.querySelector(
     "settings-modal",
@@ -381,6 +389,7 @@ export function createRenderer(
     unitDisplay,
     gameRightSidebar,
     seasonDisplay,
+    coachHints,
     controlPanel,
     playerInfo,
     winModal,

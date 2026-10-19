@@ -19,6 +19,8 @@ import { GameView } from "../../view";
 import { PlayerView } from "../../view/PlayerView";
 import { goldCoinIcon, soldierIcon } from "../HotbarIcons";
 import { TutorialHighlight, TutorialHighlightEvent } from "../Tutorial";
+import { goldRateTracker } from "./lib/GoldRateTracker";
+import { recordGoldRates } from "./lib/StatsColumns";
 const swordIcon = assetUrl("images/SwordIcon.svg");
 
 @customElement("control-panel")
@@ -49,6 +51,9 @@ export class ControlPanel extends LitElement implements Controller {
 
   @state()
   private _gold: Gold;
+  // GalloFront: gold income per second, shown next to the balance on phones
+  // (the same window as the leaderboard's gold/min column).
+  private _goldRate: number = 0;
 
   @state()
   private _attackingTroops: number = 0;
@@ -130,6 +135,8 @@ export class ControlPanel extends LitElement implements Controller {
     const config = this.game.config();
     this._maxTroops = config.maxTroops(player);
     this._gold = player.gold();
+    recordGoldRates(player, this.game);
+    this._goldRate = goldRateTracker.goldIncomePerMin(player.smallID()) / 60;
     this._troops = player.troops();
     this._attackingTroops = player
       .outgoingAttacks()
@@ -618,7 +625,7 @@ export class ControlPanel extends LitElement implements Controller {
       <div class="flex gap-2 items-center">
         <!-- Gold -->
         <div
-          class="flex items-center justify-center p-1 gap-0.5 border rounded-md border-yellow-400 font-bold text-yellow-400 text-xs w-1/5 shrink-0 relative ${this.tutorialHighlightClass(
+          class="flex flex-wrap items-center justify-center p-1 gap-0.5 border rounded-md border-yellow-400 font-bold text-yellow-400 text-xs w-1/5 shrink-0 relative ${this.tutorialHighlightClass(
             "gold",
           )}"
           translate="no"
@@ -634,6 +641,11 @@ export class ControlPanel extends LitElement implements Controller {
             : ""}
           <img src=${goldCoinIcon} width="13" height="13" />
           <span class="px-0.5">${renderNumber(this._gold)}</span>
+          <span
+            data-gold-rate
+            class="text-[9px] leading-none text-green-400 tabular-nums whitespace-nowrap"
+            >+${renderNumber(Math.round(this._goldRate))}/s</span
+          >
         </div>
         <!-- Troop bar -->
         <div

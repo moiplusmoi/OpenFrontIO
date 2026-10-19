@@ -5,7 +5,7 @@ import {
   TechId,
 } from "@openfront/engine-api/game/GameTypes";
 import { renderNumber } from "@openfront/engine-lib/Format";
-import { EventBus, GameEvent } from "@openfront/shared/EventBus";
+import { EventBus } from "@openfront/shared/EventBus";
 import { html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { Controller } from "../../Controller";
@@ -13,11 +13,12 @@ import { CloseViewEvent, ToggleTechPanelEvent } from "../../InputHandler";
 import { SendResearchIntentEvent } from "../../Transport";
 import { translateText } from "../../Utils";
 import { GameView, PlayerView } from "../../view";
+import { unitsUnlockedBy, unitTypeKey } from "./TechLock";
 
-/** Opens (or closes) the technologies panel. */
-export class ShowTechPanelEvent implements GameEvent {
-  constructor(public readonly visible: boolean = true) {}
-}
+import { ShowTechPanelEvent } from "./TechPanelEvents";
+
+// Re-exported so existing imports (GameRightSidebar, tests) keep working.
+export { ShowTechPanelEvent };
 
 const BRANCHES: readonly { branch: TechBranch; key: string; icon: string }[] = [
   { branch: TechBranch.Economy, key: "economy", icon: "💰" },
@@ -26,6 +27,9 @@ const BRANCHES: readonly { branch: TechBranch; key: string; icon: string }[] = [
 ];
 
 type TechStatus = "done" | "researching" | "available" | "locked";
+
+/** How long the card a locked item sent us to keeps its ring. */
+const HIGHLIGHT_MS = 4000;
 
 /**
  * GalloFront: the technologies panel. A 3 (branches) × 4 (levels) grid of
@@ -40,6 +44,9 @@ export class TechPanel extends LitElement implements Controller {
   @state() private isVisible = false;
   /** Bumped each tick while open so the progress bar and gold refresh. */
   @state() private tickCount = 0;
+  /** The tech a locked build item sent us to; flashed and scrolled into view. */
+  @state() private highlight: TechId | null = null;
+  private highlightTimer: number | undefined;
 
   createRenderRoot() {
     return this; // Light DOM so Tailwind applies.
@@ -47,7 +54,7 @@ export class TechPanel extends LitElement implements Controller {
 
   init() {
     this.eventBus.on(ShowTechPanelEvent, (e) =>
-      e.visible ? this.open() : this.close(),
+      e.visible ? this.open(e.highlight) : this.close(),
     );
     this.eventBus.on(ToggleTechPanelEvent, () =>
       this.isVisible ? this.close() : this.open(),
@@ -61,12 +68,33 @@ export class TechPanel extends LitElement implements Controller {
     if (this.isVisible) this.tickCount = this.game.ticks();
   }
 
-  open() {
+  open(highlight: TechId | null = null) {
     this.isVisible = true;
+    window.clearTimeout(this.highlightTimer);
+    this.highlight = highlight;
+    if (highlight !== null) {
+      this.highlightTimer = window.setTimeout(() => {
+        this.highlight = null;
+      }, HIGHLIGHT_MS);
+    }
   }
 
   close() {
     this.isVisible = false;
+    window.clearTimeout(this.highlightTimer);
+    this.highlight = null;
+  }
+
+  protected updated(changed: Map<PropertyKey, unknown>) {
+    if (!changed.has("highlight") || this.highlight === null) return;
+    // Lit has committed the DOM; bring the highlighted card into view.
+    const card = this.querySelector(`[data-tech="${this.highlight}"]`);
+    if (
+      card instanceof HTMLElement &&
+      typeof card.scrollIntoView === "function"
+    ) {
+      card.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
   }
 
   private onBackdropClick = (e: MouseEvent) => {
@@ -181,10 +209,15 @@ export class TechPanel extends LitElement implements Controller {
     else if (status === "researching")
       box = "border-blue-400/60 bg-blue-500/10";
     else if (status === "locked") box = "border-white/5 bg-white/2 opacity-50";
+    const ring =
+      this.highlight === def.id
+        ? "ring-2 ring-amber-400 shadow-[0_0_18px_rgba(251,191,36,0.6)] !opacity-100"
+        : "";
+    const unlocks = unitsUnlockedBy(config, def.id);
 
     return html`
       <article
-        class="flex flex-col gap-1.5 rounded-xl border p-3 ${box}"
+        class="flex flex-col gap-1.5 rounded-xl border p-3 ${box} ${ring}"
         data-tech=${def.id}
         data-status=${status}
       >
@@ -199,6 +232,16 @@ export class TechPanel extends LitElement implements Controller {
         <p class="line-clamp-2 min-h-[2.5rem] text-sm leading-5 text-zinc-300">
           ${translateText(`tech.${def.id}.desc`)}
         </p>
+        ${unlocks.length > 0
+          ? html`<p class="text-xs leading-4 text-amber-200/90">
+              🔓
+              ${translateText("tech_panel.unlocks", {
+                units: unlocks
+                  .map((unit) => translateText(unitTypeKey(unit)))
+                  .join(", "),
+              })}
+            </p>`
+          : nothing}
         <div
           class="flex items-center justify-between gap-2 text-sm tabular-nums"
           translate="no"

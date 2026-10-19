@@ -26,6 +26,7 @@ import "../../components/LevelBadge";
 import { actionButton } from "../../components/ui/ActionButton";
 import "../../components/ui/Divider";
 import { Controller } from "../../Controller";
+import { Platform } from "../../Platform";
 import {
   CloseViewEvent,
   MouseUpEvent,
@@ -88,6 +89,8 @@ export class PlayerPanel extends LitElement implements Controller {
   private kickedPlayerIDs = new Set<string>();
   private userSettings = new UserSettings();
 
+  // GalloFront block (techs, capital, intel): folded on phones, open elsewhere.
+  @state() private galloFrontOpen = !Platform.isMobileWidth;
   @state() private sendTarget: PlayerView | null = null;
   @state() private sendMode: "troops" | "gold" | "none" = "none";
   @state() public isVisible: boolean = false;
@@ -709,6 +712,43 @@ export class PlayerPanel extends LitElement implements Controller {
     `;
   }
 
+  /**
+   * GalloFront: the fork's own lines (technologies, capital, intel) under one
+   * "GalloFront" header with a chevron; folded by default on phones, where
+   * the panel is already tall.
+   */
+  private renderGalloFront(other: PlayerView, viewer: PlayerView) {
+    return html`
+      <div class="mb-1" data-gallofront>
+        <button
+          type="button"
+          class="flex w-full items-center gap-1.5 rounded-lg bg-white/4 px-3 py-1.5 text-left text-white"
+          aria-expanded=${this.galloFrontOpen}
+          @click=${() => {
+            this.galloFrontOpen = !this.galloFrontOpen;
+          }}
+        >
+          <span
+            class="inline-block transition-transform ${this.galloFrontOpen
+              ? "rotate-90"
+              : ""}"
+            aria-hidden="true"
+            >›</span
+          >
+          <span class="font-semibold">
+            ${translateText("player_panel.gallofront")}
+          </span>
+        </button>
+        ${this.galloFrontOpen
+          ? html`<div class="mt-1">
+              ${this.renderTechs(other)} ${this.renderCapital(other)}
+              ${this.renderIntel(other, viewer)}
+            </div>`
+          : ""}
+      </div>
+    `;
+  }
+
   /** GalloFront: "Technologies: Eco N · Mil N · Def N". */
   private renderTechs(other: PlayerView) {
     const levels = [
@@ -1273,9 +1313,8 @@ export class PlayerPanel extends LitElement implements Controller {
                     <ui-divider></ui-divider>
 
                     <!-- Resources -->
-                    ${this.renderResources(other)} ${this.renderTechs(other)}
-                    ${this.renderCapital(other)}
-                    ${this.renderIntel(other, viewer)}
+                    ${this.renderResources(other)}
+                    ${this.renderGalloFront(other, viewer)}
 
                     <!-- Rocket direction toggle -->
                     ${other === viewer && !isSpectator

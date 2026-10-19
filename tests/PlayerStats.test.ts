@@ -66,7 +66,7 @@ describe("PlayerStats", () => {
     // Only selected stat tracks share definite spare space. Rank, the clan
     // column, name, and picker remain fixed and never stretch.
     expect(content?.getAttribute("style")).toContain(
-      "34px 80px 100px auto auto auto 32px",
+      "34px 80px 100px auto auto auto auto 32px",
     );
 
     playerStats.remove();
@@ -257,12 +257,12 @@ describe("PlayerStats clan column", () => {
           '.stats-table-header > [role="columnheader"]',
         ),
       ]),
-    ).toEqual([false, true, true, true, true, true, true]);
+    ).toEqual([false, true, true, true, true, true, true, true]);
     expect(
       hasRule([
         ...playerStats.querySelectorAll('.stats-table-row > [role="cell"]'),
       ]),
-    ).toEqual([false, true, true, true, true, true]);
+    ).toEqual([false, true, true, true, true, true, true]);
   });
 
   it("leaves an empty cell for clanless players", async () => {

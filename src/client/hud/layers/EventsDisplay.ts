@@ -21,6 +21,7 @@ import { customElement, query, state } from "lit/decorators.js";
 import { DirectiveResult } from "lit/directive.js";
 import { unsafeHTML, UnsafeHTMLDirective } from "lit/directives/unsafe-html.js";
 import { Controller } from "../../Controller";
+import { haptic } from "../../Haptics";
 import { SendAllianceRequestIntentEvent } from "../../Transport";
 import { UserSettings } from "../../UserSettings";
 
@@ -32,6 +33,7 @@ import { renderNumber, renderTroops } from "@openfront/engine-lib/Format";
 import { PlaySoundEffectEvent } from "../../sound/Sounds";
 import { UIState } from "../../UIState";
 import { getMessageTypeClasses, translateText } from "../../Utils";
+import { raiseGameAlert } from "./GameAlerts";
 
 interface GameEvent {
   description: string;
@@ -121,6 +123,21 @@ const MESSAGE_COLORS: Readonly<Record<string, string>> = {
 };
 
 const isTier1 = (type: MessageType): boolean => TIER_1_TYPES.has(type);
+const isTier1Event = (event: GameEvent): boolean =>
+  isTier1(event.type) && !event.minor;
+
+// GalloFront: the small feed folds into one "+N events" line this long
+// after its last entry (phones have no room for it), a tap unfolds it.
+const TIER2_COLLAPSE_TICKS = 6 * 10;
+
+/** Inbound warnings that pulse the screen and buzz the phone. */
+const INBOUND_UNIT_KEYS: ReadonlyMap<MessageType, string> = new Map([
+  [MessageType.NUKE_INBOUND, "unit_type.atom_bomb"],
+  [MessageType.HYDROGEN_BOMB_INBOUND, "unit_type.hydrogen_bomb"],
+  [MessageType.MIRV_INBOUND, "unit_type.mirv"],
+  [MessageType.BOMBER_INBOUND, "unit_type.bomber"],
+  [MessageType.PARADROP_INBOUND, "unit_type.air_transport"],
+]);
 
 @customElement("events-display")
 export class EventsDisplay extends LitElement implements Controller {
@@ -133,6 +150,10 @@ export class EventsDisplay extends LitElement implements Controller {
   private userSettings = new UserSettings();
 
   @state() private _isVisible: boolean = false;
+
+  // GalloFront: tier-2 fold (see TIER2_COLLAPSE_TICKS).
+  @state() private tier2Expanded = false;
+  private lastTier2Tick = -1;
 
   @query(".events-container")
   private _eventsContainer?: HTMLDivElement;
@@ -308,7 +329,41 @@ export class EventsDisplay extends LitElement implements Controller {
 
   private addEvent(event: GameEvent) {
     this.events = [...this.events, event];
+    if (!isTier1Event(event)) {
+      this.lastTier2Tick = event.createdAt;
+      this.tier2Expanded = false;
+    }
     this.requestUpdate();
+  }
+
+  private expandTier2() {
+    this.tier2Expanded = true;
+    this.requestUpdate();
+  }
+
+  // GalloFront: game feel on the phone — a buzz (Haptics) and a sound for
+  // the events that matter most, from the victim's point of view.
+  private feelDisplayMessage(message: string, type: MessageType) {
+    switch (type) {
+      case MessageType.CAPITAL_FALLEN:
+        if (message !== "events_display.capital_captured") {
+          haptic("capital_lost");
+          this.eventBus.emit(new PlaySoundEffectEvent("defeat"));
+        }
+        return;
+      case MessageType.RESEARCH_COMPLETE:
+        haptic("research");
+        this.eventBus.emit(new PlaySoundEffectEvent("build-city"));
+        return;
+      case MessageType.SPY_CAPTURED:
+        haptic("spy_captured");
+        return;
+      case MessageType.AIR_RAID:
+        if (message === "events_display.air_raid") haptic("raid");
+        return;
+      default:
+        return;
+    }
   }
 
   // The core simulation runs identically for every client and has no notion
@@ -416,6 +471,7 @@ export class EventsDisplay extends LitElement implements Controller {
       focusID: event.focusPlayerID,
       colorClasses: MESSAGE_COLORS[message],
     });
+    this.feelDisplayMessage(message, event.messageType);
   }
 
   onDisplayChatEvent(event: DisplayChatMessageUpdate) {
@@ -722,6 +778,34 @@ export class EventsDisplay extends LitElement implements Controller {
       createdAt: this.game.ticks(),
       unitView: unitView,
     });
+    this.feelIncomingUnit(event.messageType, unitView);
+  }
+
+  // GalloFront: a bomb, bomber or paradrop on its way pulses the screen
+  // yellow with a double buzz; a naval invasion is an attack (red).
+  private feelIncomingUnit(type: MessageType, unitView: UnitView | undefined) {
+    const name = unitView?.owner().displayName() ?? "";
+    if (type === MessageType.NAVAL_INVASION_INBOUND) {
+      haptic("attack");
+      raiseGameAlert(
+        "attack",
+        translateText("heads_up_message.attacked", {
+          name,
+          troops: renderTroops(unitView?.troops() ?? 0),
+        }),
+      );
+      return;
+    }
+    const unitKey = INBOUND_UNIT_KEYS.get(type);
+    if (unitKey === undefined) return;
+    haptic("inbound");
+    raiseGameAlert(
+      "inbound",
+      translateText("heads_up_message.inbound", {
+        name,
+        unit: translateText(unitKey),
+      }),
+    );
   }
 
   private getEventDescription(
@@ -800,13 +884,15 @@ export class EventsDisplay extends LitElement implements Controller {
     const tier1Events: GameEvent[] = [];
     let tier2Events: GameEvent[] = [];
     for (const event of this.events) {
-      (isTier1(event.type) && !event.minor ? tier1Events : tier2Events).push(
-        event,
-      );
+      (isTier1Event(event) ? tier1Events : tier2Events).push(event);
     }
     tier1Events.sort((a, b) => a.createdAt - b.createdAt);
     tier2Events.sort((a, b) => a.createdAt - b.createdAt);
     tier2Events = tier2Events.slice(-4);
+    const tier2Collapsed =
+      tier2Events.length > 0 &&
+      !this.tier2Expanded &&
+      this.game.ticks() - this.lastTier2Tick >= TIER2_COLLAPSE_TICKS;
 
     if (
       tier1Events.length === 0 &&
@@ -818,21 +904,33 @@ export class EventsDisplay extends LitElement implements Controller {
 
     return html`
       <div class="flex flex-col gap-1 w-full min-[1200px]:w-96">
-        ${tier2Events.length > 0
+        ${tier2Collapsed
           ? html`
-              <div
-                class="bg-gray-800/92 backdrop-blur-sm max-h-[12vh] lg:max-h-[22vh] overflow-y-auto rounded-lg opacity-90 events-container"
+              <button
+                data-events-collapsed
+                class="bg-gray-800/80 backdrop-blur-sm rounded-lg px-2 py-0.5 text-left text-xs lg:text-sm text-gray-300 pointer-events-auto w-fit"
+                @click=${() => this.expandTier2()}
               >
-                <table
-                  class="w-full border-collapse text-white text-xs lg:text-sm pointer-events-auto"
-                >
-                  <tbody>
-                    ${tier2Events.map((event) => this.renderEventRow(event))}
-                  </tbody>
-                </table>
-              </div>
+                ${translateText("events_display.more_events", {
+                  count: tier2Events.length,
+                })}
+              </button>
             `
-          : ""}
+          : tier2Events.length > 0
+            ? html`
+                <div
+                  class="bg-gray-800/92 backdrop-blur-sm max-h-[12vh] lg:max-h-[22vh] overflow-y-auto rounded-lg opacity-90 events-container"
+                >
+                  <table
+                    class="w-full border-collapse text-white text-xs lg:text-sm pointer-events-auto"
+                  >
+                    <tbody>
+                      ${tier2Events.map((event) => this.renderEventRow(event))}
+                    </tbody>
+                  </table>
+                </div>
+              `
+            : ""}
         ${tier1Events.length > 0 || showBetrayalTimer
           ? html`
               <div

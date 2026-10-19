@@ -94,6 +94,22 @@ export class HelpModal extends BaseModal {
           [&_td:nth-child(2)]:[unicode-bidi:plaintext]
           [&_td:nth-child(3)]:[unicode-bidi:plaintext]"
       >
+          <!-- GalloFront: what this fork adds, one line each, ahead of everything -->
+          <section
+            class="bg-amber-500/10 rounded-xl border border-amber-400/30 px-5 py-4 mb-6"
+          >
+            <h3 class="!mt-0 !mb-2 text-amber-200">
+              ✨ ${translateText("help_modal.gallofront_title")}
+            </h3>
+            <ul class="!mb-0 text-sm">
+              <li>🔬 ${translateText("help_modal.gallofront_tech")}</li>
+              <li>👑 ${translateText("help_modal.gallofront_capital")}</li>
+              <li>🕵 ${translateText("help_modal.gallofront_spy")}</li>
+              <li>✈️ ${translateText("help_modal.gallofront_aviation")}</li>
+              <li>🍂 ${translateText("help_modal.gallofront_seasons")}</li>
+            </ul>
+          </section>
+
           <!-- In-game tutorial: starts a default solo game with the guide on -->
           <section
             class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/5 rounded-xl border border-white/10 px-5 py-4 mb-8"

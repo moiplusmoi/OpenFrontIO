@@ -19,6 +19,8 @@ function player(id: string, tiles: number): PlayerView {
     troops: () => tiles,
     totalUnitLevels: () => tiles,
     isAlive: () => true,
+    techLevel: () => 0,
+    capitalTile: () => null,
     isOnSameTeam: () => false,
   } as unknown as PlayerView;
 }

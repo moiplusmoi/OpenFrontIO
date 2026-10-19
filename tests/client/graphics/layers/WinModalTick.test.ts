@@ -209,6 +209,7 @@ describe("WinModal tick win handling", () => {
     ];
     expect(actions.map((b) => b.getAttribute("data-win-action"))).toEqual([
       "exit",
+      "play-again",
       "keep",
     ]);
     // Leaving is the quiet button, staying the main one.
