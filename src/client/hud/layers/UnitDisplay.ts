@@ -170,7 +170,7 @@ export class UnitDisplay extends LitElement implements Controller {
       <div class="relative border-t border-white/10 p-0.5 w-full">
         ${this.renderTooltip()}
         <div
-          class="grid grid-rows-1 grid-flow-col gap-1 lg:gap-0.5 w-fit max-w-full mx-auto overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          class="grid grid-cols-6 gap-1 w-full lg:w-fit lg:grid-cols-none lg:grid-rows-1 lg:grid-flow-col lg:gap-0.5 lg:mx-auto lg:overflow-x-auto lg:overflow-y-hidden lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
         >
           ${this.renderUnitItem(
             cityIcon,
@@ -377,7 +377,7 @@ export class UnitDisplay extends LitElement implements Controller {
 
     return html`
       <div
-        class="flex flex-col items-center min-w-11 lg:min-w-0 select-none"
+        class="flex flex-col items-center min-w-0 w-full lg:w-auto lg:min-w-0 select-none"
         @mouseenter=${onEnter}
         @mouseleave=${onLeave}
       >
@@ -386,7 +386,7 @@ export class UnitDisplay extends LitElement implements Controller {
             ? "opacity-70 border-dashed border-amber-600"
             : this.canBuild(unitType)
               ? "border-slate-500"
-              : "opacity-40 border-slate-500"} border rounded-sm px-0.5 pb-0.5 flex items-center gap-0.5 cursor-pointer
+              : "opacity-40 border-slate-500"} border rounded-sm px-0.5 pb-0.5 w-full lg:w-auto min-h-11 lg:min-h-0 flex items-center justify-center gap-0.5 cursor-pointer
              ${hover
             ? selected
               ? "hover:bg-gray-400/10"
@@ -420,7 +420,7 @@ export class UnitDisplay extends LitElement implements Controller {
         ${hover
           ? null
           : html`<div
-              class="h-3.5 max-w-12 truncate text-[9px] leading-[14px] tabular-nums ${locked !==
+              class="h-3.5 max-w-full lg:max-w-12 truncate text-[9px] leading-[14px] tabular-nums ${locked !==
               null
                 ? "text-amber-300"
                 : "text-yellow-300"}"
