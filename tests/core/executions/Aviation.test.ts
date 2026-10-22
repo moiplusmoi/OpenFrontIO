@@ -101,6 +101,7 @@ describe("GalloFront aviation", () => {
     learn(b, [TechId.Mil1, TechId.Mil2, TechId.Mil3, TechId.Mil4]);
     constructionExecution(game, a, 10, 10, UnitType.Airport);
     constructionExecution(game, b, 90, 90, UnitType.Airport);
+    constructionExecution(game, b, 90, 90, UnitType.Airport);
     const bAirport = b.units(UnitType.Airport)[0];
     game.addExecution(new FighterExecution(b, bAirport.tile()));
     executeTicks(game, 3);
@@ -108,14 +109,23 @@ describe("GalloFront aviation", () => {
     let intercepted = 0;
     const sorties = 12;
     for (let i = 0; i < sorties; i++) {
-      game.addExecution(new BomberExecution(a, bAirport.tile()));
+      // Each sortie is an independent roll: a raid that gets through can
+      // destroy the airport and its fighter, so rebuild both before the next.
+      if (b.unitCount(UnitType.Airport) === 0) {
+        constructionExecution(game, b, 90, 90, UnitType.Airport);
+      }
+      const target = b.units(UnitType.Airport)[0];
+      if (b.unitCount(UnitType.Fighter) === 0) {
+        game.addExecution(new FighterExecution(b, target.tile()));
+        executeTicks(game, 3);
+      }
+      game.addExecution(new BomberExecution(a, target.tile()));
       executeTicks(game, 2);
       const before = b.unitCount(UnitType.Airport);
       executeTicks(game, 70);
       // bomber gone either way; if the airport kept its level, it was shot down
       if (b.unitCount(UnitType.Airport) === before && before > 0) intercepted++;
       executeTicks(game, game.config().airportSortieCooldown(a) + 1);
-      if (b.unitCount(UnitType.Airport) === 0) break;
     }
     expect(intercepted).toBeGreaterThan(0);
   });

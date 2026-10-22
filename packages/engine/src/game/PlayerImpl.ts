@@ -1634,6 +1634,8 @@ export class PlayerImpl implements Player {
       case UnitType.Frigate:
       case UnitType.Destroyer:
         return this.warshipSpawn(targetTile);
+      case UnitType.CommercialAircraft:
+        return this.commercialSpawn(targetTile);
       case UnitType.Shell:
       case UnitType.SAMMissile:
         return targetTile;
@@ -1661,6 +1663,14 @@ export class PlayerImpl implements Player {
       default:
         assertNever(unitType);
     }
+  }
+
+  // Airliners take off from an active airport this player owns.
+  private commercialSpawn(tile: TileRef): TileRef | false {
+    const airport = this.units(UnitType.Airport).find(
+      (a) => a.tile() === tile && a.isActive() && !a.isUnderConstruction(),
+    );
+    return airport === undefined ? false : tile;
   }
 
   // GalloFront: nearest ready airport whose range covers the target tile.

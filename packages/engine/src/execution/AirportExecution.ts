@@ -1,7 +1,10 @@
+import { UnitType } from "@openfront/engine-api/game/GameTypes";
+import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import { zRef } from "@openfront/engine-lib/snapshot/SnapshotType";
 import { z } from "zod";
 import { Execution, Game, Unit } from "../game/Game";
 import { execSnapshotType } from "../snapshot/ExecutionSnapshot";
+import { CommercialAircraftExecution } from "./CommercialAircraftExecution";
 import type {
   ExecRecord,
   SnapshotReader,
@@ -23,7 +26,7 @@ export class AirportExecution implements Execution {
     this.mg = mg;
   }
 
-  tick(_ticks: number): void {
+  tick(ticks: number): void {
     if (this.airport.isUnderConstruction()) return;
     if (!this.airport.isActive()) {
       this.active = false;
@@ -38,6 +41,39 @@ export class AirportExecution implements Execution {
       if (this.mg.ticks() - frontTime < cooldown) break;
       this.airport.reloadMissile();
     }
+    this.maybeDispatchAirliner(ticks);
+  }
+
+  // Each airport gets a dispatch slot every interval. A slot launches an
+  // airliner with some odds, to a random airport of a player it can trade with.
+  // Sorties do not use the airport's sortie slots, so civil traffic never
+  // takes capacity from military flights.
+  private maybeDispatchAirliner(ticks: number): void {
+    const cfg = this.mg.config();
+    const interval = cfg.commercialAircraftSpawnInterval();
+    if (ticks % interval !== this.airport.id() % interval) return;
+    const random = new PseudoRandom(ticks * 7919 + this.airport.id());
+    if (!random.chance(cfg.commercialAircraftSpawnOdds())) return;
+    if (
+      this.mg.units(UnitType.CommercialAircraft).length >=
+      cfg.commercialAircraftCap()
+    ) {
+      return;
+    }
+    const owner = this.airport.owner();
+    const destinations = this.mg
+      .units(UnitType.Airport)
+      .filter(
+        (a) =>
+          a !== this.airport &&
+          a.isActive() &&
+          !a.isUnderConstruction() &&
+          a.owner() !== owner &&
+          owner.canTrade(a.owner()),
+      );
+    if (destinations.length === 0) return;
+    const dst = destinations[random.nextInt(0, destinations.length)];
+    this.mg.addExecution(new CommercialAircraftExecution(this.airport, dst));
   }
 
   isActive(): boolean {

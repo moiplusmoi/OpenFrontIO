@@ -517,6 +517,7 @@ export class Config {
       case UnitType.Bomber:
       case UnitType.Fighter:
       case UnitType.AirTransport:
+      case UnitType.CommercialAircraft:
         info = {};
         break;
       case UnitType.Airport:

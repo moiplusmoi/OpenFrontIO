@@ -447,6 +447,7 @@ export class EngineConfig extends Config {
       case UnitType.MIRVWarhead:
       case UnitType.TradeShip:
       case UnitType.Train:
+      case UnitType.CommercialAircraft:
         return () => 0n;
       default:
         assertNever(type);
@@ -834,6 +835,47 @@ export class EngineConfig extends Config {
 
   shellLifetime(): number {
     return 50;
+  }
+
+  /**
+   * Gold for one commercial flight of `dist` tiles, paid to both airports'
+   * owners on arrival. Same trade multipliers as a trade ship, but a flatter
+   * curve: airliners earn steadily on long routes, no short-range debuff.
+   */
+  commercialAircraftGold(
+    dist: number,
+    player: PlayerLike,
+    season: Season | null = null,
+  ): Gold {
+    const baseGold = 20_000 + 60 * dist;
+    return BigInt(
+      Math.floor(
+        baseGold *
+          this.goldMultiplierFor(player) *
+          this.techTradeMult(player) *
+          this.seasonTradeMult(season),
+      ),
+    );
+  }
+
+  /** Tiles an airliner covers per tick (air routes are straight lines). */
+  commercialAircraftSpeed(): number {
+    return 4;
+  }
+
+  /** Most airliners in flight at once, across the whole map. */
+  commercialAircraftCap(): number {
+    return 30;
+  }
+
+  /** Each airport gets one dispatch slot every this many ticks. */
+  commercialAircraftSpawnInterval(): number {
+    return 45;
+  }
+
+  /** A dispatch slot launches an airliner one time in this many. */
+  commercialAircraftSpawnOdds(): number {
+    return 3;
   }
 
   /**

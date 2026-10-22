@@ -28,6 +28,7 @@ const AIRCRAFT_TYPES = [
   UnitType.Bomber,
   UnitType.Fighter,
   UnitType.AirTransport,
+  UnitType.CommercialAircraft,
 ] as const;
 
 export class AircraftLayer implements Controller {
@@ -155,6 +156,10 @@ export class AircraftLayer implements Controller {
           break;
         case UnitType.Fighter:
           drawPlane(ctx, from.x, from.y, size * 0.7, heading, "#e2e8f0", mine);
+          break;
+        case UnitType.CommercialAircraft:
+          // Airliners are white with a gold wash, so they read as civil traffic.
+          drawPlane(ctx, from.x, from.y, size * 0.8, heading, "#fde68a", mine);
           break;
         case UnitType.AirTransport: {
           drawPlane(ctx, from.x, from.y, size * 0.9, heading, "#64748b", mine);

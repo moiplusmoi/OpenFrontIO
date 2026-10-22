@@ -1,5 +1,6 @@
 // Every entry is `<ClassName>Snapshot`, exported next to its class.
 import { AirportExecutionSnapshot } from "../execution/AirportExecution";
+import { CommercialAircraftExecutionSnapshot } from "../execution/CommercialAircraftExecution";
 import { BomberExecutionSnapshot } from "../execution/BomberExecution";
 import { FighterExecutionSnapshot } from "../execution/FighterExecution";
 import { ParadropExecutionSnapshot } from "../execution/ParadropExecution";
@@ -61,6 +62,7 @@ import type { ExecutionSnapshotType } from "./ExecutionSnapshot";
  */
 export const EXECUTION_SNAPSHOT_TYPES = [
   AirportExecutionSnapshot,
+  CommercialAircraftExecutionSnapshot,
   BomberExecutionSnapshot,
   FighterExecutionSnapshot,
   ParadropExecutionSnapshot,

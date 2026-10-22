@@ -206,6 +206,10 @@ describe.each(VARIANTS)("full game snapshots: %s", (_, overrides) => {
         "Bomber",
         "Fighter",
         "Paradrop",
+        // GalloFront: an airliner needs two airports of two trading players
+        // (airports need mil_2), which the reference game never sets up.
+        // CommercialAircraft.test.ts covers its flight and snapshot.
+        "CommercialAircraft",
       ]);
       const missing = EXECUTION_SNAPSHOT_TYPES.map((t) => t.name).filter(
         (name) => !reference.execTypes.has(name) && !neverStored.has(name),

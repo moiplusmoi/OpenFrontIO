@@ -2671,6 +2671,8 @@
     "boat": "Boat",
     "bomber": "Bomber",
     "city": "City",
+    "commercial_aircraft": "Commercial aircraft",
+    "commercial_aircraft_desc": "Airliner that flies between airports and pays both owners on arrival.",
     "defense_post": "Defense Post",
     "destroyer": "Destroyer",
     "factory": "Factory",

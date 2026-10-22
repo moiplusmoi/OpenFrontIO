@@ -2338,7 +2338,9 @@
     "fighter": "Chasseur",
     "air_transport": "Transport aérien",
     "frigate": "Frégate",
-    "destroyer": "Destroyer"
+    "destroyer": "Destroyer",
+    "commercial_aircraft": "Avion de ligne",
+    "commercial_aircraft_desc": "Avion qui relie les aéroports et paie ses deux propriétaires à l'arrivée."
   },
   "update_available": {
     "desktop": "Une nouvelle version d’OpenFront est disponible. Elle sera téléchargée en arrière-plan ; une fois prête, rechargez la page depuis la barre de mise à jour.",

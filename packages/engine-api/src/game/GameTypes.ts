@@ -216,6 +216,8 @@ export enum UnitType {
   Bomber = "Bomber",
   Fighter = "Fighter",
   AirTransport = "Air Transport",
+  // Civil airliner: flies airport to airport for gold; never bought directly.
+  CommercialAircraft = "Commercial Aircraft",
 }
 
 /** Ships that patrol and fight: the warship family. Frigate and Destroyer share the warship execution. */
@@ -386,6 +388,8 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.HydrogenBomb,
   UnitType.MIRV,
   UnitType.Warship,
+  UnitType.Frigate,
+  UnitType.Destroyer,
   UnitType.Bomber,
   UnitType.Fighter,
 ] as const);
