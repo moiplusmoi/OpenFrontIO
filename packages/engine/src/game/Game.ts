@@ -71,6 +71,10 @@ export interface UnitParamsMap {
     patrolTile: TileRef;
   };
 
+  [UnitType.Carrier]: {
+    patrolTile: TileRef;
+  };
+
   [UnitType.CommercialAircraft]: {
     targetUnit: Unit;
   };

@@ -49,6 +49,8 @@ export class AirportExecution implements Execution {
   // Sorties do not use the airport's sortie slots, so civil traffic never
   // takes capacity from military flights.
   private maybeDispatchAirliner(ticks: number): void {
+    // Carriers launch sorties only; airliners fly from land airports.
+    if (this.airport.type() !== UnitType.Airport) return;
     const cfg = this.mg.config();
     const interval = cfg.commercialAircraftSpawnInterval();
     if (ticks % interval !== this.airport.id() % interval) return;

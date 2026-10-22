@@ -189,7 +189,8 @@
       "fighter": "Patrouille à 60 cases de son aéroport et intercepte bombardiers et transports ennemis (60 %), bombes A (25 %) et bombes H (15 %). Un par niveau d'aéroport. Nécessite Supériorité aérienne (mil 4).",
       "frigate": "Corsaire rapide. Peu chère et fragile, tirs légers (60 % des dégâts). Chasse les cargos et protège la flotte. Chaque frégate en service renchérit la suivante.",
       "destroyer": "Navire de ligne lourd. Lent à virer et difficile à couler, ses obus frappent 50 % plus fort. Demande Doctrine offensive (mil 2).",
-      "submarine": "Torpilleur furtif. Invisible pour l'ennemi tant qu'un navire de surface ou un port à lui n'est pas à 35 cases. Coule les cargos sur-le-champ, et inflige 40 % des dégâts d'obus d'un navire de guerre. Demande Radar (déf 2)."
+      "submarine": "Torpilleur furtif. Invisible pour l'ennemi tant qu'un navire de surface ou un port à lui n'est pas à 35 cases. Coule les cargos sur-le-champ, et inflige 40 % des dégâts d'obus d'un navire de guerre. Demande Radar (déf 2).",
+      "carrier": "Base aérienne flottante. Lance bombardiers, chasseurs et parachutages depuis la mer, et suit la flotte. Ses sorties se rechargent comme à un aéroport. Lent, ses obus sont légers. Demande Supériorité aérienne (mil 4)."
     },
     "not_enough_money": "Pas assez d'argent",
     "upgrade_amount": "x{amount}",
@@ -2342,7 +2343,8 @@
     "destroyer": "Destroyer",
     "commercial_aircraft": "Avion de ligne",
     "commercial_aircraft_desc": "Avion qui relie les aéroports et paie ses deux propriétaires à l'arrivée.",
-    "submarine": "Sous-marin"
+    "submarine": "Sous-marin",
+    "carrier": "Porte-avions"
   },
   "update_available": {
     "desktop": "Une nouvelle version d’OpenFront est disponible. Elle sera téléchargée en arrière-plan ; une fois prête, rechargez la page depuis la barre de mise à jour.",

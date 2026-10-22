@@ -70,7 +70,7 @@ export class FighterExecution implements Execution {
         return;
       }
       const home = this.player
-        .units(UnitType.Airport)
+        .units(UnitType.Airport, UnitType.Carrier)
         .find((a) => a.tile() === spawn);
       if (home === undefined) {
         this.active = false;

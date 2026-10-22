@@ -392,6 +392,13 @@ export class EngineConfig extends Config {
             Math.min(1_400_000, 350_000 + numUnits * 150_000),
           UnitType.Submarine,
         );
+      // A floating air base is dear: 1.2M, +600k per carrier afloat, capped at 2.5M.
+      case UnitType.Carrier:
+        return this.costWrapper(
+          (numUnits: number) =>
+            Math.min(2_500_000, 1_200_000 + numUnits * 600_000),
+          UnitType.Carrier,
+        );
       case UnitType.Port:
         return this.costWrapper(
           (numUnits: number) => Math.min(1_000_000, pow2(numUnits) * 125_000),
@@ -900,6 +907,9 @@ export class EngineConfig extends Config {
       // Torpedo runs: it fights warships at 40% and mostly hunts merchant ships.
       case UnitType.Submarine:
         return { stepsPerTick: 1, moveEveryTicks: 1, shellDamagePct: 40 };
+      // Slow and tough; its shells are light, its strength is the sorties it launches.
+      case UnitType.Carrier:
+        return { stepsPerTick: 1, moveEveryTicks: 2, shellDamagePct: 60 };
       case UnitType.Warship:
         return { stepsPerTick: 1, moveEveryTicks: 1, shellDamagePct: 100 };
       default:

@@ -29,6 +29,7 @@ const FLEET_TYPES = [
   UnitType.Frigate,
   UnitType.Destroyer,
   UnitType.Submarine,
+  UnitType.Carrier,
 ] as const;
 
 export class FleetLayer implements Controller {
@@ -126,6 +127,9 @@ export class FleetLayer implements Controller {
       switch (ship.type()) {
         case UnitType.Destroyer:
           drawDestroyer(ctx, x, y, size * 1.1, heading, fill, mine);
+          break;
+        case UnitType.Carrier:
+          drawCarrier(ctx, x, y, size * 1.6, heading, fill, mine);
           break;
         case UnitType.Submarine:
           // Our own submarines show faint (submerged); a detected enemy is solid.
@@ -295,5 +299,39 @@ function drawSubmarine(
   ctx.strokeStyle = "rgba(248, 250, 252, 0.9)";
   ctx.lineWidth = Math.max(1, s * 0.06);
   ctx.stroke();
+  ctx.restore();
+}
+
+/** Broad hull with a flight deck and a bridge island: the floating air base. */
+function drawCarrier(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  s: number,
+  heading: number,
+  fill: string,
+  mine: boolean,
+) {
+  const half = s / 2;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(heading);
+  ctx.lineJoin = "round";
+  ctx.lineWidth = Math.max(1, s * 0.07);
+  ctx.strokeStyle = strokeStyleFor(mine);
+  ctx.fillStyle = fill;
+  hullPath(ctx, half, half * 0.5);
+  ctx.stroke();
+  ctx.fill();
+  // Flight deck: a centreline and an arrester wire across the stern.
+  ctx.beginPath();
+  ctx.moveTo(-half * 0.8, 0);
+  ctx.lineTo(half * 0.7, 0);
+  ctx.strokeStyle = "rgba(248, 250, 252, 0.7)";
+  ctx.lineWidth = Math.max(1, s * 0.05);
+  ctx.stroke();
+  // Bridge island, off the centreline to starboard.
+  ctx.fillStyle = "rgba(15, 23, 42, 0.6)";
+  ctx.fillRect(-half * 0.1, half * 0.18, half * 0.4, half * 0.2);
   ctx.restore();
 }

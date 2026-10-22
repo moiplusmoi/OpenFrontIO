@@ -56,7 +56,7 @@ export class BomberExecution implements Execution {
         return;
       }
       const airport = this.player
-        .units(UnitType.Airport)
+        .units(UnitType.Airport, UnitType.Carrier)
         .find((a) => a.tile() === src);
       if (airport === undefined) {
         this.active = false;

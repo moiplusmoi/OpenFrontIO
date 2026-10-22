@@ -74,7 +74,7 @@ export class ParadropExecution implements Execution {
     const src = this.player.canBuild(UnitType.AirTransport, this.dst);
     if (src === false) return false;
     const airport = this.player
-      .units(UnitType.Airport)
+      .units(UnitType.Airport, UnitType.Carrier)
       .find((a) => a.tile() === src);
     if (airport === undefined) return false;
     const troops = Math.min(

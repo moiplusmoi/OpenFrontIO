@@ -1634,6 +1634,7 @@ export class PlayerImpl implements Player {
       case UnitType.Frigate:
       case UnitType.Destroyer:
       case UnitType.Submarine:
+      case UnitType.Carrier:
         return this.warshipSpawn(targetTile);
       case UnitType.CommercialAircraft:
         return this.commercialSpawn(targetTile);
@@ -1674,6 +1675,11 @@ export class PlayerImpl implements Player {
     return airport === undefined ? false : tile;
   }
 
+  // Airports and carriers are the places sorties launch from.
+  private airBases(): Unit[] {
+    return this.units(UnitType.Airport, UnitType.Carrier);
+  }
+
   // GalloFront: nearest ready airport whose range covers the target tile.
   airStrikeSpawn(tile: TileRef): TileRef | false {
     const mg = this.mg;
@@ -1682,7 +1688,7 @@ export class PlayerImpl implements Player {
     const owner = mg.owner(tile);
     if (owner.isPlayer() && this.isFriendly(owner)) return false;
     const cfg = mg.config();
-    const ready = this.units(UnitType.Airport).filter(
+    const ready = this.airBases().filter(
       (a) =>
         a.isActive() &&
         !a.isUnderConstruction() &&
@@ -1700,7 +1706,7 @@ export class PlayerImpl implements Player {
 
   // GalloFront: a fighter spawns at one of the player's airports with a free slot.
   fighterSpawn(tile: TileRef): TileRef | false {
-    const airport = this.units(UnitType.Airport).find(
+    const airport = this.airBases().find(
       (a) => a.tile() === tile && a.isActive() && !a.isUnderConstruction(),
     );
     if (airport === undefined) return false;

@@ -36,6 +36,8 @@ const frigateIcon = assetUrl("images/BoatIconWhite.svg");
 const destroyerIcon = assetUrl("images/DestroyerIconWhite.svg");
 // Stealth is the point of a submarine: the ninja mark stands for it.
 const submarineIcon = assetUrl("images/NinjaIconWhite.svg");
+// A carrier is an airport afloat.
+const carrierIcon = assetUrl("images/AirportIconWhite.svg");
 const cityIcon = assetUrl("images/CityIconWhite.svg");
 const factoryIcon = assetUrl("images/FactoryIconWhite.svg");
 const goldCoinIcon = assetUrl("images/GoldCoinIcon.svg");
@@ -108,6 +110,13 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: submarineIcon,
       description: "build_menu.desc.submarine",
       key: "unit_type.submarine",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Carrier,
+      icon: carrierIcon,
+      description: "build_menu.desc.carrier",
+      key: "unit_type.carrier",
       countable: true,
     },
     {

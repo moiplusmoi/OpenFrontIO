@@ -135,6 +135,7 @@ export class UnitImpl implements Unit {
       case UnitType.Frigate:
       case UnitType.Destroyer:
       case UnitType.Submarine:
+      case UnitType.Carrier:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
@@ -268,6 +269,7 @@ export class UnitImpl implements Unit {
       case UnitType.Frigate:
       case UnitType.Destroyer:
       case UnitType.Submarine:
+      case UnitType.Carrier:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
@@ -435,6 +437,7 @@ export class UnitImpl implements Unit {
         case UnitType.Frigate:
         case UnitType.Destroyer:
         case UnitType.Submarine:
+        case UnitType.Carrier:
         case UnitType.Factory:
           this.mg.stats().unitDestroy(destroyer, this._type);
           this.mg.stats().unitLose(this.owner(), this._type);
@@ -614,7 +617,7 @@ export class UnitImpl implements Unit {
   }
 
   isInCooldown(): boolean {
-    return this._missileTimerQueue.length === this._level;
+    return this._missileTimerQueue.length >= this._level;
   }
 
   missileTimerQueue(): number[] {

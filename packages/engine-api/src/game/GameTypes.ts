@@ -198,6 +198,8 @@ export enum UnitType {
   Destroyer = "Destroyer",
   // Stealthy: hidden from enemies until a surface ship or port is in sonar range.
   Submarine = "Submarine",
+  // Floating air base: a warship with sortie slots, like an airport.
+  Carrier = "Carrier",
   Shell = "Shell",
   SAMMissile = "SAMMissile",
   Port = "Port",
@@ -228,6 +230,7 @@ export const NavalCombatants = [
   UnitType.Frigate,
   UnitType.Destroyer,
   UnitType.Submarine,
+  UnitType.Carrier,
 ] as const;
 
 /** Ships on the surface: what detects a submarine (and ports, see submarine rules). */
@@ -235,6 +238,7 @@ export const SurfaceCombatants = [
   UnitType.Warship,
   UnitType.Frigate,
   UnitType.Destroyer,
+  UnitType.Carrier,
 ] as const;
 export type NavalCombatant = (typeof NavalCombatants)[number];
 
@@ -401,6 +405,7 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.Frigate,
   UnitType.Destroyer,
   UnitType.Submarine,
+  UnitType.Carrier,
   UnitType.Bomber,
   UnitType.Fighter,
 ] as const);

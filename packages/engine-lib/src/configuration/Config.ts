@@ -226,6 +226,9 @@ export class Config {
       // Submarines carry sonar, which Radar (def_2) provides.
       case UnitType.Submarine:
         return TechId.Def2;
+      // Carriers launch sorties: they need Air Superiority (mil_4).
+      case UnitType.Carrier:
+        return TechId.Mil4;
       case UnitType.Fighter:
         return TechId.Mil4;
       default:
@@ -482,6 +485,9 @@ export class Config {
         break;
       case UnitType.Submarine:
         info = { maxHealth: 600 };
+        break;
+      case UnitType.Carrier:
+        info = { maxHealth: 1800 };
         break;
       case UnitType.Shell:
         info = { damage: 250 };

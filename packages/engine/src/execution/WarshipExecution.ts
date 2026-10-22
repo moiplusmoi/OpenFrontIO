@@ -38,6 +38,7 @@ import type {
   SnapshotWriter,
 } from "../snapshot/SnapshotContext";
 import { isSubmarineDetectedBy } from "../game/Submarines";
+import { AirportExecution } from "./AirportExecution";
 import { ShellExecution } from "./ShellExecution";
 
 export class WarshipExecution implements Execution {
@@ -74,6 +75,10 @@ export class WarshipExecution implements Execution {
         return;
       }
       this.warship = this.input.owner.buildUnit(type, spawn, this.input);
+      if (type === UnitType.Carrier) {
+        // A carrier reloads its sortie slots like an airport does.
+        this.mg.addExecution(new AirportExecution(this.warship));
+      }
     }
     this.lastObservedPatrolTile = this.warship.warshipState().patrolTile;
   }
