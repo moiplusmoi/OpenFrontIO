@@ -3,6 +3,7 @@ import {
   TribeLeaderboardResponse,
 } from "@openfront/shared/ApiSchemas";
 import { html, LitElement, nothing, TemplateResult } from "lit";
+import "../ui/Icon";
 import { customElement, state } from "lit/decorators.js";
 import { fetchTribeLeaderboard } from "../../Api";
 import { loadModal } from "../../LazyModals";
@@ -31,23 +32,26 @@ export function formatWindowDate(value: string): string | null {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function rankStyle(rank: number): { color: string; icon: string } {
+function rankStyle(rank: number): {
+  color: string;
+  icon: TemplateResult | string;
+} {
   if (rank === 1) {
     return {
       color: "text-yellow-400 bg-yellow-400/10 ring-1 ring-yellow-400/20",
-      icon: "👑",
+      icon: html`<of-icon name="crown" size="14"></of-icon>`,
     };
   }
   if (rank === 2) {
     return {
       color: "text-slate-300 bg-slate-400/10 ring-1 ring-slate-400/20",
-      icon: "🥈",
+      icon: "2",
     };
   }
   if (rank === 3) {
     return {
       color: "text-amber-600 bg-amber-600/10 ring-1 ring-amber-600/20",
-      icon: "🥉",
+      icon: "3",
     };
   }
   return { color: "text-white/40 bg-white/5", icon: String(rank) };

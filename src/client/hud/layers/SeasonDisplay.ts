@@ -6,15 +6,17 @@ import {
 } from "@openfront/engine-lib/game/Seasons";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import "../../components/ui/Icon";
+import type { IconName } from "../../components/ui/Icon";
 import { Controller } from "../../Controller";
 import { showToast, translateText } from "../../Utils";
 import { GameView } from "../../view";
 
-const SEASON_ICONS: Record<Season, string> = {
-  [Season.Spring]: "🌱",
-  [Season.Summer]: "☀️",
-  [Season.Autumn]: "🍂",
-  [Season.Winter]: "❄️",
+const SEASON_ICONS: Record<Season, IconName> = {
+  [Season.Spring]: "sprout",
+  [Season.Summer]: "sun",
+  [Season.Autumn]: "leaf",
+  [Season.Winter]: "snowflake",
 };
 
 // Tailwind text colors for the season name and progress bar.
@@ -109,7 +111,7 @@ export class SeasonDisplay extends LitElement implements Controller {
       >
         <div class="flex items-center justify-between gap-3 text-sm">
           <span class="font-bold ${colors.text}">
-            <span aria-hidden="true">${SEASON_ICONS[this.season]}</span>
+            <of-icon name=${SEASON_ICONS[this.season]} size="14"></of-icon>
             ${seasonName}
           </span>
           <span

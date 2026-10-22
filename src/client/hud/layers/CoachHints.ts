@@ -7,6 +7,8 @@ import { EventBus } from "@openfront/shared/EventBus";
 import { html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { Controller } from "../../Controller";
+import "../../components/ui/Icon";
+import type { IconName } from "../../components/ui/Icon";
 import { UserSettings } from "../../UserSettings";
 import { textDirection, translateText } from "../../Utils";
 import { GameView, PlayerView } from "../../view";
@@ -33,7 +35,7 @@ type HintId =
 
 interface Hint {
   id: HintId;
-  icon: string;
+  icon: IconName;
   /** The tech to open the panel on when the hint is tapped (if any). */
   tech?: TechId | null;
   /** Fires once the condition holds; the hint is then shown and remembered. */
@@ -51,23 +53,23 @@ function unitTech(game: GameView, unit: UnitType): TechId | null {
 const HINTS: readonly Hint[] = [
   {
     id: "attacked",
-    icon: "🛡",
+    icon: "shield",
     when: (_, p) => p.incomingAttacks().length > 0,
   },
   {
     id: "spawn_done",
-    icon: "⚔️",
+    icon: "crossed",
     when: (g) => !g.inSpawnPhase(),
   },
   {
     id: "first_city",
-    icon: "🏙",
+    icon: "city",
     when: (_, p) =>
       p.gold() >= CITY_GOLD && p.units(UnitType.City).length === 0,
   },
   {
     id: "first_research",
-    icon: "🔬",
+    icon: "flask",
     tech: TechId.Eco1,
     when: (_, p) =>
       p.gold() >= RESEARCH_GOLD &&
@@ -76,7 +78,7 @@ const HINTS: readonly Hint[] = [
   },
   {
     id: "airport",
-    icon: "✈️",
+    icon: "plane",
     when: (g, p) => {
       const tech = unitTech(g, UnitType.Airport);
       return tech !== null && p.hasTech(tech);
@@ -84,7 +86,7 @@ const HINTS: readonly Hint[] = [
   },
   {
     id: "bomber",
-    icon: "💣",
+    icon: "target",
     when: (g, p) => {
       const tech = unitTech(g, UnitType.Bomber);
       return tech !== null && p.hasTech(tech);
@@ -92,7 +94,7 @@ const HINTS: readonly Hint[] = [
   },
   {
     id: "spy",
-    icon: "🕵",
+    icon: "spy",
     when: (g, p) => {
       const tech = unitTech(g, UnitType.Spy);
       return tech !== null && p.hasTech(tech);
@@ -259,8 +261,8 @@ export class CoachHints extends LitElement implements Controller {
         @contextmenu=${(e: MouseEvent) => e.preventDefault()}
       >
         <span class="text-xl leading-6 shrink-0" aria-hidden="true"
-          >${hint.icon}</span
-        >
+          ><of-icon name=${hint.icon} size="16"></of-icon
+        ></span>
         <button
           class="flex-1 text-left text-sm leading-5 min-w-0"
           @click=${this.onBodyClick}
@@ -277,7 +279,7 @@ export class CoachHints extends LitElement implements Controller {
           aria-label=${translateText("coach.close")}
           @click=${() => this.dismiss()}
         >
-          ✕
+          <of-icon name="close" size="14"></of-icon>
         </button>
       </div>
     `;

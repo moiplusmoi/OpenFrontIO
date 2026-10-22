@@ -305,7 +305,7 @@ export const COLUMN_DEFS: readonly ColumnDef[] = [
   defineColumn({
     id: "techs",
     labelKey: "leaderboard.techs",
-    headerVisual: { kind: "text", text: "🔬" },
+    headerVisual: { kind: "text", text: "Tech" },
     align: "center",
     value: (player) => techScore(player),
     cell: (row) => renderNumber(row.value),

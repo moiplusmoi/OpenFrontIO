@@ -7,6 +7,7 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import "../../ui/Icon";
 import { translateText } from "../../../Utils";
 import { PlayerInfo, RANK_TYPE_LABEL_KEYS, RankType } from "./GameInfoRanking";
 
@@ -119,7 +120,7 @@ export class PlayerRow extends LitElement {
         role="img"
         aria-label=${translateText("clan_modal.history_result_defeat")}
       >
-        <span class="text-sm leading-none" aria-hidden="true">💀</span>
+        <of-icon name="close" size="14"></of-icon>
       </span>
     `;
   }

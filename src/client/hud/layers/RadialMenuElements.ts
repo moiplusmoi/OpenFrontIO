@@ -50,6 +50,10 @@ const swordIcon = assetUrl("images/SwordIconWhite.svg");
 const targetIcon = assetUrl("images/TargetIconWhite.svg");
 const traitorIcon = assetUrl("images/TraitorIconWhite.svg");
 const xIcon = assetUrl("images/XIcon.svg");
+const crownIcon = assetUrl("images/CrownIcon.svg");
+const paradropIcon = assetUrl("images/ParadropIconWhite.svg");
+const spyIcon = assetUrl("images/NinjaIconWhite.svg");
+const explosionIcon = assetUrl("images/ExplosionIconWhite.svg");
 
 export interface MenuElementParams {
   myPlayer: PlayerView;
@@ -436,7 +440,7 @@ function lockedBehind(
   return missingTech(params.game.config?.(), params.myPlayer, unit);
 }
 
-/** Tooltip lines for a locked item: "🔒 Requires: X" and the tap hint. */
+/** Tooltip lines for a locked item: "Requires: X" and the tap hint. */
 function lockedTooltip(tech: TechId): TooltipItem[] {
   return [
     { text: requiresTechLabel(tech), className: "cost" },
@@ -799,12 +803,11 @@ function paradropBlocked(params: MenuElementParams): boolean {
   );
 }
 
-/** GalloFront: "🪂 Paradrop" — the attack ratio of my troops, by air. */
+/** GalloFront: paradrop — the attack ratio of my troops, by air. */
 export const paradropMenuElement: MenuElement = {
   id: "paradrop",
   name: "paradrop",
-  text: "🪂",
-  fontSize: "22px",
+  icon: paradropIcon,
   color: (params: MenuElementParams) =>
     paradropBlocked(params) ? COLORS.disabled : COLORS.attack,
   disabled: (params: MenuElementParams) => paradropBlocked(params),
@@ -834,8 +837,7 @@ function paradropElement(params: MenuElementParams): MenuElement {
   return {
     id: "paradrop",
     name: "paradrop",
-    text: "🪂",
-    fontSize: "22px",
+    icon: paradropIcon,
     color: COLORS.disabled,
     disabled: () => false,
     tooltipItems: [
@@ -968,8 +970,7 @@ export function cityNearTile(params: MenuElementParams) {
 export const setCapitalElement: MenuElement = {
   id: "set_capital",
   name: "capital",
-  text: "👑",
-  fontSize: "22px",
+  icon: crownIcon,
   color: COLORS.build,
   disabled: (params: MenuElementParams) => {
     if (params.game.inSpawnPhase()) return true;
@@ -1072,14 +1073,13 @@ function spyBlocked(params: MenuElementParams): boolean {
 function spyMissionElement(
   mission: SpyMission,
   key: "spy_reveal" | "spy_steal" | "spy_sabotage",
-  text: string,
+  icon: string,
 ): MenuElement {
   const sabotage = mission === SpyMission.Sabotage;
   return {
     id: key,
     name: key,
-    text,
-    fontSize: "22px",
+    icon,
     color: (params: MenuElementParams) =>
       spyBlocked(params) ||
       (sabotage && sabotageTargetNearTile(params) === null)
@@ -1120,8 +1120,7 @@ function spyMissionElement(
 export const spyMenuElement: MenuElement = {
   id: "spy",
   name: "spy",
-  text: "🕵",
-  fontSize: "22px",
+  icon: spyIcon,
   color: (params: MenuElementParams) =>
     spyBlocked(params) ? COLORS.disabled : COLORS.spy,
   disabled: (params: MenuElementParams) => spyBlocked(params),
@@ -1130,9 +1129,9 @@ export const spyMenuElement: MenuElement = {
     { key: "radial_menu.spy_desc", className: "description" },
   ],
   subMenu: () => [
-    spyMissionElement(SpyMission.Reveal, "spy_reveal", "👁"),
-    spyMissionElement(SpyMission.Steal, "spy_steal", "💰"),
-    spyMissionElement(SpyMission.Sabotage, "spy_sabotage", "💣"),
+    spyMissionElement(SpyMission.Reveal, "spy_reveal", targetIcon),
+    spyMissionElement(SpyMission.Steal, "spy_steal", donateGoldIcon),
+    spyMissionElement(SpyMission.Sabotage, "spy_sabotage", explosionIcon),
   ],
 };
 
@@ -1146,8 +1145,7 @@ function spyElement(params: MenuElementParams): MenuElement {
   return {
     id: "spy",
     name: "spy",
-    text: "🕵",
-    fontSize: "22px",
+    icon: spyIcon,
     color: COLORS.disabled,
     disabled: () => false,
     tooltipItems: [

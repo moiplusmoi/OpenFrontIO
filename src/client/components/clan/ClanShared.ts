@@ -1,4 +1,5 @@
 import { html, type TemplateResult } from "lit";
+import "../ui/Icon";
 import type {
   ClanJoinRequest,
   ClanMember,
@@ -36,7 +37,7 @@ export function translateClanRole(role: string): string {
 
 export function renderRoleIcon(role: string): TemplateResult {
   if (role === "leader") {
-    return html`<span class="text-sm">👑</span>`;
+    return html`<of-icon name="crown" size="14"></of-icon>`;
   }
   if (role === "officer") {
     return html`<svg

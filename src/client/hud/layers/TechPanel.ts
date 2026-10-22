@@ -15,16 +15,19 @@ import { translateText } from "../../Utils";
 import { GameView, PlayerView } from "../../view";
 import { unitsUnlockedBy, unitTypeKey } from "./TechLock";
 
+import "../../components/ui/Icon";
+import type { IconName } from "../../components/ui/Icon";
 import { ShowTechPanelEvent } from "./TechPanelEvents";
 
 // Re-exported so existing imports (GameRightSidebar, tests) keep working.
 export { ShowTechPanelEvent };
 
-const BRANCHES: readonly { branch: TechBranch; key: string; icon: string }[] = [
-  { branch: TechBranch.Economy, key: "economy", icon: "💰" },
-  { branch: TechBranch.Military, key: "military", icon: "⚔️" },
-  { branch: TechBranch.Defense, key: "defense", icon: "🛡️" },
-];
+const BRANCHES: readonly { branch: TechBranch; key: string; icon: IconName }[] =
+  [
+    { branch: TechBranch.Economy, key: "economy", icon: "coins" },
+    { branch: TechBranch.Military, key: "military", icon: "crossed" },
+    { branch: TechBranch.Defense, key: "defense", icon: "shield" },
+  ];
 
 type TechStatus = "done" | "researching" | "available" | "locked";
 
@@ -137,7 +140,7 @@ export class TechPanel extends LitElement implements Controller {
             class="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3"
           >
             <div class="flex items-center gap-2">
-              <span class="text-2xl" aria-hidden="true">🔬</span>
+              <of-icon name="flask" size="24" class="text-blue-300"></of-icon>
               <h2 class="text-lg font-bold">
                 ${translateText("tech_panel.title")}
               </h2>
@@ -148,14 +151,15 @@ export class TechPanel extends LitElement implements Controller {
                 class="rounded-lg bg-white/5 px-3 py-1.5 text-sm tabular-nums"
                 title=${translateText("player_panel.gold")}
               >
-                💰 ${renderNumber(gold)}
+                <of-icon name="coins" size="14" class="mr-1"></of-icon
+                >${renderNumber(gold)}
               </span>
               <button
                 class="flex size-11 items-center justify-center rounded-full bg-zinc-700 text-lg hover:bg-red-500 transition-colors"
                 aria-label=${translateText("common.close")}
                 @click=${this.close}
               >
-                ✕
+                <of-icon name="close" size="18"></of-icon>
               </button>
             </div>
           </header>
@@ -182,7 +186,7 @@ export class TechPanel extends LitElement implements Controller {
         <h3
           class="flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-wider text-zinc-300"
         >
-          <span aria-hidden="true">${b.icon}</span>
+          <of-icon name=${b.icon} size="16"></of-icon>
           ${translateText(`tech_panel.branch.${b.key}`)}
         </h3>
         ${defs.map((def) => this.renderTech(def, player, research, gold))}
@@ -234,7 +238,7 @@ export class TechPanel extends LitElement implements Controller {
         </p>
         ${unlocks.length > 0
           ? html`<p class="text-xs leading-4 text-amber-200/90">
-              🔓
+              <of-icon name="unlock" size="12" class="mr-1"></of-icon>
               ${translateText("tech_panel.unlocks", {
                 units: unlocks
                   .map((unit) => translateText(unitTypeKey(unit)))
@@ -247,10 +251,19 @@ export class TechPanel extends LitElement implements Controller {
           translate="no"
         >
           <span class=${status !== "done" && !canAfford ? "text-red-300" : ""}>
-            💰 ${renderNumber(cost)}
+            <span class="inline-flex items-center gap-1"
+              ><of-icon name="coins" size="14"></of-icon>${renderNumber(
+                cost,
+              )}</span
+            >
           </span>
           <span class="text-zinc-400">
-            ⏱ ${translateText("tech_panel.duration", { seconds })}
+            <span class="inline-flex items-center gap-1"
+              ><of-icon name="hourglass" size="14"></of-icon>${translateText(
+                "tech_panel.duration",
+                { seconds },
+              )}</span
+            >
           </span>
         </div>
         ${this.renderAction(def, status, canResearch, research)}
@@ -269,7 +282,8 @@ export class TechPanel extends LitElement implements Controller {
         return html`<div
           class="flex min-h-11 items-center justify-center rounded-lg bg-green-600/30 text-sm font-semibold text-green-200"
         >
-          ✓ ${translateText("tech_panel.done")}
+          <of-icon name="check" size="16" class="mr-1"></of-icon
+          >${translateText("tech_panel.done")}
         </div>`;
       case "researching": {
         const start = research?.startTick ?? 0;
@@ -299,7 +313,10 @@ export class TechPanel extends LitElement implements Controller {
         return html`<div
           class="flex min-h-11 items-center justify-center rounded-lg bg-white/5 text-sm text-zinc-400"
         >
-          🔒 ${translateText("tech_panel.requires", { level: def.level - 1 })}
+          <of-icon name="lock" size="14" class="mr-1"></of-icon>${translateText(
+            "tech_panel.requires",
+            { level: def.level - 1 },
+          )}
         </div>`;
       case "available":
         return html`<button
@@ -310,7 +327,8 @@ export class TechPanel extends LitElement implements Controller {
           ?disabled=${!canResearch}
           @click=${() => this.onResearchClick(def.id)}
         >
-          🔬 ${translateText("tech_panel.research")}
+          <of-icon name="flask" size="16" class="mr-1"></of-icon
+          >${translateText("tech_panel.research")}
         </button>`;
     }
   }

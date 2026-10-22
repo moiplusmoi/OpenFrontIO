@@ -1918,8 +1918,8 @@ export class GameXpPanel extends LitElement {
                     size="card"
                   ></cosmetic-preview>`
                 : html`<span aria-hidden="true" class="text-xl text-purple-200"
-                    >★</span
-                  >`}
+                    ><of-icon name="star" size="20"></of-icon
+                  ></span>`}
             </span>
             <div class="min-w-0 text-left">
               <div

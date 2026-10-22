@@ -3,6 +3,7 @@ import {
   ClanLeaderboardResponse,
 } from "@openfront/shared/ClanApiSchemas";
 import { html, LitElement } from "lit";
+import "../ui/Icon";
 import { customElement, state } from "lit/decorators.js";
 import { fetchClanLeaderboard } from "../../ClanApi";
 import { translateText } from "../../Utils";
@@ -350,12 +351,8 @@ export class LeaderboardClanTable extends LitElement {
                           : "text-white/40 bg-white/5";
                   const rankIcon =
                     displayRank === 1
-                      ? "👑"
-                      : displayRank === 2
-                        ? "🥈"
-                        : displayRank === 3
-                          ? "🥉"
-                          : String(displayRank);
+                      ? html`<of-icon name="crown" size="14"></of-icon>`
+                      : String(displayRank);
 
                   return html`
                     <tr

@@ -289,7 +289,7 @@ export class AttacksDisplay extends LitElement implements Controller {
           })}
           ${!attack.retreating
             ? this.renderButton({
-                content: "❌",
+                content: "×",
                 onClick: () => this.emitCancelAttackIntent(attack.id),
                 className: "ml-auto text-left shrink-0",
                 disabled: attack.retreating,
@@ -325,7 +325,7 @@ export class AttacksDisplay extends LitElement implements Controller {
           })}
           ${!landAttack.retreating
             ? this.renderButton({
-                content: "❌",
+                content: "×",
                 onClick: () => this.emitCancelAttackIntent(landAttack.id),
                 className: "ml-auto text-left shrink-0",
                 disabled: landAttack.retreating,

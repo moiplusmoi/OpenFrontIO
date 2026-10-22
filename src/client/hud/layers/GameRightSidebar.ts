@@ -6,6 +6,7 @@ import { customElement, state } from "lit/decorators.js";
 import { createNextLobby } from "../../Api";
 import { ClientEnv } from "../../ClientEnv";
 import "../../components/DoomsdayClockPanel";
+import "../../components/ui/Icon";
 import "../../components/OvertimePanel";
 import { Controller } from "../../Controller";
 import { isDesktopShell } from "../../DesktopShell";
@@ -387,7 +388,7 @@ export class GameRightSidebar extends LitElement implements Controller {
           aria-label=${translateText("tech_panel.open")}
           @click=${this.onTechButtonClick}
         >
-          🔬
+          <of-icon name="flask" size="20" class="text-blue-300"></of-icon>
         </button>
 
         <div

@@ -4,6 +4,7 @@ import {
   RankedLeaderboardEntry,
 } from "@openfront/shared/ApiSchemas";
 import { html, LitElement, nothing, PropertyValues } from "lit";
+import "../ui/Icon";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { fetchPlayerLeaderboard, getUserMe } from "../../Api";
 import { loadModal } from "../../LazyModals";
@@ -374,11 +375,9 @@ export class LeaderboardPlayerList extends LitElement {
       }?.[displayRank] ?? "text-white/40 bg-white/5";
 
     const rankIcon =
-      {
-        1: "👑",
-        2: "🥈",
-        3: "🥉",
-      }?.[displayRank] ?? String(displayRank);
+      displayRank === 1
+        ? html`<of-icon name="crown" size="14"></of-icon>`
+        : String(displayRank);
 
     return html`
       <tr

@@ -1,5 +1,6 @@
 import { html, LitElement, render as litRender } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import "../../components/ui/Icon";
 import type { ColumnId } from "../../StatsConstants";
 import { translateText } from "../../Utils";
 import type { ColumnDef } from "./lib/StatsColumns";
@@ -139,7 +140,7 @@ export class ColumnPicker extends LitElement {
         aria-haspopup="menu"
         @click=${() => (this.open = !this.open)}
       >
-        ⚙️
+        <of-icon name="gear" size="16"></of-icon>
       </button>
     `;
   }

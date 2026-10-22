@@ -1,5 +1,6 @@
 import { assetUrl } from "@openfront/shared/AssetUrls";
 import { html } from "lit";
+import "./components/ui/Icon";
 import { customElement, query, state } from "lit/decorators.js";
 import {
   DESKTOP_TUTORIAL_VIDEO_URL,
@@ -99,14 +100,14 @@ export class HelpModal extends BaseModal {
             class="bg-amber-500/10 rounded-xl border border-amber-400/30 px-5 py-4 mb-6"
           >
             <h3 class="!mt-0 !mb-2 text-amber-200">
-              ✨ ${translateText("help_modal.gallofront_title")}
+              ${translateText("help_modal.gallofront_title")}
             </h3>
             <ul class="!mb-0 text-sm">
-              <li>🔬 ${translateText("help_modal.gallofront_tech")}</li>
-              <li>👑 ${translateText("help_modal.gallofront_capital")}</li>
-              <li>🕵 ${translateText("help_modal.gallofront_spy")}</li>
-              <li>✈️ ${translateText("help_modal.gallofront_aviation")}</li>
-              <li>🍂 ${translateText("help_modal.gallofront_seasons")}</li>
+              <li><of-icon name="flask" size="14"></of-icon> ${translateText("help_modal.gallofront_tech")}</li>
+              <li><of-icon name="crown" size="14"></of-icon> ${translateText("help_modal.gallofront_capital")}</li>
+              <li><of-icon name="spy" size="14"></of-icon> ${translateText("help_modal.gallofront_spy")}</li>
+              <li><of-icon name="plane" size="14"></of-icon> ${translateText("help_modal.gallofront_aviation")}</li>
+              <li><of-icon name="star" size="14"></of-icon> ${translateText("help_modal.gallofront_seasons")}</li>
             </ul>
           </section>
 
@@ -1150,7 +1151,7 @@ export class HelpModal extends BaseModal {
                       ${translateText("unit_type.spy")}
                     </td>
                     <td class="py-3 border-b border-white/5">
-                      <span class="text-2xl" aria-hidden="true">🕵</span>
+                      <of-icon name="spy" size="24"></of-icon>
                     </td>
                     <td
                       class="py-3 border-b border-white/5 text-white/60 text-sm"
@@ -1211,7 +1212,7 @@ export class HelpModal extends BaseModal {
                       ${translateText("radial_menu.paradrop")}
                     </td>
                     <td class="py-3 border-b border-white/5">
-                      <span class="text-2xl" aria-hidden="true">🪂</span>
+                      <of-icon name="parachute" size="24"></of-icon>
                     </td>
                     <td
                       class="py-3 border-b border-white/5 text-white/60 text-sm"

@@ -17,7 +17,7 @@ import {
   type LevelBadge,
   packLevelBadge,
 } from "@openfront/shared/LevelBadgeWire";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import Countries from "resources/countries.json" with { type: "json" };
 import { fetchLobbyListed, getUserMe } from "../../Api";
@@ -25,6 +25,8 @@ import "../../components/EquippedCosmeticsRow";
 import "../../components/LevelBadge";
 import { actionButton } from "../../components/ui/ActionButton";
 import "../../components/ui/Divider";
+import "../../components/ui/Icon";
+import type { IconName } from "../../components/ui/Icon";
 import { Controller } from "../../Controller";
 import { Platform } from "../../Platform";
 import {
@@ -432,26 +434,30 @@ export class PlayerPanel extends LitElement implements Controller {
     this.eventBus.emit(new SwapRocketDirectionEvent(next));
   }
 
-  private identityChipProps(type: PlayerType) {
+  private identityChipProps(type: PlayerType): {
+    labelKey: string;
+    classes: string;
+    icon: IconName | null;
+  } {
     switch (type) {
       case PlayerType.Nation:
         return {
           labelKey: "player_type.nation",
           classes: "border-indigo-400/25 bg-indigo-500/10 text-indigo-200",
-          icon: "🏛️",
+          icon: "city",
         };
       case PlayerType.Bot:
         return {
           labelKey: "player_type.bot",
           classes: "border-purple-400/25 bg-purple-500/10 text-purple-200",
-          icon: "⚔️",
+          icon: "crossed",
         };
       case PlayerType.Human:
       default:
         return {
           labelKey: "player_type.player",
           classes: "border-zinc-400/20 bg-zinc-500/5 text-zinc-300",
-          icon: "👤",
+          icon: null,
         };
     }
   }
@@ -668,7 +674,9 @@ export class PlayerPanel extends LitElement implements Controller {
               aria-label=${translateText(chip.labelKey)}
               title=${translateText(chip.labelKey)}
             >
-              <span aria-hidden="true" class="leading-none">${chip.icon}</span>
+              ${chip.icon
+                ? html`<of-icon name=${chip.icon} size="14"></of-icon>`
+                : nothing}
               <span class="tracking-tight"
                 >${translateText(chip.labelKey)}</span
               >
@@ -687,7 +695,7 @@ export class PlayerPanel extends LitElement implements Controller {
           class="inline-flex items-center gap-1.5 rounded-lg bg-white/4 px-3 py-1.5 shrink-0
                     text-white w-35"
         >
-          <span class="mr-0.5">💰</span>
+          <of-icon name="coins" size="14" class="mr-0.5"></of-icon>
           <span translate="no" class="tabular-nums w-[5ch] font-semibold">
             ${renderNumber(other.gold() || 0)}
           </span>
@@ -700,7 +708,7 @@ export class PlayerPanel extends LitElement implements Controller {
           class="inline-flex items-center gap-1.5 rounded-lg bg-white/4 px-3 py-1.5
                     text-white w-35 shrink-0"
         >
-          <span class="mr-0.5">🛡️</span>
+          <of-icon name="shield" size="14" class="mr-0.5"></of-icon>
           <span translate="no" class="tabular-nums w-[5ch] font-semibold">
             ${renderTroops(other.troops() || 0)}
           </span>
@@ -761,7 +769,7 @@ export class PlayerPanel extends LitElement implements Controller {
         class="mb-1 flex items-center gap-1.5 rounded-lg bg-white/4 px-3 py-1.5 text-white"
         data-techs
       >
-        <span class="mr-0.5">🔬</span>
+        <of-icon name="flask" size="14" class="mr-0.5"></of-icon>
         <span class="text-zinc-200 whitespace-nowrap">
           ${translateText("player_panel.techs")}
         </span>
@@ -805,7 +813,7 @@ export class PlayerPanel extends LitElement implements Controller {
         data-intel
       >
         <div class="flex items-center gap-1.5">
-          <span class="mr-0.5">🕵</span>
+          <of-icon name="spy" size="14" class="mr-0.5"></of-icon>
           <span class="whitespace-nowrap font-semibold">
             ${translateText("player_panel.intel", { seconds })}
           </span>
@@ -823,7 +831,20 @@ export class PlayerPanel extends LitElement implements Controller {
           </span>
           <span>${translateText("player_panel.intel_ready")}</span>
           <span translate="no" class="text-right tabular-nums font-semibold">
-            🚀 ${silosReady} · 🛰 ${samsReady}
+            <span class="inline-flex items-center gap-1"
+              ><img
+                src=${assetUrl("images/MissileSiloIconWhite.svg")}
+                alt=""
+                class="size-3.5"
+              />${silosReady}</span
+            >
+            <span class="inline-flex items-center gap-1"
+              ><img
+                src=${assetUrl("images/SamLauncherIconWhite.svg")}
+                alt=""
+                class="size-3.5"
+              />${samsReady}</span
+            >
           </span>
         </div>
         ${entry.stale
@@ -835,7 +856,7 @@ export class PlayerPanel extends LitElement implements Controller {
     `;
   }
 
-  /** GalloFront: "👑 Capital" or "No capital" for the displayed player. */
+  /** GalloFront: crown + "Capital" or "No capital" for the displayed player. */
   private renderCapital(other: PlayerView) {
     const hasCapital = other.capitalTile() !== null;
     return html`
@@ -845,7 +866,7 @@ export class PlayerPanel extends LitElement implements Controller {
           : "text-zinc-400"}"
         data-capital
       >
-        <span class="mr-0.5">👑</span>
+        <of-icon name="crown" size="14" class="mr-0.5"></of-icon>
         <span class="whitespace-nowrap">
           ${translateText(
             hasCapital ? "player_panel.capital" : "player_panel.no_capital",
@@ -872,7 +893,7 @@ export class PlayerPanel extends LitElement implements Controller {
               : translateText("player_panel.arc_down")}
           </span>
         </div>
-        <span class="text-lg" aria-hidden="true">🔀</span>
+        <of-icon name="swap" size="18"></of-icon>
       </button>
     `;
   }
@@ -884,7 +905,7 @@ export class PlayerPanel extends LitElement implements Controller {
         <div
           class="flex items-center gap-2 text-[15px] font-medium text-zinc-100 leading-snug"
         >
-          <span aria-hidden="true">⚠️</span>
+          <of-icon name="alert" size="16"></of-icon>
           <span>${translateText("player_panel.betrayals")}</span>
         </div>
         <div class="text-right text-[14px] font-semibold text-zinc-200">
@@ -897,7 +918,7 @@ export class PlayerPanel extends LitElement implements Controller {
         <div
           class="flex items-center gap-2 text-[15px] font-medium text-zinc-100 leading-snug"
         >
-          <span aria-hidden="true">⚓</span>
+          <img src=${assetUrl("images/PortIcon.svg")} alt="" class="size-4" />
           <span>${translateText("player_panel.trading")}</span>
         </div>
         <div
@@ -1142,7 +1163,7 @@ export class PlayerPanel extends LitElement implements Controller {
                   ? `${translateText("player_panel.stop_trade_enemies")} - ${translateText("cooldown")}`
                   : translateText("player_panel.stop_trade_enemies"),
                 label: !this.actions?.canEmbargoAll
-                  ? `${translateText("player_panel.stop_trade_enemies")} ⏳`
+                  ? translateText("player_panel.stop_trade_enemies")
                   : translateText("player_panel.stop_trade_enemies"),
                 type: "yellow",
                 disabled: !this.actions?.canEmbargoAll,
@@ -1155,7 +1176,7 @@ export class PlayerPanel extends LitElement implements Controller {
                   ? `${translateText("player_panel.start_trade_enemies")} - ${translateText("cooldown")}`
                   : translateText("player_panel.start_trade_enemies"),
                 label: !this.actions?.canEmbargoAll
-                  ? `${translateText("player_panel.start_trade_enemies")} ⏳`
+                  ? translateText("player_panel.start_trade_enemies")
                   : translateText("player_panel.start_trade_enemies"),
                 type: "green",
                 disabled: !this.actions?.canEmbargoAll,

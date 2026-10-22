@@ -10,6 +10,7 @@ import { renderNumber } from "@openfront/engine-lib/Format";
 import { EventBus } from "@openfront/shared/EventBus";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
+import "../../components/ui/Icon";
 import { Controller } from "../../Controller";
 import { ToggleStructureEvent } from "../../InputHandler";
 import { Platform } from "../../Platform";
@@ -411,7 +412,7 @@ export class UnitDisplay extends LitElement implements Controller {
               class="align-middle size-7 lg:size-5"
             />
             ${locked !== null
-              ? html`<span class="text-xs" aria-hidden="true">🔒</span>`
+              ? html`<of-icon name="lock" size="12"></of-icon>`
               : number !== null
                 ? html`<span class="text-xs">${renderNumber(number)}</span>`
                 : null}

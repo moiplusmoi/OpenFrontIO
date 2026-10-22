@@ -124,8 +124,10 @@ describe("PlayerRow", () => {
 
     expect(row.querySelector('[data-player-avatar="flag"]')).not.toBeNull();
     expect(
-      row.querySelector('[data-player-status="eliminated"]')?.textContent,
-    ).toContain("💀");
+      row.querySelector(
+        '[data-player-status="eliminated"] of-icon[name="close"]',
+      ),
+    ).not.toBeNull();
   });
 
   it("treats killedAt zero as eliminated while leaving absent values active", async () => {
