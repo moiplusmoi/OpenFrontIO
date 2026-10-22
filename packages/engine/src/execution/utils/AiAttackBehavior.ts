@@ -12,6 +12,7 @@ import {
   TerrainType,
   TerraNullius,
   UnitType,
+NavalCombatants,
 } from "@openfront/engine-api/game/GameTypes";
 import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import {
@@ -1728,7 +1729,7 @@ export class AiAttackBehavior {
 
   private hostileWarships(): Unit[] {
     return this.game
-      .units(UnitType.Warship)
+      .units(...NavalCombatants)
       .filter(
         (w) =>
           w.owner() !== this.player &&

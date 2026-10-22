@@ -214,6 +214,10 @@ export class Config {
         return TechId.Mil2;
       case UnitType.Bomber:
         return TechId.Mil3;
+      // Destroyers are the navy's heavy line: Offensive Doctrine (mil_2),
+      // which already hardens warships.
+      case UnitType.Destroyer:
+        return TechId.Mil2;
       case UnitType.Fighter:
         return TechId.Mil4;
       default:
@@ -461,6 +465,12 @@ export class Config {
     switch (type) {
       case UnitType.Warship:
         info = { maxHealth: 1000 };
+        break;
+      case UnitType.Frigate:
+        info = { maxHealth: 500 };
+        break;
+      case UnitType.Destroyer:
+        info = { maxHealth: 2200 };
         break;
       case UnitType.Shell:
         info = { damage: 250 };

@@ -1,5 +1,9 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
-import { Cell, UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  Cell,
+  NavalCombatants,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { EventBus } from "@openfront/shared/EventBus";
 import { Controller } from "../Controller";
 import {
@@ -143,7 +147,7 @@ export class WarshipSelectionController implements Controller {
     const myPlayer = this.game.myPlayer();
     if (!myPlayer) return [];
     return this.game
-      .units(UnitType.Warship)
+      .units(...NavalCombatants)
       .filter(
         (unit) =>
           unit.isActive() &&

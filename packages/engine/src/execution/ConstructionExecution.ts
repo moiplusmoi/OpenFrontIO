@@ -148,8 +148,14 @@ export class ConstructionExecution implements Execution {
         this.mg.addExecution(new MirvExecution(player, this.tile));
         break;
       case UnitType.Warship:
+      case UnitType.Frigate:
+      case UnitType.Destroyer:
         this.mg.addExecution(
-          new WarshipExecution({ owner: player, patrolTile: this.tile }),
+          new WarshipExecution({
+            owner: player,
+            patrolTile: this.tile,
+            unitType: this.constructionType,
+          }),
         );
         break;
       case UnitType.Port:

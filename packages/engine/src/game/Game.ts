@@ -67,6 +67,14 @@ export interface UnitParamsMap {
     patrolTile: TileRef;
   };
 
+  [UnitType.Frigate]: {
+    patrolTile: TileRef;
+  };
+
+  [UnitType.Destroyer]: {
+    patrolTile: TileRef;
+  };
+
   [UnitType.Spy]: {
     targetTile: TileRef;
   };

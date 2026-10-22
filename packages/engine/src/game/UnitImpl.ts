@@ -10,6 +10,7 @@ import {
   TransportShipState,
   UnitType,
   WarshipState,
+  isNavalCombatant,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdateType,
@@ -36,6 +37,19 @@ import type {
 import { AllUnitParams, EngineUnitInfo, Player, Unit } from "./Game";
 import { GameImpl } from "./GameImpl";
 import { PlayerImpl } from "./PlayerImpl";
+
+
+/** Locale key of a naval combatant's name (the warship family). */
+function navalUnitKey(type: UnitType): string {
+  switch (type) {
+    case UnitType.Frigate:
+      return "unit_type.frigate";
+    case UnitType.Destroyer:
+      return "unit_type.destroyer";
+    default:
+      return "unit_type.warship";
+  }
+}
 
 export class UnitImpl implements Unit {
   private _active = true;
@@ -119,6 +133,8 @@ export class UnitImpl implements Unit {
 
     switch (this._type) {
       case UnitType.Warship:
+      case UnitType.Frigate:
+      case UnitType.Destroyer:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
@@ -249,6 +265,8 @@ export class UnitImpl implements Unit {
     this.clearPendingDeletion();
     switch (this._type) {
       case UnitType.Warship:
+      case UnitType.Frigate:
+      case UnitType.Destroyer:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
@@ -297,7 +315,7 @@ export class UnitImpl implements Unit {
     // mil_2 Offensive doctrine: sturdier warships.
     const base =
       (this.info().maxHealth ?? 1) *
-      (this._type === UnitType.Warship
+      (isNavalCombatant(this._type)
         ? this.mg.config().techWarshipHealthMult(this.owner())
         : 1);
     // veterancy() is 0 for non-warships, so this returns base for them.
@@ -413,6 +431,8 @@ export class UnitImpl implements Unit {
         case UnitType.Port:
         case UnitType.SAMLauncher:
         case UnitType.Warship:
+        case UnitType.Frigate:
+        case UnitType.Destroyer:
         case UnitType.Factory:
           this.mg.stats().unitDestroy(destroyer, this._type);
           this.mg.stats().unitLose(this.owner(), this._type);
@@ -424,10 +444,7 @@ export class UnitImpl implements Unit {
   private displayMessageOnDeleted(): void {
     // Only warships and transport ships are worth notifying about; everything
     // else is either visible on the map or too low-stakes to surface.
-    if (
-      this._type !== UnitType.Warship &&
-      this._type !== UnitType.TransportShip
-    ) {
+    if (!isNavalCombatant(this._type) && this._type !== UnitType.TransportShip) {
       return;
     }
 
@@ -440,7 +457,7 @@ export class UnitImpl implements Unit {
         unit:
           this._type === UnitType.TransportShip
             ? "unit_type.boat"
-            : "unit_type.warship",
+            : navalUnitKey(this._type),
       },
       this.id(),
     );
@@ -705,7 +722,7 @@ export class UnitImpl implements Unit {
     if (this._warshipState === undefined) {
       return;
     }
-    if (targetType === UnitType.Warship) {
+    if (isNavalCombatant(targetType)) {
       // Final blow on an enemy warship: instant level, and the partial
       // transport/capture progress toward the next level is wiped.
       this._warshipState.veterancyProgress = 0;

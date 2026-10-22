@@ -4,6 +4,7 @@ import {
   PlayerType,
   Team,
   UnitType,
+NavalCombatants,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   doomsdayClockDrain,
@@ -195,7 +196,7 @@ export class DoomsdayClockExecution implements Execution {
             // attacker is passed, so any loss is environmental, never a credited
             // kill (see UnitImpl.delete). Healing is suppressed for flagged owners
             // in WarshipExecution.healWarship so the decay actually lands.
-            for (const ws of m.units(UnitType.Warship)) {
+            for (const ws of m.units(...NavalCombatants)) {
               const shipFloor = Math.floor(
                 (ws.maxHealth() * cfg.drainFloorPercent) / 100,
               );

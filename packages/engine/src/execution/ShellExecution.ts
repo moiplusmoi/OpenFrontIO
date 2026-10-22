@@ -1,5 +1,9 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
-import { UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  isNavalCombatant,
+  NavalCombatant,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import {
   zInt,
@@ -81,7 +85,7 @@ export class ShellExecution implements Execution {
           targetWasActive &&
           !this.target.isActive() &&
           this.ownerUnit.isActive() &&
-          this.ownerUnit.type() === UnitType.Warship
+          isNavalCombatant(this.ownerUnit.type())
         ) {
           this.ownerUnit.recordKill(targetType);
         }
@@ -111,7 +115,17 @@ export class ShellExecution implements Execution {
       );
     }
 
-    return Math.round((baseDamage / 250) * damageMultiplier);
+    // Frigates hit lighter, destroyers harder (see EngineConfig.navalTraits).
+    const shellDamagePct = isNavalCombatant(this.ownerUnit.type())
+      ? this.mg.config().navalTraits(this.ownerUnit.type() as NavalCombatant)
+          .shellDamagePct
+      : 100;
+    if (shellDamagePct === 100) {
+      return Math.round((baseDamage / 250) * damageMultiplier);
+    }
+    return Math.round(
+      ((baseDamage / 250) * damageMultiplier * shellDamagePct) / 100,
+    );
   }
 
   public getEffectOnTargetForTesting(): number {

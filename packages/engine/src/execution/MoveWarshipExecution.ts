@@ -1,5 +1,8 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
-import { UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  NavalCombatants,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { zNum, zPlayerRef } from "@openfront/engine-lib/snapshot/SnapshotType";
 import { z } from "zod";
 import { Execution, Game, Player } from "../game/Game";
@@ -26,7 +29,7 @@ export class MoveWarshipExecution implements Execution {
     const newPatrolTileWaterComponent = mg.getWaterComponent(this.position);
     // Cache warship list and build a lookup map — avoids repeated iteration
     const warshipMap = new Map(
-      this.owner.units(UnitType.Warship).map((u) => [u.id(), u]),
+      this.owner.units(...NavalCombatants).map((u) => [u.id(), u]),
     );
     // Deduplicate ids so each warship is only moved once
     for (const unitId of new Set(this.unitIds)) {

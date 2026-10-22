@@ -193,6 +193,9 @@ function unitTypeGroup<T extends readonly UnitType[]>(types: T) {
 export enum UnitType {
   TransportShip = "Transport",
   Warship = "Warship",
+  // Naval combatants bought like warships (see NavalCombatants).
+  Frigate = "Frigate",
+  Destroyer = "Destroyer",
   Shell = "Shell",
   SAMMissile = "SAMMissile",
   Port = "Port",
@@ -213,6 +216,18 @@ export enum UnitType {
   Bomber = "Bomber",
   Fighter = "Fighter",
   AirTransport = "Air Transport",
+}
+
+/** Ships that patrol and fight: the warship family. Frigate and Destroyer share the warship execution. */
+export const NavalCombatants = [
+  UnitType.Warship,
+  UnitType.Frigate,
+  UnitType.Destroyer,
+] as const;
+export type NavalCombatant = (typeof NavalCombatants)[number];
+
+export function isNavalCombatant(type: UnitType): type is NavalCombatant {
+  return (NavalCombatants as readonly UnitType[]).includes(type);
 }
 
 export const Aircraft = [

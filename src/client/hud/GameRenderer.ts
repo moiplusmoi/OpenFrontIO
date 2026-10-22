@@ -27,6 +27,7 @@ import { AlertFrame } from "./layers/AlertFrame";
 import { AttacksDisplay } from "./layers/AttacksDisplay";
 import { BuildMenu } from "./layers/BuildMenu";
 import { AircraftLayer } from "./layers/AircraftLayer";
+import { FleetLayer } from "./layers/FleetLayer";
 import { CapitalLayer } from "./layers/CapitalLayer";
 import { SpyLayer } from "./layers/SpyLayer";
 import { ChatDisplay } from "./layers/ChatDisplay";
@@ -368,6 +369,7 @@ export function createRenderer(
     new CapitalLayer(game, transformHandler, inputEl),
     new SpyLayer(game, transformHandler, inputEl),
     new AircraftLayer(game, transformHandler, inputEl),
+    new FleetLayer(game, transformHandler, inputEl),
     ...(mapLayerController ? [mapLayerController] : []),
     eventsDisplay,
     actionableEvents,

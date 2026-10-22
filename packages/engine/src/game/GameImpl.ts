@@ -22,6 +22,7 @@ import {
   Tick,
   Trios,
   UnitType,
+isNavalCombatant,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdate,
@@ -1645,8 +1646,7 @@ export class GameImpl implements Game {
         .units()
         .filter(
           (u) =>
-            u.type() === UnitType.Warship ||
-            u.type() === UnitType.TransportShip,
+            isNavalCombatant(u.type()) || u.type() === UnitType.TransportShip,
         );
 
       for (const ship of ships) {

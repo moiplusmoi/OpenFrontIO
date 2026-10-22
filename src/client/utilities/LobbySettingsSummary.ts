@@ -20,6 +20,8 @@ const DISABLED_UNIT_KEYS: Record<string, string> = {
   "SAM Launcher": "unit_type.sam_launcher",
   "Missile Silo": "unit_type.missile_silo",
   Warship: "unit_type.warship",
+  Frigate: "unit_type.frigate",
+  Destroyer: "unit_type.destroyer",
   Factory: "unit_type.factory",
   "Atom Bomb": "unit_type.atom_bomb",
   "Hydrogen Bomb": "unit_type.hydrogen_bomb",

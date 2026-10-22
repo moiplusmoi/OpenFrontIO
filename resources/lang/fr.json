@@ -186,7 +186,9 @@
       "warship": "Capture les bateaux de commerce, détruit les navires de guerre et les bateaux de transport",
       "airport": "Lance bombardiers, chasseurs et parachutages à 200 cases (+25 par niveau) ; chaque niveau est un créneau de sortie qui se recharge en 30 s. Nécessite Aviation (mil 3).",
       "bomber": "Vole en ligne droite vers la cible : le défenseur perd jusqu'à 8 % de ses troupes (10 % avec mil 4) et une structure dans un rayon de 8 perd un niveau. Ni territoire, ni retombées. Jamais sur un allié.",
-      "fighter": "Patrouille à 60 cases de son aéroport et intercepte bombardiers et transports ennemis (60 %), bombes A (25 %) et bombes H (15 %). Un par niveau d'aéroport. Nécessite Supériorité aérienne (mil 4)."
+      "fighter": "Patrouille à 60 cases de son aéroport et intercepte bombardiers et transports ennemis (60 %), bombes A (25 %) et bombes H (15 %). Un par niveau d'aéroport. Nécessite Supériorité aérienne (mil 4).",
+      "frigate": "Corsaire rapide. Peu chère et fragile, tirs légers (60 % des dégâts). Chasse les cargos et protège la flotte. Chaque frégate en service renchérit la suivante.",
+      "destroyer": "Navire de ligne lourd. Lent à virer et difficile à couler, ses obus frappent 50 % plus fort. Demande Doctrine offensive (mil 2)."
     },
     "not_enough_money": "Pas assez d'argent",
     "upgrade_amount": "x{amount}",
@@ -2334,7 +2336,9 @@
     "airport": "Aéroport",
     "bomber": "Bombardier",
     "fighter": "Chasseur",
-    "air_transport": "Transport aérien"
+    "air_transport": "Transport aérien",
+    "frigate": "Frégate",
+    "destroyer": "Destroyer"
   },
   "update_available": {
     "desktop": "Une nouvelle version d’OpenFront est disponible. Elle sera téléchargée en arrière-plan ; une fois prête, rechargez la page depuis la barre de mise à jour.",

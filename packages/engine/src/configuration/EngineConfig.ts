@@ -8,6 +8,7 @@ import {
   Tick,
   UnitType,
   TechBranch,
+  NavalCombatant,
 } from "@openfront/engine-api/game/GameTypes";
 import { Season } from "@openfront/engine-lib/game/Seasons";
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
@@ -22,6 +23,13 @@ import {
   within,
 } from "@openfront/engine-lib/Util";
 import type { EngineUnitInfo, Game, Player, Unit } from "../game/Game";
+
+/** Per-type tuning of the warship family, see EngineConfig.navalTraits. */
+export interface NavalTraits {
+  stepsPerTick: number;
+  moveEveryTicks: number;
+  shellDamagePct: number;
+}
 
 export interface AttackLogicInput {
   terrain: TerrainType;
@@ -363,6 +371,19 @@ export class EngineConfig extends Config {
         return this.costWrapper(
           (numUnits: number) => Math.min(1_000_000, (numUnits + 1) * 250_000),
           UnitType.Warship,
+        );
+      // Cheap, fast raiders: each extra frigate is dearer, capped at 600k.
+      case UnitType.Frigate:
+        return this.costWrapper(
+          (numUnits: number) => Math.min(600_000, 100_000 + numUnits * 100_000),
+          UnitType.Frigate,
+        );
+      // Heavy line ships: 600k, +300k per destroyer already afloat, capped at 2M.
+      case UnitType.Destroyer:
+        return this.costWrapper(
+          (numUnits: number) =>
+            Math.min(2_000_000, 600_000 + numUnits * 300_000),
+          UnitType.Destroyer,
         );
       case UnitType.Port:
         return this.costWrapper(
@@ -813,6 +834,25 @@ export class EngineConfig extends Config {
 
   shellLifetime(): number {
     return 50;
+  }
+
+  /**
+   * Per-type behaviour of the warship family (integer values only).
+   * stepsPerTick: pathfinder steps per tick while patrolling.
+   * moveEveryTicks: the ship only patrols on ticks divisible by this.
+   * shellDamagePct: percent of the normal shell damage it deals.
+   */
+  navalTraits(type: NavalCombatant): NavalTraits {
+    switch (type) {
+      case UnitType.Frigate:
+        return { stepsPerTick: 2, moveEveryTicks: 1, shellDamagePct: 60 };
+      case UnitType.Destroyer:
+        return { stepsPerTick: 1, moveEveryTicks: 2, shellDamagePct: 150 };
+      case UnitType.Warship:
+        return { stepsPerTick: 1, moveEveryTicks: 1, shellDamagePct: 100 };
+      default:
+        assertNever(type);
+    }
   }
 
   warshipPatrolRange(): number {

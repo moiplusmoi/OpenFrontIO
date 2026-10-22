@@ -31,6 +31,9 @@ import { GameView } from "../../view";
 import { missingTech, requiresTechLabel } from "./TechLock";
 import { ShowTechPanelEvent } from "./TechPanelEvents";
 const warshipIcon = assetUrl("images/BattleshipIconWhite.svg");
+// No dedicated frigate art yet: the small boat stands in for it.
+const frigateIcon = assetUrl("images/BoatIconWhite.svg");
+const destroyerIcon = assetUrl("images/DestroyerIconWhite.svg");
 const cityIcon = assetUrl("images/CityIconWhite.svg");
 const factoryIcon = assetUrl("images/FactoryIconWhite.svg");
 const goldCoinIcon = assetUrl("images/GoldCoinIcon.svg");
@@ -82,6 +85,20 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: warshipIcon,
       description: "build_menu.desc.warship",
       key: "unit_type.warship",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Frigate,
+      icon: frigateIcon,
+      description: "build_menu.desc.frigate",
+      key: "unit_type.frigate",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Destroyer,
+      icon: destroyerIcon,
+      description: "build_menu.desc.destroyer",
+      key: "unit_type.destroyer",
       countable: true,
     },
     {

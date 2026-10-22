@@ -1,5 +1,10 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
-import { UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  isNavalCombatant,
+  NavalCombatant,
+  NavalCombatants,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import {
   zInt,
@@ -47,7 +52,9 @@ export class WarshipExecution implements Execution {
   private lastEmittedCombat = false;
 
   constructor(
-    private input: (UnitParams<UnitType.Warship> & OwnerComp) | Unit,
+    private input:
+      | (UnitParams<NavalCombatant> & OwnerComp & { unitType?: NavalCombatant })
+      | Unit,
   ) {}
 
   init(mg: Game, ticks: number): void {
@@ -57,21 +64,15 @@ export class WarshipExecution implements Execution {
     if (isUnit(this.input)) {
       this.warship = this.input;
     } else {
-      const spawn = this.input.owner.canBuild(
-        UnitType.Warship,
-        this.input.patrolTile,
-      );
+      const type = this.input.unitType ?? UnitType.Warship;
+      const spawn = this.input.owner.canBuild(type, this.input.patrolTile);
       if (spawn === false) {
         console.warn(
-          `Failed to spawn warship for ${this.input.owner.name()} at ${this.input.patrolTile}`,
+          `Failed to spawn ${type} for ${this.input.owner.name()} at ${this.input.patrolTile}`,
         );
         return;
       }
-      this.warship = this.input.owner.buildUnit(
-        UnitType.Warship,
-        spawn,
-        this.input,
-      );
+      this.warship = this.input.owner.buildUnit(type, spawn, this.input);
     }
     this.lastObservedPatrolTile = this.warship.warshipState().patrolTile;
   }
@@ -135,7 +136,8 @@ export class WarshipExecution implements Execution {
     }
 
     // Priority 2: Fight enemy warship if in range
-    if (this.warship.targetUnit()?.type() === UnitType.Warship) {
+    const targetType = this.warship.targetUnit()?.type();
+    if (targetType !== undefined && isNavalCombatant(targetType)) {
       this.shootTarget();
       this.patrol();
       return;
@@ -250,12 +252,12 @@ export class WarshipExecution implements Execution {
   }
 
   private findRetreatAggroTarget(): Unit | undefined {
-    return this.findBestTarget([UnitType.TransportShip, UnitType.Warship]);
+    return this.findBestTarget([UnitType.TransportShip, ...NavalCombatants]);
   }
 
   private findTargetUnit(): Unit | undefined {
     return this.findBestTarget(
-      [UnitType.TransportShip, UnitType.Warship, UnitType.TradeShip],
+      [UnitType.TransportShip, ...NavalCombatants, UnitType.TradeShip],
       true,
     );
   }
@@ -298,7 +300,7 @@ export class WarshipExecution implements Execution {
         unit.owner() === owner ||
         !owner.canAttackPlayer(unit.owner(), true) ||
         this.alreadySentShell.has(unit) ||
-        (unit.type() === UnitType.Warship &&
+        (isNavalCombatant(unit.type()) &&
           unit.warshipState().state === "docked")
       ) {
         continue;
@@ -340,7 +342,7 @@ export class WarshipExecution implements Execution {
       }
 
       const typePriority =
-        type === UnitType.TransportShip ? 0 : type === UnitType.Warship ? 1 : 2;
+        type === UnitType.TransportShip ? 0 : isNavalCombatant(type) ? 1 : 2;
 
       if (
         bestUnit === undefined ||
@@ -534,7 +536,7 @@ export class WarshipExecution implements Execution {
     const owner = this.warship.owner();
 
     return this.mg
-      .nearbyUnits(port.tile(), dockingRadius, [UnitType.Warship])
+      .nearbyUnits(port.tile(), dockingRadius, [...NavalCombatants])
       .filter(({ unit: ship }) => {
         if (excludeShip && ship === excludeShip) return false;
         if (ship.owner() !== owner) return false;
@@ -735,31 +737,45 @@ export class WarshipExecution implements Execution {
   }
 
   private patrol() {
-    if (this.warship.targetTile() === undefined) {
-      this.warship.setTargetTile(this.randomTile());
-      if (this.warship.targetTile() === undefined) {
-        return;
-      }
-    }
+    const traits = this.mg.config().navalTraits(this.shipType());
+    if (this.mg.ticks() % traits.moveEveryTicks !== 0) return;
 
-    const result = this.pathfinder.next(
-      this.warship.tile(),
-      this.warship.targetTile()!,
-    );
-    switch (result.status) {
-      case PathStatus.COMPLETE:
-        this.warship.setTargetTile(undefined);
-        this.warship.move(result.node);
-        break;
-      case PathStatus.NEXT:
-        this.warship.move(result.node);
-        break;
-      case PathStatus.NOT_FOUND: {
-        console.log(`path not found to target`);
-        this.warship.setTargetTile(undefined);
-        break;
+    // Frigates take extra steps per tick; a patrol target still ends the tick
+    // it is reached or abandoned.
+    for (let step = 0; step < traits.stepsPerTick; step++) {
+      if (this.warship.targetTile() === undefined) {
+        this.warship.setTargetTile(this.randomTile());
+        if (this.warship.targetTile() === undefined) {
+          return;
+        }
+      }
+
+      const result = this.pathfinder.next(
+        this.warship.tile(),
+        this.warship.targetTile()!,
+      );
+      switch (result.status) {
+        case PathStatus.COMPLETE:
+          this.warship.setTargetTile(undefined);
+          this.warship.move(result.node);
+          return;
+        case PathStatus.NEXT:
+          this.warship.move(result.node);
+          break;
+        case PathStatus.NOT_FOUND:
+          console.log(`path not found to target`);
+          this.warship.setTargetTile(undefined);
+          return;
       }
     }
+  }
+
+  /** The ship's own type; a warship until built, then the unit's type. */
+  private shipType(): NavalCombatant {
+    if (this.warship) return this.warship.type() as NavalCombatant;
+    return isUnit(this.input)
+      ? UnitType.Warship
+      : (this.input.unitType ?? UnitType.Warship);
   }
 
   isActive(): boolean {
@@ -850,6 +866,7 @@ export class WarshipExecution implements Execution {
         : {
             owner: w.player(this.input.owner),
             patrolTile: this.input.patrolTile,
+            unitType: this.input.unitType,
           },
       initialized: this.mg !== undefined,
       random: this.random === undefined ? null : w.random(this.random),
@@ -871,7 +888,11 @@ export class WarshipExecution implements Execution {
     this.input =
       "unit" in s.input
         ? r.unit(s.input.unit)
-        : { owner: r.player(s.input.owner), patrolTile: s.input.patrolTile };
+        : {
+            owner: r.player(s.input.owner),
+            patrolTile: s.input.patrolTile,
+            unitType: s.input.unitType,
+          };
     if (s.initialized) this.mg = r.game;
     if (s.random !== null) this.random = r.random(s.random);
     if (s.warship !== null) this.warship = r.unit(s.warship);
@@ -892,7 +913,12 @@ const WarshipExecutionStateSchema = z.object({
   /** An existing warship, or the params to build one in init(). */
   input: z.union([
     z.object({ unit: zRef() }),
-    z.object({ owner: zPlayerRef(), patrolTile: zTile() }),
+    z.object({
+      owner: zPlayerRef(),
+      patrolTile: zTile(),
+      /** Absent in version 1 snapshots: those were always warships. */
+      unitType: z.enum(NavalCombatants).optional(),
+    }),
   ]),
   initialized: z.boolean(),
   random: zRandom().nullable(),
@@ -911,7 +937,11 @@ type WarshipExecutionState = z.infer<typeof WarshipExecutionStateSchema>;
 
 export const WarshipExecutionSnapshot = execSnapshotType({
   name: "Warship",
-  version: 1,
+  version: 2,
+  // Version 2 only adds the optional unitType in input; old records stay valid.
+  migrations: {
+    1: (d: object) => d,
+  },
   schema: WarshipExecutionStateSchema,
   cls: () => WarshipExecution,
 });
