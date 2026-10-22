@@ -1368,6 +1368,16 @@ export class UserSettingModal extends BaseModal {
       ></setting-keybind>
 
       <setting-keybind
+        action="batchPlace"
+        label=${translateText("user_setting.batch_place")}
+        description=${translateText("user_setting.batch_place_desc")}
+        defaultKey=${this.defaultKeybinds.batchPlace}
+        .value=${this.getKeyValue("batchPlace")}
+        .display=${this.getKeyChar("batchPlace")}
+        @change=${this.handleKeybindChange}
+      ></setting-keybind>
+
+      <setting-keybind
         action="buildAtomBomb"
         label=${translateText("user_setting.build_atom_bomb")}
         description=${translateText("user_setting.build_atom_bomb_desc")}

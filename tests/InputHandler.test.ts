@@ -106,6 +106,7 @@ describe("InputHandler AutoUpgrade", () => {
       {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
         upgradeMultiplier: 1,
       },
@@ -991,6 +992,7 @@ describe("InputHandler AutoUpgrade", () => {
       uiState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1045,6 +1047,7 @@ describe("InputHandler AutoUpgrade", () => {
       const uiState: UIState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1099,6 +1102,7 @@ describe("InputHandler AutoUpgrade", () => {
       const uiState: UIState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1151,6 +1155,7 @@ describe("InputHandler AutoUpgrade", () => {
       const uiState: UIState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1171,6 +1176,7 @@ describe("InputHandler AutoUpgrade", () => {
       const uiState: UIState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1197,6 +1203,7 @@ describe("InputHandler AutoUpgrade", () => {
       const uiState: UIState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1220,6 +1227,7 @@ describe("InputHandler AutoUpgrade", () => {
       const uiState: UIState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
       inputHandler = new InputHandler(
@@ -1246,6 +1254,7 @@ describe("InputHandler AutoUpgrade", () => {
       uiState = {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
       } as UIState;
     });
@@ -1378,6 +1387,7 @@ describe("InputHandler AutoUpgrade", () => {
         {
           attackRatio: 20,
           ghostStructure: null,
+          batchPlace: false,
           rocketDirectionUp: true,
           upgradeMultiplier: 1,
         },
@@ -1407,6 +1417,7 @@ describe("InputHandler AutoUpgrade", () => {
         {
           attackRatio: 20,
           ghostStructure: null,
+          batchPlace: false,
           rocketDirectionUp: true,
           upgradeMultiplier: 1,
         },
@@ -1470,6 +1481,7 @@ describe("InputHandler AutoUpgrade", () => {
         {
           attackRatio: 20,
           ghostStructure: null,
+          batchPlace: false,
           rocketDirectionUp: true,
           upgradeMultiplier: 1,
         },
@@ -1601,6 +1613,7 @@ describe("Warship box selection (Shift+drag)", () => {
     uiState = {
       attackRatio: 20,
       ghostStructure: null,
+      batchPlace: false,
       rocketDirectionUp: true,
     } as UIState;
     inputHandler = new InputHandler(
@@ -1786,6 +1799,7 @@ describe("InputHandler right-click cancels unit selection (#4692)", () => {
       {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
         upgradeMultiplier: 1,
       },
@@ -1901,6 +1915,7 @@ describe("InputHandler teardown (OPE-411)", () => {
       {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
         upgradeMultiplier: 1,
       },

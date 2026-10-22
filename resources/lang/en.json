@@ -2753,6 +2753,8 @@
     "build_sam_launcher_desc": "Build a SAM Launcher under your cursor.",
     "build_warship": "Build Warship",
     "build_warship_desc": "Build a Warship under your cursor.",
+    "batch_place": "Batch placement (warships)",
+    "batch_place_desc": "Keep the warship ghost armed after each placement, so you can place several. Press the key again to stop.",
     "camera_movement": "Camera Movement",
     "center_camera": "Center Camera",
     "center_camera_desc": "Center camera on player",

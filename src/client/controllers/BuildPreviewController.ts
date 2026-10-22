@@ -25,6 +25,7 @@ import {
   ConfirmGhostStructureEvent,
   MouseMoveEvent,
   MouseUpEvent,
+  ToggleBatchPlaceEvent,
 } from "../InputHandler";
 import { buildNukeTrajectory, MapRenderer } from "../render/gl";
 import type { SAMInfo } from "../render/gl/utils/NukeTrajectory";
@@ -38,9 +39,32 @@ import { UIState } from "../UIState";
 import { UserSettings } from "../UserSettings";
 import { GameView } from "../view";
 
-/** True for nuke types (AtomBomb, HydrogenBomb): ghost is preserved after placement so user can place multiple or keep selection (Enter/key confirm). */
-export function shouldPreserveGhostAfterBuild(unitType: UnitType): boolean {
-  return unitType === UnitType.AtomBomb || unitType === UnitType.HydrogenBomb;
+/** Minimum gap between two batch placements; keeps a click burst under the server's intent rate limit (10/s). */
+export const BATCH_PLACE_INTERVAL_MS = 150;
+
+/** Unit types the batch mode can place repeatedly. */
+export function isBatchPlaceable(unitType: UnitType): boolean {
+  return unitType === UnitType.Warship;
+}
+
+/** True when enough time has passed since the last batch placement. */
+export function batchPlaceReady(lastAt: number, now: number): boolean {
+  return now - lastAt >= BATCH_PLACE_INTERVAL_MS;
+}
+
+/**
+ * Nuke types (AtomBomb, HydrogenBomb) keep the ghost after placement so the
+ * user can place more or confirm again. In batch mode, batch-placeable units
+ * keep it too, until batch mode is switched off or the player cannot pay.
+ */
+export function shouldPreserveGhostAfterBuild(
+  unitType: UnitType,
+  batchPlace = false,
+): boolean {
+  if (unitType === UnitType.AtomBomb || unitType === UnitType.HydrogenBomb) {
+    return true;
+  }
+  return batchPlace && isBatchPlaceable(unitType);
 }
 
 // tSamIntercept value used to flag an untargetable (impassable) destination:
@@ -78,6 +102,7 @@ export class BuildPreviewController implements Controller {
   private readonly mousePos = { x: 0, y: 0 };
   private lastGhostQueryAt: number = 0;
   private pendingConfirm: MouseUpEvent | null = null;
+  private lastBatchPlaceAt = -Infinity;
 
   // Buildable validation runs on the snapped tile under the cursor, but the
   // rendered icon follows the cursor at sub-tile precision so motion is
@@ -108,6 +133,9 @@ export class BuildPreviewController implements Controller {
   init() {
     this.eventBus.on(MouseMoveEvent, (e) => this.moveGhost(e));
     this.eventBus.on(MouseUpEvent, (e) => this.requestConfirmStructure(e));
+    this.eventBus.on(ToggleBatchPlaceEvent, () => {
+      this.uiState.batchPlace = !this.uiState.batchPlace;
+    });
     this.eventBus.on(ConfirmGhostStructureEvent, () =>
       this.requestConfirmStructure(
         new MouseUpEvent(this.mousePos.x, this.mousePos.y),
@@ -565,6 +593,14 @@ export class BuildPreviewController implements Controller {
         return;
       }
 
+      const batch = this.uiState.batchPlace && isBatchPlaceable(unitType);
+      if (batch) {
+        // Too soon after the last batch placement: drop this click, keep the ghost.
+        const now = performance.now();
+        if (!batchPlaceReady(this.lastBatchPlaceAt, now)) return;
+        this.lastBatchPlaceAt = now;
+      }
+
       const isNuke = unitType === UnitType.AtomBomb;
       const rocketDirectionUp =
         unitType === UnitType.AtomBomb || unitType === UnitType.HydrogenBomb
@@ -578,7 +614,7 @@ export class BuildPreviewController implements Controller {
           isNuke ? this.uiState.upgradeMultiplier || 1 : undefined,
         ),
       );
-      if (!shouldPreserveGhostAfterBuild(unitType)) {
+      if (!shouldPreserveGhostAfterBuild(unitType, this.uiState.batchPlace)) {
         this.removeGhostStructure();
       }
     } else {

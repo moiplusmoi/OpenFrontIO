@@ -70,6 +70,7 @@ export function createRenderer(
   const uiState: UIState = {
     attackRatio: 20,
     ghostStructure: null,
+    batchPlace: false,
     rocketDirectionUp: true,
     upgradeMultiplier: 1,
   };

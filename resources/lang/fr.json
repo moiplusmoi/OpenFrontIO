@@ -2407,6 +2407,8 @@
     "build_sam_launcher_desc": "Construire un lanceur SAM sous votre curseur.",
     "build_warship": "Construire un navire de guerre",
     "build_warship_desc": "Construire un navire de guerre sous votre curseur.",
+    "batch_place": "Pose en lot (navires de guerre)",
+    "batch_place_desc": "Garde le fantôme du navire de guerre armé après chaque pose, pour en poser plusieurs. Appuie de nouveau sur la touche pour arrêter.",
     "camera_movement": "Mouvement de la caméra",
     "center_camera": "Centrer la caméra",
     "center_camera_desc": "Centrer la caméra sur le joueur",

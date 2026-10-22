@@ -38,6 +38,7 @@ describe("keybind capture over a live game", () => {
       {
         attackRatio: 20,
         ghostStructure: null,
+        batchPlace: false,
         rocketDirectionUp: true,
         upgradeMultiplier: 1,
       },

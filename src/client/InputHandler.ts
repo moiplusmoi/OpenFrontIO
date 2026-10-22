@@ -150,6 +150,9 @@ export class TouchLongPressStartEvent implements GameEvent {
 /** GalloFront: open/close the technologies panel (keybind `techPanel`). */
 export class ToggleTechPanelEvent implements GameEvent {}
 
+/** Batch placement: keep the warship ghost armed after each placement (keybind `batchPlace`). */
+export class ToggleBatchPlaceEvent implements GameEvent {}
+
 export class ShowBuildMenuEvent implements GameEvent {
   constructor(
     public readonly x: number,
@@ -444,6 +447,11 @@ export class InputHandler {
     });
     this.addKeybindAndEvent(this.keybinds.centerCamera, () => {
       this.eventBus.emit(new CenterCameraEvent());
+    });
+    this.addKeybindAndEvent(this.keybinds.batchPlace, () => {
+      if (this.canUseBuildKeybinds()) {
+        this.eventBus.emit(new ToggleBatchPlaceEvent());
+      }
     });
     this.addKeybindAndEvent(this.keybinds.selectAllWarships, () => {
       this.eventBus.emit(new SelectAllWarshipsEvent());
