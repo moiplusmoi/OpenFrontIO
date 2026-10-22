@@ -10,10 +10,14 @@
  * or the canvas size changes.
  */
 
-import { Cell, UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  Cell,
+  SurfaceCombatants,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import type { Controller } from "../../Controller";
 import type { TransformHandler } from "../../TransformHandler";
-import type { GameView, UnitView } from "../../view";
+import type { GameView, PlayerView, UnitView } from "../../view";
 
 /** Below this zoom (screen pixels per tile) the ships are hidden. */
 const MIN_SCALE = 0.6;
@@ -21,7 +25,11 @@ const SHIP_TILES = 3.2;
 const SHIP_MIN_PX = 8;
 const SHIP_MAX_PX = 26;
 
-const FLEET_TYPES = [UnitType.Frigate, UnitType.Destroyer] as const;
+const FLEET_TYPES = [
+  UnitType.Frigate,
+  UnitType.Destroyer,
+  UnitType.Submarine,
+] as const;
 
 export class FleetLayer implements Controller {
   private canvas: HTMLCanvasElement | null = null;
@@ -67,11 +75,23 @@ export class FleetLayer implements Controller {
     const cssW = canvas.clientWidth;
     const cssH = canvas.clientHeight;
     const th = this.transformHandler;
-    const ships = this.ships();
+    const me = this.game.myPlayer();
+    // Enemy submarines are drawn only while one of our surface ships or ports
+    // is in sonar range (see isSubmarineDetectedBy in the engine).
+    const detectors =
+      me === null
+        ? []
+        : this.game
+            .units(...SurfaceCombatants, UnitType.Port)
+            .filter((u) => u.owner() === me || me.isFriendly(u.owner()));
+    const ships = this.ships().filter((ship) =>
+      this.canSee(ship, me, detectors),
+    );
 
     const signature =
       `${cssW}x${cssH}@${dpr}|${th.scale}|${th.offsetX}|${th.offsetY}|` +
-      ships.map((u) => `${u.id()}:${u.tile()}`).join(",");
+      ships.map((u) => `${u.id()}:${u.tile()}`).join(",") +
+      `|${detectors.map((u) => u.tile()).join(",")}`;
     if (signature === this.lastSignature) return;
     this.lastSignature = signature;
 
@@ -90,8 +110,6 @@ export class FleetLayer implements Controller {
       SHIP_MAX_PX,
       Math.max(SHIP_MIN_PX, th.scale * SHIP_TILES),
     );
-    const me = this.game.myPlayer();
-
     for (const ship of ships) {
       const tile = ship.tile();
       if (!th.isOnScreen(this.cellOf(tile))) continue;
@@ -105,12 +123,42 @@ export class FleetLayer implements Controller {
       const { x, y } = this.screenOf(tile);
       const heading = this.headingOf(ship);
 
-      if (ship.type() === UnitType.Destroyer) {
-        drawDestroyer(ctx, x, y, size * 1.1, heading, fill, mine);
-      } else {
-        drawFrigate(ctx, x, y, size * 0.8, heading, fill, mine);
+      switch (ship.type()) {
+        case UnitType.Destroyer:
+          drawDestroyer(ctx, x, y, size * 1.1, heading, fill, mine);
+          break;
+        case UnitType.Submarine:
+          // Our own submarines show faint (submerged); a detected enemy is solid.
+          ctx.globalAlpha = mine ? 0.55 : 1;
+          drawSubmarine(ctx, x, y, size * 0.9, heading, fill, mine);
+          ctx.globalAlpha = 1;
+          break;
+        default:
+          drawFrigate(ctx, x, y, size * 0.8, heading, fill, mine);
       }
     }
+  }
+
+  /**
+   * Whether `me` can see a ship. Only submarines are ever hidden: friends
+   * always see them, enemies only inside sonar range of a detector.
+   */
+  private canSee(
+    ship: UnitView,
+    me: PlayerView | null,
+    detectors: UnitView[],
+  ): boolean {
+    if (ship.type() !== UnitType.Submarine) return true;
+    const owner = ship.owner();
+    if (me !== null && (owner === me || me.isFriendly(owner))) return true;
+    const range = this.game.config().submarineDetectionRange();
+    const tile = ship.tile();
+    return detectors.some(
+      (d) =>
+        Math.abs(this.game.x(d.tile()) - this.game.x(tile)) +
+          Math.abs(this.game.y(d.tile()) - this.game.y(tile)) <=
+        range,
+    );
   }
 
   /** Nose toward the last move, or straight up when the ship has not moved. */
@@ -213,5 +261,39 @@ function drawDestroyer(
     ctx.arc(tx, 0, Math.max(1, s * 0.09), 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.restore();
+}
+
+/** Long, narrow hull with a conning tower and a periscope: the stealth raider. */
+function drawSubmarine(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  s: number,
+  heading: number,
+  fill: string,
+  mine: boolean,
+) {
+  const half = s / 2;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(heading);
+  ctx.lineJoin = "round";
+  ctx.lineWidth = Math.max(1, s * 0.09);
+  ctx.strokeStyle = strokeStyleFor(mine);
+  ctx.fillStyle = fill;
+  hullPath(ctx, half, half * 0.22);
+  ctx.stroke();
+  ctx.fill();
+  // Conning tower, a little forward of midships.
+  ctx.fillStyle = "rgba(15, 23, 42, 0.6)";
+  ctx.fillRect(-half * 0.15, -half * 0.16, half * 0.45, half * 0.32);
+  // Periscope.
+  ctx.beginPath();
+  ctx.moveTo(half * 0.1, 0);
+  ctx.lineTo(half * 0.1, -half * 0.28);
+  ctx.strokeStyle = "rgba(248, 250, 252, 0.9)";
+  ctx.lineWidth = Math.max(1, s * 0.06);
+  ctx.stroke();
   ctx.restore();
 }

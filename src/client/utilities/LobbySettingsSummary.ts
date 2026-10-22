@@ -22,6 +22,7 @@ const DISABLED_UNIT_KEYS: Record<string, string> = {
   Warship: "unit_type.warship",
   Frigate: "unit_type.frigate",
   Destroyer: "unit_type.destroyer",
+  Submarine: "unit_type.submarine",
   Factory: "unit_type.factory",
   "Atom Bomb": "unit_type.atom_bomb",
   "Hydrogen Bomb": "unit_type.hydrogen_bomb",

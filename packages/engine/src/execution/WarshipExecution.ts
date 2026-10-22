@@ -37,6 +37,7 @@ import type {
   SnapshotReader,
   SnapshotWriter,
 } from "../snapshot/SnapshotContext";
+import { isSubmarineDetectedBy } from "../game/Submarines";
 import { ShellExecution } from "./ShellExecution";
 
 export class WarshipExecution implements Execution {
@@ -256,6 +257,14 @@ export class WarshipExecution implements Execution {
   }
 
   private findTargetUnit(): Unit | undefined {
+    // A submarine torpedoes merchant ships and transports; it does not duel
+    // warships on the surface.
+    if (this.shipType() === UnitType.Submarine) {
+      return this.findBestTarget(
+        [UnitType.TransportShip, UnitType.TradeShip],
+        true,
+      );
+    }
     return this.findBestTarget(
       [UnitType.TransportShip, ...NavalCombatants, UnitType.TradeShip],
       true,
@@ -307,6 +316,14 @@ export class WarshipExecution implements Execution {
       }
 
       const type = unit.type();
+
+      // A submerged submarine is only a target for a side that detects it.
+      if (
+        type === UnitType.Submarine &&
+        !isSubmarineDetectedBy(unit, owner, mg)
+      ) {
+        continue;
+      }
 
       if (includeTradeShips && type === UnitType.TradeShip) {
         if (warshipComponent === undefined) {
@@ -678,6 +695,16 @@ export class WarshipExecution implements Execution {
     }
   }
 
+  /** A warship captures the merchant ship; a submarine torpedoes it. */
+  private takeTradeShip(target: Unit): void {
+    if (this.shipType() === UnitType.Submarine) {
+      target.delete(true, this.warship.owner());
+      return;
+    }
+    this.warship.owner().captureUnit(target);
+    this.warship.recordTradeCapture();
+  }
+
   private huntDownTradeShip() {
     this.warship.updateWarshipState({ isInCombat: true });
     for (let i = 0; i < 2; i++) {
@@ -686,8 +713,7 @@ export class WarshipExecution implements Execution {
       const dist = this.mg.manhattanDist(this.warship.tile(), targetTile);
 
       if (dist <= 5) {
-        this.warship.owner().captureUnit(target);
-        this.warship.recordTradeCapture();
+        this.takeTradeShip(target);
         this.warship.setTargetUnit(undefined);
         this.warship.touch();
         return;
@@ -706,8 +732,7 @@ export class WarshipExecution implements Execution {
       const result = this.pathfinder.next(this.warship.tile(), targetTile, 5);
       switch (result.status) {
         case PathStatus.COMPLETE:
-          this.warship.owner().captureUnit(target);
-          this.warship.recordTradeCapture();
+          this.takeTradeShip(target);
           this.warship.setTargetUnit(undefined);
           this.warship.touch();
           return;

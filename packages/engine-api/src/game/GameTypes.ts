@@ -196,6 +196,8 @@ export enum UnitType {
   // Naval combatants bought like warships (see NavalCombatants).
   Frigate = "Frigate",
   Destroyer = "Destroyer",
+  // Stealthy: hidden from enemies until a surface ship or port is in sonar range.
+  Submarine = "Submarine",
   Shell = "Shell",
   SAMMissile = "SAMMissile",
   Port = "Port",
@@ -222,6 +224,14 @@ export enum UnitType {
 
 /** Ships that patrol and fight: the warship family. Frigate and Destroyer share the warship execution. */
 export const NavalCombatants = [
+  UnitType.Warship,
+  UnitType.Frigate,
+  UnitType.Destroyer,
+  UnitType.Submarine,
+] as const;
+
+/** Ships on the surface: what detects a submarine (and ports, see submarine rules). */
+export const SurfaceCombatants = [
   UnitType.Warship,
   UnitType.Frigate,
   UnitType.Destroyer,
@@ -390,6 +400,7 @@ export const BuildableAttacks = unitTypeGroup([
   UnitType.Warship,
   UnitType.Frigate,
   UnitType.Destroyer,
+  UnitType.Submarine,
   UnitType.Bomber,
   UnitType.Fighter,
 ] as const);

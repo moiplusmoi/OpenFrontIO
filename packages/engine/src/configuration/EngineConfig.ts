@@ -385,6 +385,13 @@ export class EngineConfig extends Config {
             Math.min(2_000_000, 600_000 + numUnits * 300_000),
           UnitType.Destroyer,
         );
+      // Stealth raider: dear, and each extra submarine costs more, capped at 1.4M.
+      case UnitType.Submarine:
+        return this.costWrapper(
+          (numUnits: number) =>
+            Math.min(1_400_000, 350_000 + numUnits * 150_000),
+          UnitType.Submarine,
+        );
       case UnitType.Port:
         return this.costWrapper(
           (numUnits: number) => Math.min(1_000_000, pow2(numUnits) * 125_000),
@@ -890,6 +897,9 @@ export class EngineConfig extends Config {
         return { stepsPerTick: 2, moveEveryTicks: 1, shellDamagePct: 60 };
       case UnitType.Destroyer:
         return { stepsPerTick: 1, moveEveryTicks: 2, shellDamagePct: 150 };
+      // Torpedo runs: it fights warships at 40% and mostly hunts merchant ships.
+      case UnitType.Submarine:
+        return { stepsPerTick: 1, moveEveryTicks: 1, shellDamagePct: 40 };
       case UnitType.Warship:
         return { stepsPerTick: 1, moveEveryTicks: 1, shellDamagePct: 100 };
       default:

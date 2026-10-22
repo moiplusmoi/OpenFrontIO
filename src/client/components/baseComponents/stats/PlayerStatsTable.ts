@@ -22,7 +22,7 @@ const BUILDING_ORDER = {
   silo: 5,
   saml: 6,
 } as const satisfies Record<
-  Exclude<(typeof otherUnits)[number], "wshp" | "frig" | "dstr">,
+  Exclude<(typeof otherUnits)[number], "wshp" | "frig" | "dstr" | "subm">,
   number
 >;
 
@@ -45,6 +45,7 @@ const UNIT_LABEL_KEYS = {
   wshp: "unit_type.warship",
   frig: "unit_type.frigate",
   dstr: "unit_type.destroyer",
+  subm: "unit_type.submarine",
   abomb: "unit_type.atom_bomb",
   hbomb: "unit_type.hydrogen_bomb",
   mirv: "unit_type.mirv",
@@ -175,7 +176,14 @@ export class PlayerStatsTable extends LitElement {
         ${statsSection("player_stats_table.warship_stats", UNIT_COLUMNS, [
           { values: slots(stats?.units?.wshp, 4) },
           { label: "unit_type.frigate", values: slots(stats?.units?.frig, 4) },
-          { label: "unit_type.destroyer", values: slots(stats?.units?.dstr, 4) },
+          {
+            label: "unit_type.destroyer",
+            values: slots(stats?.units?.dstr, 4),
+          },
+          {
+            label: "unit_type.submarine",
+            values: slots(stats?.units?.subm, 4),
+          },
         ])}
         ${statsSection(
           "player_stats_table.ship_arrivals",

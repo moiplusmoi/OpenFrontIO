@@ -38,7 +38,6 @@ import { AllUnitParams, EngineUnitInfo, Player, Unit } from "./Game";
 import { GameImpl } from "./GameImpl";
 import { PlayerImpl } from "./PlayerImpl";
 
-
 /** Locale key of a naval combatant's name (the warship family). */
 function navalUnitKey(type: UnitType): string {
   switch (type) {
@@ -135,6 +134,7 @@ export class UnitImpl implements Unit {
       case UnitType.Warship:
       case UnitType.Frigate:
       case UnitType.Destroyer:
+      case UnitType.Submarine:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
@@ -267,6 +267,7 @@ export class UnitImpl implements Unit {
       case UnitType.Warship:
       case UnitType.Frigate:
       case UnitType.Destroyer:
+      case UnitType.Submarine:
       case UnitType.Port:
       case UnitType.MissileSilo:
       case UnitType.DefensePost:
@@ -433,6 +434,7 @@ export class UnitImpl implements Unit {
         case UnitType.Warship:
         case UnitType.Frigate:
         case UnitType.Destroyer:
+        case UnitType.Submarine:
         case UnitType.Factory:
           this.mg.stats().unitDestroy(destroyer, this._type);
           this.mg.stats().unitLose(this.owner(), this._type);
@@ -444,7 +446,10 @@ export class UnitImpl implements Unit {
   private displayMessageOnDeleted(): void {
     // Only warships and transport ships are worth notifying about; everything
     // else is either visible on the map or too low-stakes to surface.
-    if (!isNavalCombatant(this._type) && this._type !== UnitType.TransportShip) {
+    if (
+      !isNavalCombatant(this._type) &&
+      this._type !== UnitType.TransportShip
+    ) {
       return;
     }
 

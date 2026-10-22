@@ -114,6 +114,7 @@ const unitOptions: { type: UnitType; translationKey: string }[] = [
   { type: UnitType.Warship, translationKey: "unit_type.warship" },
   { type: UnitType.Frigate, translationKey: "unit_type.frigate" },
   { type: UnitType.Destroyer, translationKey: "unit_type.destroyer" },
+  { type: UnitType.Submarine, translationKey: "unit_type.submarine" },
   { type: UnitType.TransportShip, translationKey: "unit_type.boat" },
   { type: UnitType.MissileSilo, translationKey: "unit_type.missile_silo" },
   { type: UnitType.SAMLauncher, translationKey: "unit_type.sam_launcher" },

@@ -201,6 +201,11 @@ export class Config {
     return durations[techDef(id).level - 1];
   }
   /** Tech required to build a unit type, or null (none of the base units need one). */
+  /** A submarine is seen by an enemy only within this many tiles of a surface ship or port. */
+  submarineDetectionRange(): number {
+    return 35;
+  }
+
   unitRequiredTech(type: UnitType): TechId | null {
     switch (type) {
       // Spies open with Radar (def_2); Intelligence (def_3) and
@@ -218,6 +223,9 @@ export class Config {
       // which already hardens warships.
       case UnitType.Destroyer:
         return TechId.Mil2;
+      // Submarines carry sonar, which Radar (def_2) provides.
+      case UnitType.Submarine:
+        return TechId.Def2;
       case UnitType.Fighter:
         return TechId.Mil4;
       default:
@@ -471,6 +479,9 @@ export class Config {
         break;
       case UnitType.Destroyer:
         info = { maxHealth: 2200 };
+        break;
+      case UnitType.Submarine:
+        info = { maxHealth: 600 };
         break;
       case UnitType.Shell:
         info = { damage: 250 };

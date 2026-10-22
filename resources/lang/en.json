@@ -202,6 +202,7 @@
       "missile_silo": "Used to launch nukes",
       "port": "Sends trade ships to generate gold",
       "sam_launcher": "Defends against incoming nukes",
+      "submarine": "Stealth torpedo boat. Invisible to enemies until a surface ship or port of theirs is within 35 tiles. Sinks merchant ships outright, and does 40% of the warship shell damage. Needs Radar (def 2).",
       "warship": "Captures trade ships, destroys ships and boats"
     },
     "not_enough_money": "Not enough money",
@@ -2684,6 +2685,7 @@
     "port": "Port",
     "sam_launcher": "SAM Launcher",
     "spy": "Spy",
+    "submarine": "Submarine",
     "warship": "Warship"
   },
   "update_available": {

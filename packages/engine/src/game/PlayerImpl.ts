@@ -1633,6 +1633,7 @@ export class PlayerImpl implements Player {
       case UnitType.Warship:
       case UnitType.Frigate:
       case UnitType.Destroyer:
+      case UnitType.Submarine:
         return this.warshipSpawn(targetTile);
       case UnitType.CommercialAircraft:
         return this.commercialSpawn(targetTile);

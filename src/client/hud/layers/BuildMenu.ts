@@ -34,6 +34,8 @@ const warshipIcon = assetUrl("images/BattleshipIconWhite.svg");
 // No dedicated frigate art yet: the small boat stands in for it.
 const frigateIcon = assetUrl("images/BoatIconWhite.svg");
 const destroyerIcon = assetUrl("images/DestroyerIconWhite.svg");
+// Stealth is the point of a submarine: the ninja mark stands for it.
+const submarineIcon = assetUrl("images/NinjaIconWhite.svg");
 const cityIcon = assetUrl("images/CityIconWhite.svg");
 const factoryIcon = assetUrl("images/FactoryIconWhite.svg");
 const goldCoinIcon = assetUrl("images/GoldCoinIcon.svg");
@@ -99,6 +101,13 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: destroyerIcon,
       description: "build_menu.desc.destroyer",
       key: "unit_type.destroyer",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Submarine,
+      icon: submarineIcon,
+      description: "build_menu.desc.submarine",
+      key: "unit_type.submarine",
       countable: true,
     },
     {
