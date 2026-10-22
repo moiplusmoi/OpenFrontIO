@@ -401,7 +401,7 @@ export class ControlPanel extends LitElement implements Controller {
     const { greenPercent, orangePercent } = this.calculateTroopBar();
     return html`
       <div
-        class="w-full h-6 border border-gray-600 rounded-md bg-gray-900/60 overflow-hidden relative"
+        class="w-full h-6 border border-hud-line rounded bg-hud overflow-hidden relative"
       >
         <div class="relative h-full">
           <div
@@ -459,7 +459,7 @@ export class ControlPanel extends LitElement implements Controller {
     const { greenPercent, orangePercent } = this.calculateTroopBar();
     return html`
       <div
-        class="w-full h-6 border border-gray-600 rounded-md bg-gray-900/60 overflow-hidden relative"
+        class="w-full h-6 border border-hud-line rounded bg-hud overflow-hidden relative"
       >
         <div class="relative h-full">
           <div
@@ -532,7 +532,7 @@ export class ControlPanel extends LitElement implements Controller {
       <div class="flex gap-1.5 items-center mb-1">
         <!-- Troop rate -->
         <div
-          class="flex items-center gap-1 shrink-0 border rounded-md font-bold text-sm py-0.5 px-1 w-[5.5rem] ${this.tutorialHighlightClass(
+          class="flex items-center gap-1 shrink-0 border rounded bg-hud-raised font-bold text-sm py-0.5 px-1.5 w-[5.5rem] ${this.tutorialHighlightClass(
             "troop_rate",
           )} ${this._troopRateIsIncreasing
             ? "border-green-400"
@@ -563,7 +563,7 @@ export class ControlPanel extends LitElement implements Controller {
         </div>
         <!-- Gold -->
         <div
-          class="flex items-center gap-1 shrink-0 border rounded-md border-yellow-400 font-bold text-yellow-400 text-sm py-0.5 px-1 min-w-[4.5rem] relative ${this.tutorialHighlightClass(
+          class="flex items-center gap-1 shrink-0 border rounded bg-hud-raised border-yellow-400 font-bold text-yellow-400 text-sm py-0.5 px-1.5 min-w-[4.5rem] relative ${this.tutorialHighlightClass(
             "gold",
           )}"
           translate="no"
@@ -589,7 +589,7 @@ export class ControlPanel extends LitElement implements Controller {
         translate="no"
       >
         <div
-          class="flex items-center gap-1 shrink-0 border border-gray-600 rounded-md px-1 py-0.5 text-sm font-bold text-white cursor-pointer w-[8rem]"
+          class="flex items-center gap-1 shrink-0 border border-hud-line rounded bg-hud-raised px-1.5 py-0.5 text-sm font-bold text-white cursor-pointer w-[8rem]"
         >
           <img
             src=${swordIcon}
@@ -625,7 +625,7 @@ export class ControlPanel extends LitElement implements Controller {
       <div class="flex gap-2 items-center">
         <!-- Gold -->
         <div
-          class="flex flex-wrap items-center justify-center p-1 gap-0.5 border rounded-md border-yellow-400 font-bold text-yellow-400 text-xs w-1/5 shrink-0 relative ${this.tutorialHighlightClass(
+          class="flex flex-wrap items-center justify-center p-1 gap-0.5 border rounded bg-hud-raised border-yellow-400 font-bold text-yellow-400 text-xs w-1/5 shrink-0 relative ${this.tutorialHighlightClass(
             "gold",
           )}"
           translate="no"

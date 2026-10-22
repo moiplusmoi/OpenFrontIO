@@ -844,7 +844,7 @@ export class EventsDisplay extends LitElement implements Controller {
     return html`
       <tr>
         <td
-          class="lg:px-2 lg:py-1 p-1 text-left ${event.colorClasses ??
+          class="lg:px-2 lg:py-1 p-1 pl-2 text-left border-l-2 border-current/50 ${event.colorClasses ??
           getMessageTypeClasses(event.type)}"
         >
           ${event.focusID

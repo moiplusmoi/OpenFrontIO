@@ -215,10 +215,11 @@ export class BuildMenu extends LitElement implements Controller {
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 9999;
-      background-color: #1e1e1e;
+      background-color: var(--color-hud);
       padding: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--color-hud-line);
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -242,12 +243,14 @@ export class BuildMenu extends LitElement implements Controller {
       position: relative;
       width: 120px;
       height: 140px;
-      border: 2px solid #444;
-      background-color: #2c2c2c;
+      border: 1px solid var(--color-hud-line);
+      background-color: var(--color-hud-raised);
       color: white;
-      border-radius: 12px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -262,19 +265,18 @@ export class BuildMenu extends LitElement implements Controller {
        sticky :hover behind, and the scale transition read as a jitter. */
     @media (hover: hover) {
       .build-button:not(:disabled):hover {
-        background-color: #3a3a3a;
-        transform: scale(1.05);
-        border-color: #666;
+        background-color: #1b3152;
+        border-color: rgba(63, 169, 245, 0.5);
       }
     }
     .build-button:not(:disabled):active {
-      background-color: #4a4a4a;
-      transform: scale(0.95);
+      background-color: #234670;
+      transform: scale(0.98);
     }
     .build-button.locked {
       border-style: dashed;
       border-color: #b45309;
-      background-color: #1a1a1a;
+      background-color: #0a1421;
     }
     .build-button.locked img {
       opacity: 0.5;
@@ -286,8 +288,8 @@ export class BuildMenu extends LitElement implements Controller {
       text-align: center;
     }
     .build-button:disabled {
-      background-color: #1a1a1a;
-      border-color: #333;
+      background-color: #0a1421;
+      border-color: var(--color-hud-line);
       cursor: not-allowed;
       opacity: 0.7;
     }
@@ -317,7 +319,7 @@ export class BuildMenu extends LitElement implements Controller {
       position: absolute;
       top: -10px;
       right: -10px;
-      background-color: #2c2c2c;
+      background-color: var(--color-hud-raised);
       color: white;
       padding: 2px 10px;
       border-radius: 10000px;
@@ -326,20 +328,20 @@ export class BuildMenu extends LitElement implements Controller {
       display: flex;
       justify-content: center;
       align-content: center;
-      border: 1px solid #444;
+      border: 1px solid var(--color-hud-line);
     }
     @media (hover: hover) {
       .build-button:not(:disabled):hover > .build-count-chip {
-        background-color: #3a3a3a;
-        border-color: #666;
+        background-color: #1b3152;
+        border-color: rgba(63, 169, 245, 0.5);
       }
     }
     .build-button:not(:disabled):active > .build-count-chip {
-      background-color: #4a4a4a;
+      background-color: #234670;
     }
     .build-button:disabled > .build-count-chip {
-      background-color: #1a1a1a;
-      border-color: #333;
+      background-color: #0a1421;
+      border-color: var(--color-hud-line);
       cursor: not-allowed;
     }
     .build-count {
