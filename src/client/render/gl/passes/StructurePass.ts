@@ -129,6 +129,10 @@ export class StructurePass {
   private ghost: GhostPreviewData | null = null;
   /** Scratch buffer for the single ghost instance (avoids allocation). */
   private ghostBuf = new Float32Array(FLOATS_PER_INSTANCE);
+  // Per-atlas-column uniforms, refilled each frame. Reused so draw() does not
+  // allocate; uniform1fv copies the values synchronously.
+  private readonly shapeScales = new Float32Array(ATLAS_COLS);
+  private readonly iconFills = new Float32Array(ATLAS_COLS);
 
   constructor(
     gl: WebGL2RenderingContext,
@@ -389,15 +393,13 @@ export class StructurePass {
     gl.uniform1f(this.uIconGrowZoom, ss.iconGrowZoom);
 
     // Build per-structure uniform arrays from settings, ordered by atlas column
-    const scales = new Float32Array(ATLAS_COLS);
-    const fills = new Float32Array(ATLAS_COLS);
     for (let i = 0; i < STRUCTURE_ORDER.length; i++) {
       const cfg = ss.shapes[STRUCTURE_ORDER[i]];
-      scales[i] = cfg?.scale ?? 1.0;
-      fills[i] = cfg?.iconFill ?? 0.6;
+      this.shapeScales[i] = cfg?.scale ?? 1.0;
+      this.iconFills[i] = cfg?.iconFill ?? 0.6;
     }
-    gl.uniform1fv(this.uShapeScales, scales);
-    gl.uniform1fv(this.uIconFills, fills);
+    gl.uniform1fv(this.uShapeScales, this.shapeScales);
+    gl.uniform1fv(this.uIconFills, this.iconFills);
 
     gl.uniform1i(
       this.uAltView,
