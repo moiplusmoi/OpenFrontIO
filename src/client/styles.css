@@ -30,6 +30,12 @@
   /* App-specific surface colors */
   --color-surface: #0a1628;
 
+  /* In-game HUD panels: navy-tinted instead of neutral gray, so they sit in
+     the same family as the brand surface. */
+  --color-hud: #0b1828;
+  --color-hud-raised: #13243d;
+  --color-hud-line: rgba(63, 169, 245, 0.18);
+
   --shadow-malibu-blue: 0 0 15px rgba(0, 132, 209, 0.2);
   --shadow-malibu-blue-soft: 0 0 12px rgba(0, 132, 209, 0.2);
   --shadow-malibu-blue-strong: 0 0 15px rgba(0, 132, 209, 0.3);
@@ -106,19 +112,19 @@ body.in-game {
 
 body.in-game .bg-gray-800\/92:not(.game-end-timer-sidebar-flash) {
   background-color: rgb(
-    from var(--color-gray-800) r g b / calc(0.92 * var(--hud-opacity, 1))
+    from var(--color-hud) r g b / calc(0.92 * var(--hud-opacity, 1))
   );
 }
 
 body.in-game .stats-table .bg-gray-800\/85 {
   background-color: rgb(
-    from var(--color-gray-800) r g b / calc(0.85 * var(--hud-opacity, 1))
+    from var(--color-hud) r g b / calc(0.85 * var(--hud-opacity, 1))
   );
 }
 
 body.in-game .stats-table .bg-gray-700\/95 {
   background-color: rgb(
-    from var(--color-gray-700) r g b / calc(0.95 * var(--hud-opacity, 1))
+    from var(--color-hud-raised) r g b / calc(0.95 * var(--hud-opacity, 1))
   );
 }
 

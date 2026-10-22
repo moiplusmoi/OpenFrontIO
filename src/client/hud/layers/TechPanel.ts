@@ -130,7 +130,7 @@ export class TechPanel extends LitElement implements Controller {
         @wheel=${(e: WheelEvent) => e.stopPropagation()}
       >
         <div
-          class="flex h-full w-full flex-col overflow-hidden bg-zinc-900/95 text-white shadow-2xl ring-1 ring-white/10
+          class="flex h-full w-full flex-col overflow-hidden bg-hud/95 text-white shadow-2xl ring-1 ring-hud-line
                  lg:h-auto lg:max-h-[90vh] lg:w-auto lg:max-w-5xl lg:rounded-2xl"
           role="dialog"
           aria-modal="true"
