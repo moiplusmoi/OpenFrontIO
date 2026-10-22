@@ -55,20 +55,21 @@ import {
 } from "./Utils";
 import { isReplayShellHost } from "./VersionedReplay";
 
+// Flat buttons: colour changes only, no scale (scaling made the row jitter).
 const PRIMARY_ACTION =
-  "bg-malibu-blue hover:bg-aquarius active:bg-malibu-blue/80 hover:scale-y-105 hover:scale-x-[1.01]";
+  "bg-malibu-blue hover:brightness-110 active:brightness-95";
 const SECONDARY_ACTION =
-  "bg-surface hover:brightness-[1.08] active:brightness-[0.95] hover:scale-105 hover:shadow-[var(--shadow-action-card-hover)]";
+  "bg-hud-raised border border-hud-line hover:bg-hud hover:border-aquarius/50 active:brightness-95";
 const DISABLED = "opacity-50 cursor-not-allowed pointer-events-none";
 /** Tutorial card: the panel's gold, dark text for contrast. */
 const TUTORIAL_ACTION =
-  "bg-cyber-yellow hover:bg-yellow-300 active:bg-cyber-yellow/80 !text-gray-900 hover:scale-y-105 hover:scale-x-[1.01]";
+  "bg-cyber-yellow hover:brightness-105 active:brightness-95 !text-gray-900";
 
 /** The Tutorial card shows beside Solo until the player has played this many games. */
 const TUTORIAL_CARD_MAX_GAMES = 5;
 /** GalloFront: the one-tap "Play now" hero button. */
 const PLAY_NOW_ACTION =
-  "bg-gradient-to-r from-malibu-blue to-aquarius hover:brightness-110 active:brightness-95 shadow-[var(--shadow-malibu-blue)] hover:scale-[1.01]";
+  "bg-malibu-blue hover:brightness-110 active:brightness-95";
 /** Quick solo: the Solo card's little sibling. */
 const QUICK_SOLO_ACTION =
   "bg-malibu-blue/60 hover:bg-malibu-blue active:bg-malibu-blue/80";
@@ -712,7 +713,7 @@ export class GameModeSelector extends LitElement {
         </div>
 
         <div class="flex gap-4 h-14 sm:col-span-2 sm:row-start-4">
-          <div class="flex-[2] grid grid-cols-[1fr_auto] gap-2">
+          <div class="flex-[2] min-w-0 grid grid-cols-2 gap-2">
             ${this.renderSmallActionCard(
               translateText("main.solo"),
               this.openSinglePlayerModal,
@@ -725,7 +726,7 @@ export class GameModeSelector extends LitElement {
             )}
           </div>
           ${getGamesPlayed() < TUTORIAL_CARD_MAX_GAMES
-            ? html`<div class="flex-1">
+            ? html`<div class="flex-1 min-w-0">
                 ${this.renderSmallActionCard(
                   translateText("main.tutorial"),
                   this.startTutorial,
@@ -1085,7 +1086,7 @@ export class GameModeSelector extends LitElement {
         @click=${onClick}
         ?disabled=${!this.inputValid}
         aria-disabled=${blocked}
-        class="relative flex items-center justify-center w-full h-full rounded-lg ${bgClass} transition-all duration-200 text-sm lg:text-base font-medium text-white uppercase tracking-wider text-center ${!this
+        class="relative flex items-center justify-center w-full h-full min-w-0 px-2 rounded-md ${bgClass} transition-colors duration-150 text-sm lg:text-base font-semibold text-white uppercase tracking-wide whitespace-nowrap truncate text-center ${!this
           .inputValid
           ? DISABLED
           : blocked

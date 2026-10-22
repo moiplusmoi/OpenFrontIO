@@ -98,17 +98,17 @@ export class DesktopNavBar extends LitElement {
         <button
           class="no-game-portal nav-menu-item ${currentPage === "page-inventory"
             ? "active"
-            : ""} text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors [&.active]:text-malibu-blue"
+            : ""} text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
           data-page="page-inventory"
           data-i18n="main.inventory"
         ></button>
         <button
-          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue  font-medium tracking-wider uppercase cursor-pointer transition-colors [&.active]:text-malibu-blue "
+          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
           data-page="page-leaderboard"
           data-i18n="main.leaderboard"
         ></button>
         <button
-          class="no-game-portal nav-menu-item text-white/70 hover:text-blue-500 font-medium tracking-wider uppercase cursor-pointer transition-colors [&.active]:text-blue-500"
+          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
           data-page="page-clan"
           data-i18n="main.clans"
         ></button>
