@@ -137,7 +137,12 @@ export class ServerEnv {
     return 100;
   }
   static gameCreationRate(): number {
-    return ServerEnv.gameEnv === GameEnv.Dev ? 5 * 1000 : 2 * 60 * 1000;
+    // The 5 s dev cadence is for local iteration. A standalone server that
+    // runs with GAME_ENV=dev would otherwise open ~36 lobbies a minute
+    // (three scheduled types), nobody joins them, and they all end unstarted.
+    const fastDev =
+      ServerEnv.gameEnv === GameEnv.Dev && !ServerEnv.standalone();
+    return fastDev ? 5 * 1000 : 2 * 60 * 1000;
   }
   static workerIndex(gameID: GameID): number {
     return simpleHash(gameID) % ServerEnv.numWorkers();

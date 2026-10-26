@@ -105,6 +105,35 @@ describe("ServerEnv game id minting", () => {
   });
 });
 
+describe("ServerEnv.gameCreationRate", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  // gameEnv is read once at module load, so each case reloads the module.
+  async function rateFor(env: Record<string, string>): Promise<number> {
+    vi.resetModules();
+    for (const [key, value] of Object.entries(env)) vi.stubEnv(key, value);
+    const { ServerEnv: Fresh } = await import("../../src/server/ServerEnv");
+    return Fresh.gameCreationRate();
+  }
+
+  test("dev without standalone opens lobbies every 5 s", async () => {
+    expect(await rateFor({ GAME_ENV: "dev" })).toBe(5 * 1000);
+  });
+
+  test("dev with standalone keeps the 2 min production cadence", async () => {
+    expect(await rateFor({ GAME_ENV: "dev", STANDALONE: "1" })).toBe(
+      2 * 60 * 1000,
+    );
+  });
+
+  test("prod uses the 2 min cadence", async () => {
+    expect(await rateFor({ GAME_ENV: "prod" })).toBe(2 * 60 * 1000);
+  });
+});
+
 describe("ServerEnv.turnstileSiteKey", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
