@@ -8,10 +8,20 @@ import {
 } from "../../../src/client/controllers/BuildPreviewController";
 
 describe("batch placement", () => {
-  test("only warships can be batch-placed", () => {
+  test("every naval combatant can be batch-placed", () => {
     expect(isBatchPlaceable(UnitType.Warship)).toBe(true);
+    expect(isBatchPlaceable(UnitType.Frigate)).toBe(true);
+    expect(isBatchPlaceable(UnitType.Destroyer)).toBe(true);
+    expect(isBatchPlaceable(UnitType.Submarine)).toBe(true);
+    expect(isBatchPlaceable(UnitType.Carrier)).toBe(true);
     expect(isBatchPlaceable(UnitType.City)).toBe(false);
     expect(isBatchPlaceable(UnitType.AtomBomb)).toBe(false);
+  });
+
+  test("a Shift-held naval placement keeps the ghost like batch mode", () => {
+    expect(shouldPreserveGhostAfterBuild(UnitType.Frigate, true)).toBe(true);
+    expect(shouldPreserveGhostAfterBuild(UnitType.Carrier, true)).toBe(true);
+    expect(shouldPreserveGhostAfterBuild(UnitType.Frigate, false)).toBe(false);
   });
 
   test("warship ghost stays armed only while batch mode is on", () => {

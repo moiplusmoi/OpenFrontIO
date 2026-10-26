@@ -1,5 +1,6 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
 import {
+  isNavalCombatant,
   PlayerBuildableUnitType,
   PlayerID,
   UnitType,
@@ -20,6 +21,8 @@ export class MouseUpEvent implements GameEvent {
   constructor(
     public readonly x: number,
     public readonly y: number,
+    /** Shift held on release: keeps a naval ghost armed for several placements. */
+    public readonly shiftHeld = false,
   ) {}
 }
 
@@ -703,7 +706,7 @@ export class InputHandler {
       let deltaY = 0;
 
       // Skip if select warship modifier is held down
-      if (this.activeKeys.has(this.keybinds.boxSelectWarships)) {
+      if (this.isBoxSelectHeld()) {
         return;
       }
 
@@ -877,6 +880,7 @@ export class InputHandler {
             "ControlLeft",
             "ControlRight",
             this.keybinds.boxSelectWarships,
+            "ShiftRight",
             this.keybinds.emojiMenuModifier,
             this.keybinds.buildMenuModifier,
             this.keybinds.altKey,
@@ -886,9 +890,13 @@ export class InputHandler {
         }
 
         // warship box selection mode.
-        // If a ghost structure is active, discard it first.
-        if (e.code === this.keybinds.boxSelectWarships) {
-          if (this.uiState.ghostStructure !== null) {
+        // A non-naval ghost is discarded; a naval ghost stays armed so Shift+click
+        // places several ships in a row (Shift+drag still selects a box).
+        if (this.isBoxSelectKey(e.code)) {
+          if (
+            this.uiState.ghostStructure !== null &&
+            !isNavalCombatant(this.uiState.ghostStructure)
+          ) {
             this.setGhostStructure(null);
           }
           this.canvas.style.cursor = "crosshair";
@@ -951,7 +959,7 @@ export class InputHandler {
 
         // Reset crosshair when Shift is released (unless selection box or multi-selection still active)
         if (
-          e.code === this.keybinds.boxSelectWarships &&
+          this.isBoxSelectKey(e.code) &&
           !this.selectionBoxActive &&
           !this.multiSelectionActive
         ) {
@@ -1131,6 +1139,10 @@ export class InputHandler {
         Math.abs(event.clientX - this.lastPointerDownX) +
         Math.abs(event.clientY - this.lastPointerDownY);
       if (dist >= this.DRAG_THRESHOLD_PX) {
+        // A box selection replaces any naval ghost left armed by Shift+click.
+        if (this.uiState.ghostStructure !== null) {
+          this.setGhostStructure(null);
+        }
         this.eventBus.emit(
           new WarshipSelectionBoxCompleteEvent(
             this.lastPointerDownX,
@@ -1191,7 +1203,7 @@ export class InputHandler {
         this.gameView.inSpawnPhase() || // No Radial Menu during spawn phase, only spawn point selection
         this.uiState.ghostStructure !== null // Block radial menu on left click if building
       ) {
-        this.eventBus.emit(new MouseUpEvent(event.x, event.y));
+        this.eventBus.emit(new MouseUpEvent(event.x, event.y, event.shiftKey));
       } else {
         this.eventBus.emit(new ContextMenuEvent(event.clientX, event.clientY));
       }
@@ -1309,7 +1321,7 @@ export class InputHandler {
       // started, continue emitting selection box updates
       if (
         this.selectionBoxActive ||
-        this.activeKeys.has(this.keybinds.boxSelectWarships) ||
+        this.isBoxSelectHeld() ||
         this.longPressActive
       ) {
         this.selectionBoxActive = true;
@@ -1382,6 +1394,22 @@ export class InputHandler {
       return { shift: true, code: value.slice(6) };
     }
     return { shift: false, code: value };
+  }
+
+  /** Shift key that drives warship box selection; both Shift keys count by default. */
+  private isBoxSelectKey(code: string): boolean {
+    if (code === this.keybinds.boxSelectWarships) return true;
+    return (
+      this.keybinds.boxSelectWarships === "ShiftLeft" && code === "ShiftRight"
+    );
+  }
+
+  private isBoxSelectHeld(): boolean {
+    if (this.activeKeys.has(this.keybinds.boxSelectWarships)) return true;
+    return (
+      this.keybinds.boxSelectWarships === "ShiftLeft" &&
+      this.activeKeys.has("ShiftRight")
+    );
   }
 
   /**

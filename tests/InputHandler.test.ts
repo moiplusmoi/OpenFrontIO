@@ -1635,9 +1635,7 @@ describe("Warship box selection (Shift+drag)", () => {
   });
 
   test("ShiftRight keydown also sets cursor to crosshair", () => {
-    // ShiftRight is not the default shiftKey keybind (ShiftLeft is).
-    // This test verifies the configured shiftKey works, not a hardcoded ShiftRight.
-    window.dispatchEvent(new KeyboardEvent("keydown", { code: "ShiftLeft" }));
+    window.dispatchEvent(new KeyboardEvent("keydown", { code: "ShiftRight" }));
     expect(mockCanvas.style.cursor).toBe("crosshair");
   });
 
@@ -1647,12 +1645,57 @@ describe("Warship box selection (Shift+drag)", () => {
     expect(mockCanvas.style.cursor).toBe("");
   });
 
-  test("Shift keydown discards active ghostStructure", () => {
-    uiState.ghostStructure = UnitType.Warship;
+  test("Shift keydown discards a non-naval ghostStructure", () => {
+    uiState.ghostStructure = UnitType.City;
 
     window.dispatchEvent(new KeyboardEvent("keydown", { code: "ShiftLeft" }));
 
     expect(uiState.ghostStructure).toBeNull();
+  });
+
+  test("Shift keydown keeps an armed naval ghost for Shift+click batch placement", () => {
+    uiState.ghostStructure = UnitType.Frigate;
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { code: "ShiftLeft" }));
+
+    expect(uiState.ghostStructure).toBe(UnitType.Frigate);
+  });
+
+  test("ShiftRight keydown keeps an armed naval ghost too", () => {
+    uiState.ghostStructure = UnitType.Carrier;
+
+    window.dispatchEvent(new KeyboardEvent("keydown", { code: "ShiftRight" }));
+
+    expect(uiState.ghostStructure).toBe(UnitType.Carrier);
+  });
+
+  test("Shift+click with a naval ghost emits a MouseUpEvent carrying shiftHeld", () => {
+    const listener = vi.fn();
+    eventBus.on(MouseUpEvent, listener);
+    uiState.ghostStructure = UnitType.Destroyer;
+    inputHandler["activeKeys"].add("ShiftLeft");
+
+    inputHandler["onPointerDown"](
+      new PointerEvent("pointerdown", {
+        button: 0,
+        clientX: 80,
+        clientY: 80,
+        pointerId: 1,
+      }),
+    );
+    inputHandler["onPointerUp"](
+      new PointerEvent("pointerup", {
+        button: 0,
+        clientX: 80,
+        clientY: 80,
+        shiftKey: true,
+        pointerId: 1,
+      }),
+    );
+
+    expect(listener).toHaveBeenCalledWith(
+      expect.objectContaining({ x: 80, y: 80, shiftHeld: true }),
+    );
   });
 
   test("Shift+drag emits WarshipSelectionBoxUpdateEvent", () => {

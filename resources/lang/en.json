@@ -210,7 +210,7 @@
     "requires_tech": "Requires: {tech}",
     "requires_tech_tap": "Tap to open Technologies",
     "upgrade_amount": "x{amount}",
-    "warship_shift_hint": "Hold Shift and drag to select multiple warships at once"
+    "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several"
   },
   "change_username_modal": {
     "title": "Change Username",
@@ -1218,6 +1218,7 @@
     "action_reset_gfx": "Reset graphics",
     "action_tech_panel": "Open the technologies panel",
     "action_warship_multiselect": "Select multiple warships (drag to draw selection box)",
+    "action_naval_batch": "Hold Shift and click to place several naval units in a row (ghost stays armed)",
     "action_warship_selectall": "Select all your warships",
     "action_zoom": "Zoom out/in",
     "airport": "With Offensive Doctrine (mil 2), build an airport (750k, then +750k per level, 2M max). Each level is a sortie slot: a bomber, fighter or paradrop takes one, and it reloads in 30 s. Its range is 200 tiles (+25 per level). Captured with the land, it keeps its level; its fighters die with it.",
@@ -1243,6 +1244,7 @@
     "build_warship_desc": "Patrols in an area, capturing enemy trade ships and destroying their Boats (transport ships) and Warships. Spawns from the nearest Port and patrols the area you first clicked to build it. You can control Warships by attack-clicking on them (see action Attack under Hotkeys) and then attack-clicking the new area you want them to move to. Warships can level up (max level 3) by capturing enemy trade ships and destroying their transport boats and Warships. Leveling up increases the Warship's damage and health.",
     "capital": "Your first city becomes your capital: +10% max troops and ×1.5 defense within 30 tiles of it. If it is captured or destroyed, you lose 25% of your troops and gold (the gold goes to the conqueror), territory more than 60 tiles from any remaining city revolts, and your largest remaining city becomes the new capital. You can move the capital to another city from its menu (3 min cooldown).",
     "drag": "drag",
+    "click": "click",
     "exit_confirmation": "Are you sure you want to exit the game?",
     "fighter": "600k gold, needs Air Superiority (mil 4). Built from your own territory next to one of your airports (one fighter per airport level), it patrols 60 tiles around it and intercepts enemy bombers and air transports (60%), atom bombs (25%) and hydrogen bombs (15%), one try per target. It has 1 hit point against SAMs and is lost with its airport.",
     "gallofront_aviation": "Aviation: Offensive Doctrine (mil 2) opens airports (O) and paradrops, Aviation (mil 3) bombers, Air Superiority (mil 4) fighters.",

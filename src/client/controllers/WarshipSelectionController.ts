@@ -1,9 +1,5 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
-import {
-  Cell,
-  NavalCombatants,
-  UnitType,
-} from "@openfront/engine-api/game/GameTypes";
+import { Cell, NavalCombatants } from "@openfront/engine-api/game/GameTypes";
 import { EventBus } from "@openfront/shared/EventBus";
 import { Controller } from "../Controller";
 import {
@@ -261,7 +257,7 @@ export class WarshipSelectionController implements Controller {
     const myPlayer = this.game.myPlayer();
     if (!myPlayer) return;
 
-    const selected = this.game.units(UnitType.Warship).filter((unit) => {
+    const selected = this.getAllNavalUnits().filter((unit) => {
       if (!unit.isActive() || unit.owner() !== myPlayer) return false;
       const screen = this.transformHandler.worldToScreenCoordinates(
         new Cell(this.game.x(unit.tile()), this.game.y(unit.tile())),
@@ -278,12 +274,17 @@ export class WarshipSelectionController implements Controller {
     this.eventBus.emit(new UnitSelectionEvent(null, true, selected));
   }
 
+  /** Every naval combatant the local player owns (all warship-family types). */
+  private getAllNavalUnits(): UnitView[] {
+    return this.game.units(...NavalCombatants);
+  }
+
   private getAllWarships(): UnitView[] {
     const myPlayer = this.game.myPlayer();
     if (!myPlayer) return [];
-    return this.game
-      .units(UnitType.Warship)
-      .filter((u) => u.isActive() && u.owner() === myPlayer);
+    return this.getAllNavalUnits().filter(
+      (u) => u.isActive() && u.owner() === myPlayer,
+    );
   }
 
   public selectedAllWarships(): boolean {

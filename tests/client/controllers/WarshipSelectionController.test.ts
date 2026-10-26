@@ -93,4 +93,24 @@ describe("WarshipSelectionController", () => {
     expect(ui["multiSelectedWarships"]).toEqual(units);
     expect(ui["selectedUnit"]).toBeNull();
   });
+
+  it("selects every naval combatant, not only warships", () => {
+    const me = { id: () => 1 };
+    const ships = [
+      { type: () => "Warship", isActive: () => true, owner: () => me },
+      { type: () => "Frigate", isActive: () => true, owner: () => me },
+      { type: () => "Carrier", isActive: () => true, owner: () => me },
+      { type: () => "City", isActive: () => true, owner: () => me },
+    ];
+    game.myPlayer = () => me;
+    game.units = (...types: string[]) =>
+      ships.filter((u) => types.includes(u.type()));
+    const ui = new WarshipSelectionController(
+      game,
+      eventBus,
+      transformHandler,
+      view,
+    );
+    expect(ui["getAllWarships"]()).toHaveLength(3);
+  });
 });

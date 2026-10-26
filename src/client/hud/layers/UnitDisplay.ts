@@ -2,6 +2,7 @@ import {
   BuildableUnit,
   BuildMenus,
   Gold,
+  isNavalCombatant,
   PlayerBuildableUnitType,
   TechId,
   UnitType,
@@ -279,7 +280,7 @@ export class UnitDisplay extends LitElement implements Controller {
         <div class="p-2">
           ${translateText("build_menu.desc." + structureKey)}
         </div>
-        ${unitType === UnitType.Warship
+        ${isNavalCombatant(unitType)
           ? html`<div
               class="mt-1 px-2 py-1 text-[10px] text-cyan-300 border-t border-white/10"
             >

@@ -11,6 +11,7 @@ import { TileRef } from "@openfront/engine-api/game/GameMap";
 import {
   BuildableUnit,
   bulkCost,
+  isNavalCombatant,
   PlayerBuildableUnitType,
   Structures,
   UnitType,
@@ -42,9 +43,9 @@ import { GameView } from "../view";
 /** Minimum gap between two batch placements; keeps a click burst under the server's intent rate limit (10/s). */
 export const BATCH_PLACE_INTERVAL_MS = 150;
 
-/** Unit types the batch mode can place repeatedly. */
+/** Unit types the batch mode can place repeatedly: every naval combatant (warship, frigate, destroyer, submarine, carrier). */
 export function isBatchPlaceable(unitType: UnitType): boolean {
-  return unitType === UnitType.Warship;
+  return isNavalCombatant(unitType);
 }
 
 /** True when enough time has passed since the last batch placement. */
@@ -593,7 +594,9 @@ export class BuildPreviewController implements Controller {
         return;
       }
 
-      const batch = this.uiState.batchPlace && isBatchPlaceable(unitType);
+      // Batch mode: the J toggle, or Shift held on the click.
+      const batch =
+        (this.uiState.batchPlace || e.shiftHeld) && isBatchPlaceable(unitType);
       if (batch) {
         // Too soon after the last batch placement: drop this click, keep the ghost.
         const now = performance.now();
@@ -614,7 +617,7 @@ export class BuildPreviewController implements Controller {
           isNuke ? this.uiState.upgradeMultiplier || 1 : undefined,
         ),
       );
-      if (!shouldPreserveGhostAfterBuild(unitType, this.uiState.batchPlace)) {
+      if (!shouldPreserveGhostAfterBuild(unitType, batch)) {
         this.removeGhostStructure();
       }
     } else {
