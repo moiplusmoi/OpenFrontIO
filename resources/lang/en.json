@@ -210,7 +210,9 @@
     "requires_tech": "Requires: {tech}",
     "requires_tech_tap": "Tap to open Technologies",
     "upgrade_amount": "x{amount}",
-    "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several"
+    "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several",
+    "multi_place": "Multi",
+    "multi_place_title": "Keep the ship armed after each placement, to place several"
   },
   "change_username_modal": {
     "title": "Change Username",

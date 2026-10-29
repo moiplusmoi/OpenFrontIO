@@ -13,7 +13,10 @@ import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import "../../components/ui/Icon";
 import { Controller } from "../../Controller";
-import { ToggleStructureEvent } from "../../InputHandler";
+import {
+  ToggleBatchPlaceEvent,
+  ToggleStructureEvent,
+} from "../../InputHandler";
 import { Platform } from "../../Platform";
 import { UIState } from "../../UIState";
 import { UserSettings } from "../../UserSettings";
@@ -251,8 +254,34 @@ export class UnitDisplay extends LitElement implements Controller {
             "airport",
             this.keybinds["buildAirport"]?.key ?? "O",
           )}
+          ${this.renderMultiToggle()}
         </div>
       </div>
+    `;
+  }
+
+  /**
+   * Touch equivalent of holding Shift (or the batchPlace key): keeps a naval
+   * ghost armed after each placement. Phones only; desktop keeps the keys.
+   */
+  private renderMultiToggle() {
+    const ghost = this.uiState.ghostStructure;
+    if (ghost === null || !isNavalCombatant(ghost)) return null;
+    const on = this.uiState.batchPlace;
+    return html`
+      <button
+        class="flex items-center justify-center min-w-0 w-full min-h-11 border rounded-sm text-xs font-bold lg:hidden ${on
+          ? "border-sky-400 bg-sky-400/20 text-white"
+          : "border-slate-500 text-gray-300"}"
+        title=${translateText("build_menu.multi_place_title")}
+        aria-pressed=${on ? "true" : "false"}
+        @click=${() => {
+          this.eventBus.emit(new ToggleBatchPlaceEvent());
+          this.requestUpdate();
+        }}
+      >
+        ${translateText("build_menu.multi_place")}
+      </button>
     `;
   }
 
