@@ -188,7 +188,7 @@
   },
   "build_menu": {
     "desc": {
-      "airport": "Launches bombers, fighters and paradrops within 200 tiles (+25 per level); each level is a sortie slot that reloads in 30 s. Needs Aviation (mil 3).",
+      "airport": "Launches bombers, fighters and paradrops within 200 tiles (+25 per level); each level is a sortie slot that reloads in 30 s. Needs Offensive Doctrine (mil 2).",
       "atom_bomb": "Small explosion",
       "bomber": "Flies straight to the target: the defender loses up to 8% of their troops (10% with mil 4) and one structure within 8 tiles loses a level. No territory, no fallout. Never on an ally.",
       "carrier": "Floating air base. Launches bombers, fighters and paradrops from the sea, and moves with the fleet. Sorties reload like an airport's. Slow, and its shells are light. Needs Air Superiority (mil 4).",

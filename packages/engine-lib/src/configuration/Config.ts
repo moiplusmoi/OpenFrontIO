@@ -200,12 +200,12 @@ export class Config {
     const durations = [300, 600, 900, 1500];
     return durations[techDef(id).level - 1];
   }
-  /** Tech required to build a unit type, or null (none of the base units need one). */
   /** A submarine is seen by an enemy only within this many tiles of a surface ship or port. */
   submarineDetectionRange(): number {
     return 35;
   }
 
+  /** Tech required to build a unit type, or null (none of the base units need one). */
   unitRequiredTech(type: UnitType): TechId | null {
     switch (type) {
       // Spies open with Radar (def_2); Intelligence (def_3) and
