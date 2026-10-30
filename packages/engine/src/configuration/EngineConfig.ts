@@ -852,6 +852,14 @@ export class EngineConfig extends Config {
   }
 
   /**
+   * Troops an airliner delivers on a troop route: reinforcements for the
+   * destination owner, who is paid nothing for them.
+   */
+  commercialAircraftTroops(dist: number): number {
+    return 5_000 + 20 * dist;
+  }
+
+  /**
    * Gold for one commercial flight of `dist` tiles, paid to both airports'
    * owners on arrival. Same trade multipliers as a trade ship, but a flatter
    * curve: airliners earn steadily on long routes, no short-range debuff.

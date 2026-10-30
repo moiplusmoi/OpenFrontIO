@@ -36,13 +36,37 @@ async function airportGame(): Promise<{
   return { game, p1, p2, a1, a2 };
 }
 
+/**
+ * A route carrying `cargo` from p1's airport: p2 builds airports until one
+ * pairs with it that way (about one in three does for troops).
+ */
+async function routeWith(cargo: "gold" | "troops") {
+  const game = await setup(MAP, { instantBuild: true }, [
+    new PlayerInfo("p1", PlayerType.Human, null, "p1"),
+    new PlayerInfo("p2", PlayerType.Human, null, "p2"),
+  ]);
+  executeTicks(game, 50);
+  const p1 = game.player("p1");
+  const p2 = game.player("p2");
+  p1.conquer(game.ref(2, 2));
+  const a1 = p1.buildUnit(UnitType.Airport, game.ref(2, 2), {});
+  for (let y = 10; ; y++) {
+    p2.conquer(game.ref(2, y));
+    const a2 = p2.buildUnit(UnitType.Airport, game.ref(2, y), {});
+    if (game.config().airlinerCargo(a1.id(), a2.id()) === cargo) {
+      return { game, p1, p2, a1, a2 };
+    }
+    a2.delete(false);
+  }
+}
+
 function flightsOf(game: Game): Unit[] {
   return game.units(UnitType.CommercialAircraft);
 }
 
 describe("commercial aircraft", () => {
-  test("an airliner pays both airports' owners the same amount on arrival", async () => {
-    const { game, p1, p2, a1, a2 } = await airportGame();
+  test("a gold route pays both airports' owners the same amount on arrival", async () => {
+    const { game, p1, p2, a1, a2 } = await routeWith("gold");
     const p1Before = p1.gold();
     const p2Before = p2.gold();
 
@@ -66,6 +90,43 @@ describe("commercial aircraft", () => {
     expect(expected).toBeGreaterThan(0n);
     expect(p1.gold() - p1Before).toBe(expected);
     expect(p2.gold() - p2Before).toBe(expected);
+  });
+
+  test("a route's cargo is fixed by its pair, symmetric, about one in three troops", async () => {
+    const { game, a1, a2 } = await airportGame();
+    const cfg = game.config();
+    expect(cfg.airlinerCargo(a1.id(), a2.id())).toBe(
+      cfg.airlinerCargo(a2.id(), a1.id()),
+    );
+    let troops = 0;
+    for (let id = 1; id <= 300; id++) {
+      if (cfg.airlinerCargo(id, id + 1) === "troops") troops++;
+    }
+    expect(troops).toBeGreaterThan(70);
+    expect(troops).toBeLessThan(130);
+  });
+
+  test("a troop route reinforces the destination owner and pays no gold", async () => {
+    const { game, p1, p2, a1, a2 } = await routeWith("troops");
+    const addTroops = vi.spyOn(p2, "addTroops");
+    const p1Before = p1.gold();
+    const p2Before = p2.gold();
+
+    game.addExecution(new CommercialAircraftExecution(a1, a2));
+    for (let i = 0; i < 400 && flightsOf(game).length === 0; i++) {
+      game.executeNextTick();
+    }
+    expect(flightsOf(game).length).toBe(1);
+    for (let i = 0; i < 400 && flightsOf(game).length > 0; i++) {
+      game.executeNextTick();
+    }
+
+    const dist = game.manhattanDist(a1.tile(), a2.tile());
+    expect(addTroops).toHaveBeenCalledWith(
+      game.config().commercialAircraftTroops(dist),
+    );
+    expect(p1.gold()).toBe(p1Before);
+    expect(p2.gold()).toBe(p2Before);
   });
 
   test("no airliner without a trading partner", async () => {

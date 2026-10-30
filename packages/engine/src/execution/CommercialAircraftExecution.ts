@@ -19,8 +19,9 @@ import type {
 
 /**
  * GalloFront: a commercial airliner flies from one airport to another
- * player's airport. Like a trade ship it pays both airports' owners on
- * arrival, scaled by the flight distance. It carries no troops and cannot be
+ * player's airport. Its route's cargo decides what it brings: gold, which
+ * both airports' owners get on arrival (scaled by the flight distance), or
+ * troops, which reinforce the destination owner. It carries no troops and cannot be
  * shot down. If its destination falls, or trade between the two owners stops,
  * it is removed without payment. Between two airports of the same owner it
  * flies for the traffic only and pays nothing, so it cannot be farmed.
@@ -93,6 +94,14 @@ export class CommercialAircraftExecution implements Execution {
     this.active = false;
     this.plane!.delete(false);
     if (this.src.owner() === this.dst.owner()) return;
+    if (
+      this.mg.config().airlinerCargo(this.src.id(), this.dst.id()) === "troops"
+    ) {
+      this.dst
+        .owner()
+        .addTroops(this.mg.config().commercialAircraftTroops(this.dist));
+      return;
+    }
     const gold = this.mg
       .config()
       .commercialAircraftGold(this.dist, this.src.owner(), this.mg.season());

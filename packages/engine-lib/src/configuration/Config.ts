@@ -205,6 +205,18 @@ export class Config {
     return 35;
   }
 
+  /**
+   * GalloFront: what an airliner carries on the route between two airports.
+   * Fixed by the pair, so every flight on a route carries the same cargo and
+   * A→B matches B→A. About one route in three carries troops, the rest gold.
+   */
+  airlinerCargo(fromID: number, toID: number): "gold" | "troops" {
+    const lo = Math.min(fromID, toID);
+    const hi = Math.max(fromID, toID);
+    const mixed = Math.imul(lo, 0x9e3779b1) ^ Math.imul(hi, 0x85ebca77);
+    return (mixed >>> 0) % 3 === 0 ? "troops" : "gold";
+  }
+
   /** Tech required to build a unit type, or null (none of the base units need one). */
   unitRequiredTech(type: UnitType): TechId | null {
     switch (type) {
