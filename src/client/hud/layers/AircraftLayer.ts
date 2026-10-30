@@ -8,8 +8,9 @@
  *    the target and the impact circle (bomberRadius tiles);
  *  - a fighter: a small light triangle, nose along its last move;
  *  - an air transport: a triangle with the troops it carries.
- * Aircraft move every tick, so the layer repaints whenever a position, the
- * camera or the canvas size changes.
+ * Aircraft move every tick: between two ticks each one glides from the tile
+ * it held at the previous tick to its current one, so the layer repaints
+ * every frame while aircraft are in view.
  */
 
 import { Cell, UnitType } from "@openfront/engine-api/game/GameTypes";
@@ -23,6 +24,8 @@ const MIN_SCALE = 0.6;
 const PLANE_TILES = 3.2;
 const PLANE_MIN_PX = 9;
 const PLANE_MAX_PX = 30;
+/** One simulation tick (10 per second): the time an aircraft glides over. */
+const TICK_MS = 100;
 
 const AIRCRAFT_TYPES = [
   UnitType.Bomber,
@@ -34,7 +37,9 @@ const AIRCRAFT_TYPES = [
 export class AircraftLayer implements Controller {
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
-  private lastSignature = "";
+  /** The tick last seen, and when it arrived (performance.now()). */
+  private lastTick = -1;
+  private lastTickAt = 0;
 
   constructor(
     private game: GameView,
@@ -58,6 +63,11 @@ export class AircraftLayer implements Controller {
 
   private frame = () => {
     if (this.canvas === null || !this.canvas.isConnected) return;
+    const tick = this.game.ticks();
+    if (tick !== this.lastTick) {
+      this.lastTick = tick;
+      this.lastTickAt = performance.now();
+    }
     this.draw();
     requestAnimationFrame(this.frame);
   };
@@ -76,12 +86,7 @@ export class AircraftLayer implements Controller {
     const cssH = canvas.clientHeight;
     const th = this.transformHandler;
     const planes = this.aircraft();
-
-    const signature =
-      `${cssW}x${cssH}@${dpr}|${th.scale}|${th.offsetX}|${th.offsetY}|` +
-      planes.map((u) => `${u.id()}:${u.tile()}:${u.troops()}`).join(",");
-    if (signature === this.lastSignature) return;
-    this.lastSignature = signature;
+    const alpha = Math.min(1, (performance.now() - this.lastTickAt) / TICK_MS);
 
     const pxW = Math.round(cssW * dpr);
     const pxH = Math.round(cssH * dpr);
@@ -103,7 +108,7 @@ export class AircraftLayer implements Controller {
 
     for (const plane of planes) {
       const tile = plane.tile();
-      const from = this.screenOf(tile);
+      const from = this.glideFrom(plane, alpha);
       const owner = plane.owner();
       const mine =
         me !== null &&
@@ -174,6 +179,16 @@ export class AircraftLayer implements Controller {
         }
       }
     }
+  }
+
+  /** Where to draw a plane between ticks: part-way from its last tile to its current one. */
+  private glideFrom(plane: UnitView, alpha: number): { x: number; y: number } {
+    const now = this.screenOf(plane.tile());
+    const was = this.screenOf(plane.lastTile());
+    return {
+      x: was.x + (now.x - was.x) * alpha,
+      y: was.y + (now.y - was.y) * alpha,
+    };
   }
 
   /** The most recent previous tile that differs from the current one. */
