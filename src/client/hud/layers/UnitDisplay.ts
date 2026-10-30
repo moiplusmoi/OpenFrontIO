@@ -21,7 +21,7 @@ import { Platform } from "../../Platform";
 import { UIState } from "../../UIState";
 import { UserSettings } from "../../UserSettings";
 import { translateText } from "../../Utils";
-import { GameView } from "../../view";
+import { GameView, PlayerView } from "../../view";
 import {
   airportIcon,
   atomBombIcon,
@@ -50,6 +50,23 @@ function hoverTooltips(): boolean {
   return !Platform.isTouch;
 }
 
+/**
+ * Why an airport of mine cannot launch airliners yet, or null when it can. A
+ * flight needs two airports: two of mine, or one of mine and a partner's the
+ * player can trade with. Nothing is said before the first airport.
+ */
+function airlineNote(game: GameView, me: PlayerView): string | null {
+  const airports = game
+    .units(UnitType.Airport)
+    .filter((a) => a.isActive() && !a.isUnderConstruction());
+  const mine = airports.filter((a) => a.owner() === me).length;
+  if (mine !== 1) return null;
+  const partner = airports.some(
+    (a) => a.owner() !== me && !me.hasEmbargo(a.owner()),
+  );
+  return partner ? null : translateText("build_menu.airliners_need_partner");
+}
+
 @customElement("unit-display")
 export class UnitDisplay extends LitElement implements Controller {
   public game: GameView;
@@ -65,6 +82,8 @@ export class UnitDisplay extends LitElement implements Controller {
   private _defensePost = 0;
   private _samLauncher = 0;
   private _airports = 0;
+  /** Shown under the bar when an airport cannot yet launch airliners. */
+  private airlineNote: string | null = null;
   private allDisabled = false;
   private _hoveredUnit: PlayerBuildableUnitType | null = null;
   private tutorialHighlight: PlayerBuildableUnitType | null = null;
@@ -151,6 +170,7 @@ export class UnitDisplay extends LitElement implements Controller {
     this._factories = player.totalUnitLevels(UnitType.Factory);
     this._warships = player.totalUnitLevels(UnitType.Warship);
     this._airports = player.totalUnitLevels(UnitType.Airport);
+    this.airlineNote = airlineNote(this.game, player);
     this.requestUpdate();
   }
 
@@ -256,6 +276,13 @@ export class UnitDisplay extends LitElement implements Controller {
           )}
           ${this.renderMultiToggle()}
         </div>
+        ${this.airlineNote
+          ? html`<div
+              class="text-[11px] text-amber-200/90 text-center px-1 pt-0.5"
+            >
+              ${this.airlineNote}
+            </div>`
+          : null}
       </div>
     `;
   }

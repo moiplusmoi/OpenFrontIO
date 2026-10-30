@@ -83,6 +83,35 @@ describe("commercial aircraft", () => {
     expect(flightsOf(game).length).toBe(0);
   });
 
+  test("a player's own airports fly traffic between them, unpaid", async () => {
+    const game = await setup(MAP, { instantBuild: true }, [
+      new PlayerInfo("p1", PlayerType.Human, null, "p1"),
+      new PlayerInfo("p2", PlayerType.Human, null, "p2"),
+    ]);
+    executeTicks(game, 50);
+    const p1 = game.player("p1");
+    p1.conquer(game.ref(2, 2));
+    p1.conquer(game.ref(2, 10));
+    const a1 = p1.buildUnit(UnitType.Airport, game.ref(2, 2), {});
+    const a2 = p1.buildUnit(UnitType.Airport, game.ref(2, 10), {});
+    const before = p1.gold();
+
+    game.addExecution(new CommercialAircraftExecution(a1, a2));
+    for (
+      let i = 0;
+      i < 400 && game.units(UnitType.CommercialAircraft).length === 0;
+      i++
+    ) {
+      game.executeNextTick();
+    }
+    expect(flightsOf(game).length).toBe(1);
+    for (let i = 0; i < 400 && flightsOf(game).length > 0; i++) {
+      game.executeNextTick();
+    }
+    expect(flightsOf(game).length).toBe(0);
+    expect(p1.gold()).toBe(before);
+  });
+
   test("the dispatch cap holds the number of airliners in flight", async () => {
     const { game, a1, a2 } = await airportGame();
     // Airports dispatch through their own execution, added when built.

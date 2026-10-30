@@ -22,7 +22,8 @@ import type {
  * player's airport. Like a trade ship it pays both airports' owners on
  * arrival, scaled by the flight distance. It carries no troops and cannot be
  * shot down. If its destination falls, or trade between the two owners stops,
- * it is removed without payment.
+ * it is removed without payment. Between two airports of the same owner it
+ * flies for the traffic only and pays nothing, so it cannot be farmed.
  */
 export class CommercialAircraftExecution implements Execution {
   private active = true;
@@ -44,11 +45,11 @@ export class CommercialAircraftExecution implements Execution {
       return;
     }
     this.dist = mg.manhattanDist(this.src.tile(), this.dst.tile());
-    this.plane = this.src.owner().buildUnit(
-      UnitType.CommercialAircraft,
-      this.src.tile(),
-      { targetUnit: this.dst },
-    );
+    this.plane = this.src
+      .owner()
+      .buildUnit(UnitType.CommercialAircraft, this.src.tile(), {
+        targetUnit: this.dst,
+      });
   }
 
   tick(_ticks: number): void {
@@ -80,7 +81,7 @@ export class CommercialAircraftExecution implements Execution {
   private canTrade(): boolean {
     const from = this.src.owner();
     const to = this.dst.owner();
-    return from !== to && from.canTrade(to);
+    return from === to || from.canTrade(to);
   }
 
   private abort(): void {
@@ -91,6 +92,7 @@ export class CommercialAircraftExecution implements Execution {
   private complete(): void {
     this.active = false;
     this.plane!.delete(false);
+    if (this.src.owner() === this.dst.owner()) return;
     const gold = this.mg
       .config()
       .commercialAircraftGold(this.dist, this.src.owner(), this.mg.season());

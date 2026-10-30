@@ -212,7 +212,8 @@
     "upgrade_amount": "x{amount}",
     "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several",
     "multi_place": "Multi",
-    "multi_place_title": "Keep the ship armed after each placement, to place several"
+    "multi_place_title": "Keep the ship armed after each placement, to place several",
+    "airliners_need_partner": "Airliners need a second airport: your own, or one of a player you can trade with."
   },
   "change_username_modal": {
     "title": "Change Username",

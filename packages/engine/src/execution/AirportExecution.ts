@@ -62,6 +62,8 @@ export class AirportExecution implements Execution {
     ) {
       return;
     }
+    // Own airports count too: a player with two airports sees traffic between
+    // them (no gold, see CommercialAircraftExecution).
     const owner = this.airport.owner();
     const destinations = this.mg
       .units(UnitType.Airport)
@@ -70,8 +72,7 @@ export class AirportExecution implements Execution {
           a !== this.airport &&
           a.isActive() &&
           !a.isUnderConstruction() &&
-          a.owner() !== owner &&
-          owner.canTrade(a.owner()),
+          (a.owner() === owner || owner.canTrade(a.owner())),
       );
     if (destinations.length === 0) return;
     const dst = destinations[random.nextInt(0, destinations.length)];
