@@ -39,6 +39,7 @@ export type Intent =
   | DonateTroopsIntent
   | BuildUnitIntent
   | BuildBatchIntent
+  | UpgradeBatchIntent
   | EmbargoIntent
   | QuickChatIntent
   | MoveWarshipIntent
@@ -71,6 +72,7 @@ export type DonateTroopsIntent = z.infer<typeof DonateTroopIntentSchema>;
 export type EmbargoIntent = z.infer<typeof EmbargoIntentSchema>;
 export type BuildUnitIntent = z.infer<typeof BuildUnitIntentSchema>;
 export type BuildBatchIntent = z.infer<typeof BuildBatchIntentSchema>;
+export type UpgradeBatchIntent = z.infer<typeof UpgradeBatchIntentSchema>;
 export type UpgradeStructureIntent = z.infer<
   typeof UpgradeStructureIntentSchema
 >;
@@ -502,6 +504,15 @@ export const BuildBatchIntentSchema = z.object({
   count: zb.uint({ min: 1, max: MAX_BATCH_BUILD }),
 });
 
+// Shift + right-click on one of your structures: upgrades up to `count` of
+// that type, nearest the clicked tile first (see upgradeBatchExecutions).
+export const UpgradeBatchIntentSchema = z.object({
+  type: z.literal("upgrade_batch"),
+  unit: z.enum(UnitType),
+  tile: zb.uint(),
+  count: zb.uint({ min: 1, max: MAX_BATCH_BUILD }),
+});
+
 export const UpgradeStructureIntentSchema = z.object({
   type: z.literal("upgrade_structure"),
   unit: z.enum(UnitType),
@@ -618,6 +629,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   DonateTroopIntentSchema,
   BuildUnitIntentSchema,
   BuildBatchIntentSchema,
+  UpgradeBatchIntentSchema,
   UpgradeStructureIntentSchema,
   EmbargoIntentSchema,
   EmbargoAllIntentSchema,

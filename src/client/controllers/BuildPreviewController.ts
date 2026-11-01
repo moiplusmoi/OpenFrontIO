@@ -25,6 +25,7 @@ import { Controller } from "../Controller";
 import {
   BatchBuildRequestEvent,
   ConfirmGhostStructureEvent,
+  UpgradeBatchRequestEvent,
   MouseMoveEvent,
   MouseUpEvent,
   ToggleBatchPlaceEvent,
@@ -37,6 +38,7 @@ import {
   BuildBatchIntentEvent,
   BuildUnitIntentEvent,
   SendUpgradeStructureIntentEvent,
+  UpgradeBatchIntentEvent,
 } from "../Transport";
 import { UIState } from "../UIState";
 import { UserSettings } from "../UserSettings";
@@ -137,6 +139,9 @@ export class BuildPreviewController implements Controller {
     this.eventBus.on(MouseMoveEvent, (e) => this.moveGhost(e));
     this.eventBus.on(MouseUpEvent, (e) => this.requestConfirmStructure(e));
     this.eventBus.on(BatchBuildRequestEvent, (e) => this.requestBatchBuild(e));
+    this.eventBus.on(UpgradeBatchRequestEvent, (e) =>
+      this.requestUpgradeBatch(e),
+    );
     this.eventBus.on(ToggleBatchPlaceEvent, () => {
       this.uiState.batchPlace = !this.uiState.batchPlace;
     });
@@ -695,6 +700,32 @@ export class BuildPreviewController implements Controller {
       new BuildBatchIntentEvent(
         type,
         this.game.ref(tile.x, tile.y),
+        this.userSettings.batchBuildCount(),
+      ),
+    );
+  }
+
+  /**
+   * Shift + right-click on one of your structures: upgrade a batch of its
+   * type, nearest the click first. Nothing happens on an empty tile.
+   */
+  private requestUpgradeBatch(e: UpgradeBatchRequestEvent) {
+    const player = this.game.myPlayer();
+    if (player === null) return;
+    const tile = this.transformHandler.screenToWorldCoordinates(e.x, e.y);
+    const near = player
+      .units(...Structures.types)
+      .filter(
+        (u) =>
+          Math.abs(this.game.x(u.tile()) - tile.x) <= 2 &&
+          Math.abs(this.game.y(u.tile()) - tile.y) <= 2,
+      );
+    const target = near[0];
+    if (target === undefined) return;
+    this.eventBus.emit(
+      new UpgradeBatchIntentEvent(
+        target.type(),
+        target.tile(),
         this.userSettings.batchBuildCount(),
       ),
     );

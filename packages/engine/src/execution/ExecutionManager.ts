@@ -8,7 +8,7 @@ import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import { simpleHash } from "@openfront/engine-lib/Util";
 import { TileRef } from "@openfront/engine-api/game/GameMap";
 import { UnitType } from "@openfront/engine-api/game/GameTypes";
-import { Execution, Game, Player } from "../game/Game";
+import { Execution, Game, Player, Unit } from "../game/Game";
 import { AllianceExtensionExecution } from "./alliance/AllianceExtensionExecution";
 import { AllianceRejectExecution } from "./alliance/AllianceRejectExecution";
 import { AllianceRequestExecution } from "./alliance/AllianceRequestExecution";
@@ -102,6 +102,32 @@ export function batchBuildExecutions(
   return out;
 }
 
+/**
+ * Up to `count` of the player's structures of one type, upgraded nearest
+ * `tile` first. Each upgrade still checks its own gold when it runs.
+ */
+export function upgradeBatchExecutions(
+  mg: Game,
+  player: Player,
+  unit: UnitType,
+  tile: TileRef,
+  count: number,
+): Execution[] {
+  const x0 = mg.x(tile);
+  const y0 = mg.y(tile);
+  const distSquared = (u: Unit) => {
+    const dx = mg.x(u.tile()) - x0;
+    const dy = mg.y(u.tile()) - y0;
+    return dx * dx + dy * dy;
+  };
+  return player
+    .units(unit)
+    .filter((u) => player.canUpgradeUnit(u))
+    .sort((a, b) => distSquared(a) - distSquared(b) || a.id() - b.id())
+    .slice(0, count)
+    .map((u) => new UpgradeStructureExecution(player, u.id()));
+}
+
 export class Executor {
   // private random = new PseudoRandom(999)
   private random: PseudoRandom;
@@ -123,10 +149,14 @@ export class Executor {
 
   createExecs(turn: Turn): Execution[] {
     return turn.intents.flatMap((i) => {
-      if (i.type !== "build_batch") return [this.createExec(i)];
+      if (i.type !== "build_batch" && i.type !== "upgrade_batch") {
+        return [this.createExec(i)];
+      }
       const player = this.mg.playerByClientID(i.clientID);
       if (!player) return [this.createExec(i)];
-      return batchBuildExecutions(this.mg, player, i.unit, i.tile, i.count);
+      return i.type === "build_batch"
+        ? batchBuildExecutions(this.mg, player, i.unit, i.tile, i.count)
+        : upgradeBatchExecutions(this.mg, player, i.unit, i.tile, i.count);
     });
   }
 
@@ -187,7 +217,8 @@ export class Executor {
       case "embargo_all":
         return new EmbargoAllExecution(player, intent.action);
       case "build_batch":
-        // Expanded by createExecs into one ConstructionExecution per structure.
+      case "upgrade_batch":
+        // Expanded by createExecs into one execution per structure.
         return new NoOpExecution();
       case "build_unit":
         return new ConstructionExecution(

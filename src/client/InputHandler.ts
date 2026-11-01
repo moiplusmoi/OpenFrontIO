@@ -68,6 +68,14 @@ export class MouseMoveEvent implements GameEvent {
 }
 
 /** GalloFront: right-click with a structure armed builds a lot around the click. */
+/** GalloFront: Shift + right-click on your structure upgrades a batch of its type. */
+export class UpgradeBatchRequestEvent implements GameEvent {
+  constructor(
+    public readonly x: number,
+    public readonly y: number,
+  ) {}
+}
+
 export class BatchBuildRequestEvent implements GameEvent {
   constructor(
     public readonly x: number,
@@ -1369,6 +1377,13 @@ export class InputHandler {
     if (this.uiState.ghostStructure !== null) {
       this.eventBus.emit(
         new BatchBuildRequestEvent(event.clientX, event.clientY),
+      );
+      return;
+    }
+    // GalloFront: Shift + right-click upgrades a batch of your structures.
+    if (event.shiftKey) {
+      this.eventBus.emit(
+        new UpgradeBatchRequestEvent(event.clientX, event.clientY),
       );
       return;
     }
