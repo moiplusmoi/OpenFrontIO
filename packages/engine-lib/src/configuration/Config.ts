@@ -15,6 +15,7 @@ import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { GameConfig } from "@openfront/engine-api/Schemas";
 import { pow } from "../DetMath";
 import { Season } from "../game/Seasons";
+import { WorldEvent } from "../game/WorldEvents";
 import { DoomsdayClockSpeed } from "../game/DoomsdayClock";
 import { assertNever } from "../Util";
 
@@ -267,6 +268,18 @@ export class Config {
   /** Spring speeds up construction. */
   seasonConstructionMult(season: Season | null): number {
     return season === Season.Spring ? 0.8 : 1;
+  }
+
+  // ---- GalloFront world events ----
+  /** Percent of normal troop growth while an event runs. */
+  worldEventGrowthPct(event: WorldEvent | null): number {
+    return event === WorldEvent.Drought ? 60 : 100;
+  }
+  /** Percent of normal worker gold while an event runs. */
+  worldEventGoldPct(event: WorldEvent | null): number {
+    if (event === WorldEvent.Crisis) return 60;
+    if (event === WorldEvent.Boom) return 150;
+    return 100;
   }
 
   // ---- GalloFront aviation ----

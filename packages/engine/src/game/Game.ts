@@ -1,4 +1,5 @@
 import { Season } from "@openfront/engine-lib/game/Seasons";
+import { WorldEvent } from "@openfront/engine-lib/game/WorldEvents";
 import { GameMap, TileRef } from "@openfront/engine-api/game/GameMap";
 import {
   AllianceInfo,
@@ -713,6 +714,8 @@ export interface Game extends GameLike {
   capitalFallen(victim: Player, conqueror: Player | null): void;
   /** GalloFront: current season (null when seasons are disabled). */
   season(): Season | null;
+  /** GalloFront: the world event running now (null when calm or seasons are off). */
+  worldEvent(): WorldEvent | null;
   miniWaterHPA(): PathFinder<number> | null;
   miniWaterGraph(): AbstractGraph | null;
   getWaterComponent(tile: TileRef): number | null;

@@ -4,6 +4,10 @@ import {
   seasonProgress,
   ticksToNextSeason,
 } from "@openfront/engine-lib/game/Seasons";
+import {
+  WorldEvent,
+  worldEventAt,
+} from "@openfront/engine-lib/game/WorldEvents";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "../../components/ui/Icon";
@@ -43,10 +47,14 @@ export class SeasonDisplay extends LitElement implements Controller {
   @state() private progress = 0;
   @state() private secondsLeft = 0;
   @state() private enabled = false;
+  @state() private event: WorldEvent | null = null;
 
   // The season seen on the previous tick; null until the first tick, so the
   // initial season (and a late join / replay seek) never toasts.
   private lastSeason: Season | null = null;
+  private lastEvent: WorldEvent | null = null;
+  // False until the first tick, so an event already running on join is not announced.
+  private eventSeen = false;
 
   // Light DOM so Tailwind classes apply and it stacks in the parent's flex.
   createRenderRoot() {
@@ -90,6 +98,26 @@ export class SeasonDisplay extends LitElement implements Controller {
       this.season = season;
     }
     this.lastSeason = season;
+
+    // A world event starts: announce it once, like a season change.
+    const event = worldEventAt(tick);
+    if (
+      event !== null &&
+      event !== this.lastEvent &&
+      this.eventSeen &&
+      !this.game.isCatchingUp()
+    ) {
+      showToast(
+        translateText("world_event.started", {
+          event: translateText(`world_event.${event}`),
+        }),
+        "red",
+        SEASON_CHANGED_TOAST_MS,
+      );
+    }
+    this.event = event;
+    this.lastEvent = event;
+    this.eventSeen = true;
   }
 
   private formatTime(seconds: number): string {
@@ -132,6 +160,12 @@ export class SeasonDisplay extends LitElement implements Controller {
           ></div>
         </div>
         <div class="text-xs text-gray-300 truncate">${effect}</div>
+        ${this.event === null
+          ? null
+          : html`<div class="text-xs font-bold text-red-300 truncate">
+              ${translateText(`world_event.${this.event}`)}:
+              ${translateText(`world_event.effect.${this.event}`)}
+            </div>`}
       </div>
     `;
   }

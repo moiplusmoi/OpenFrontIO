@@ -2257,6 +2257,17 @@
   "rewards_modal": {
     "title": "Rewards"
   },
+  "world_event": {
+    "boom": "Economic boom",
+    "crisis": "Economic crisis",
+    "drought": "Drought",
+    "effect": {
+      "boom": "worker gold +50%",
+      "crisis": "worker gold −40%",
+      "drought": "troop growth −40%"
+    },
+    "started": "{event} begins"
+  },
   "season": {
     "autumn": "Autumn",
     "changed": "{season} begins",

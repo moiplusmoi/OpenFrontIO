@@ -1,4 +1,8 @@
 import { Season, seasonAt } from "@openfront/engine-lib/game/Seasons";
+import {
+  WorldEvent,
+  worldEventAt,
+} from "@openfront/engine-lib/game/WorldEvents";
 import { GameMap, TileRef } from "@openfront/engine-api/game/GameMap";
 import {
   Cell,
@@ -22,7 +26,7 @@ import {
   Tick,
   Trios,
   UnitType,
-isNavalCombatant,
+  isNavalCombatant,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdate,
@@ -1557,6 +1561,10 @@ export class GameImpl implements Game {
 
   season(): Season | null {
     return this._config.seasonsEnabled() ? seasonAt(this._ticks) : null;
+  }
+
+  worldEvent(): WorldEvent | null {
+    return this._config.seasonsEnabled() ? worldEventAt(this._ticks) : null;
   }
 
   // GalloFront: the victim loses a quarter of its troops and gold (the gold

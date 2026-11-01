@@ -132,9 +132,17 @@ export class PlayerExecution implements Execution {
     }
 
     const season = this.mg!.season();
-    const troopInc = this.config.troopIncreaseRate(this.player, season);
+    const event = this.mg!.worldEvent();
+    const troopInc = Math.floor(
+      (this.config.troopIncreaseRate(this.player, season) *
+        this.config.worldEventGrowthPct(event)) /
+        100,
+    );
     this.player.addTroops(troopInc);
-    const goldFromWorkers = this.config.goldAdditionRate(this.player, season);
+    const goldFromWorkers =
+      (this.config.goldAdditionRate(this.player, season) *
+        BigInt(this.config.worldEventGoldPct(event))) /
+      100n;
     this.player.addGold(goldFromWorkers);
 
     // Record stats
