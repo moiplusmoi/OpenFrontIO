@@ -27,6 +27,7 @@ import { AlertFrame } from "./layers/AlertFrame";
 import { AttacksDisplay } from "./layers/AttacksDisplay";
 import { BuildMenu } from "./layers/BuildMenu";
 import { AircraftLayer } from "./layers/AircraftLayer";
+import { OverlayLayer } from "./layers/OverlayLayer";
 import { FleetLayer } from "./layers/FleetLayer";
 import { CapitalLayer } from "./layers/CapitalLayer";
 import { SpyLayer } from "./layers/SpyLayer";
@@ -72,9 +73,13 @@ export function createRenderer(
     attackRatio: 20,
     ghostStructure: null,
     batchPlace: false,
+    batchPreview: [],
     rocketDirectionUp: true,
     upgradeMultiplier: 1,
   };
+
+  // GalloFront: fortified blocks and the right-click lot preview, on one canvas.
+  const overlay = new OverlayLayer(game, transformHandler, inputEl);
 
   //hide when the game renders
   const startingModal = document.querySelector(
@@ -98,6 +103,7 @@ export function createRenderer(
   buildMenu.game = game;
   buildMenu.eventBus = eventBus;
   buildMenu.uiState = uiState;
+  overlay.uiState = uiState;
   buildMenu.transformHandler = transformHandler;
 
   const techPanel = document.querySelector("tech-panel") as TechPanel;
@@ -369,6 +375,7 @@ export function createRenderer(
     new CapitalLayer(game, transformHandler, inputEl),
     new SpyLayer(game, transformHandler, inputEl),
     new AircraftLayer(game, transformHandler, inputEl),
+    overlay,
     new FleetLayer(game, transformHandler, inputEl),
     ...(mapLayerController ? [mapLayerController] : []),
     eventsDisplay,

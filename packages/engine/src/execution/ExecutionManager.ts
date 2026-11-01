@@ -7,6 +7,7 @@ import {
 import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import { simpleHash } from "@openfront/engine-lib/Util";
 import { TileRef } from "@openfront/engine-api/game/GameMap";
+import { batchOffsets } from "@openfront/engine-lib/game/BatchOffsets";
 import { UnitType } from "@openfront/engine-api/game/GameTypes";
 import { Execution, Game, Player, Unit } from "../game/Game";
 import { AllianceExtensionExecution } from "./alliance/AllianceExtensionExecution";
@@ -41,19 +42,7 @@ import { UpgradeStructureExecution } from "./UpgradeStructureExecution";
 import { PlayerSpawner } from "./utils/PlayerSpawner";
 
 /** GalloFront batch build: offsets around a click, nearest first (ties by x, then y). */
-const BATCH_RADIUS = 30;
-const BATCH_OFFSETS: [number, number][] = [];
-for (let dy = -BATCH_RADIUS; dy <= BATCH_RADIUS; dy++) {
-  for (let dx = -BATCH_RADIUS; dx <= BATCH_RADIUS; dx++) {
-    BATCH_OFFSETS.push([dx, dy]);
-  }
-}
-BATCH_OFFSETS.sort(
-  (a, b) =>
-    a[0] * a[0] + a[1] * a[1] - (b[0] * b[0] + b[1] * b[1]) ||
-    a[1] - b[1] ||
-    a[0] - b[0],
-);
+const BATCH_OFFSETS = batchOffsets();
 
 /**
  * Up to `count` structures of one type on the valid tiles nearest `tile`,

@@ -32,6 +32,8 @@ const SEASON_COLORS: Record<Season, { text: string; bar: string }> = {
 };
 
 const SEASON_CHANGED_TOAST_MS = 3000;
+/** How long the readout pulses when a world event starts. */
+const EVENT_PULSE_MS = 2500;
 
 /**
  * GalloFront: the season readout, stacked under the right sidebar. The season
@@ -53,6 +55,9 @@ export class SeasonDisplay extends LitElement implements Controller {
   // initial season (and a late join / replay seek) never toasts.
   private lastSeason: Season | null = null;
   private lastEvent: WorldEvent | null = null;
+  private announced = new Set<WorldEvent>();
+  /** Until this time (Date.now) the readout pulses, marking a new event. */
+  private pulseUntil = 0;
   // False until the first tick, so an event already running on join is not announced.
   private eventSeen = false;
 
@@ -64,6 +69,7 @@ export class SeasonDisplay extends LitElement implements Controller {
   init() {
     this.enabled = this.game.config().seasonsEnabled();
     this.lastSeason = null;
+    this.announced.clear();
     this.style.display = this.enabled ? "block" : "none";
     this.requestUpdate();
   }
@@ -101,12 +107,17 @@ export class SeasonDisplay extends LitElement implements Controller {
 
     // A world event starts: announce it once, like a season change.
     const event = worldEventAt(tick);
+    // Each kind is announced once a game, the first time it strikes; the
+    // readout keeps showing it every time it returns.
     if (
       event !== null &&
       event !== this.lastEvent &&
       this.eventSeen &&
+      !this.announced.has(event) &&
       !this.game.isCatchingUp()
     ) {
+      this.announced.add(event);
+      this.pulseUntil = Date.now() + EVENT_PULSE_MS;
       showToast(
         translateText("world_event.started", {
           event: translateText(`world_event.${event}`),
@@ -134,7 +145,10 @@ export class SeasonDisplay extends LitElement implements Controller {
     return html`
       <div
         data-season-display
-        class="w-fit max-w-[60vw] sm:max-w-none flex flex-col gap-0.5 py-1 px-3 bg-gray-800/92 backdrop-blur-sm shadow-xs rounded-bl-lg text-white leading-tight"
+        class="w-fit max-w-[60vw] sm:max-w-none flex flex-col gap-0.5 py-1 px-3 bg-gray-800/92 backdrop-blur-sm shadow-xs rounded-bl-lg text-white leading-tight ${Date.now() <
+        this.pulseUntil
+          ? "animate-pulse ring-1 ring-red-400/70"
+          : ""}"
         @contextmenu=${(e: Event) => e.preventDefault()}
       >
         <div class="flex items-center justify-between gap-3 text-sm">

@@ -84,6 +84,7 @@ export class UnitDisplay extends LitElement implements Controller {
   private _airports = 0;
   /** Shown under the bar when an airport cannot yet launch airliners. */
   private airlineNote: string | null = null;
+  private airlineOpen = false;
   private userSettings = new UserSettings();
   private allDisabled = false;
   private _hoveredUnit: PlayerBuildableUnitType | null = null;
@@ -277,14 +278,36 @@ export class UnitDisplay extends LitElement implements Controller {
           )}
           ${this.renderMultiToggle()}
         </div>
-        ${this.airlineNote
-          ? html`<div
-              class="text-[11px] text-amber-200/90 text-center px-1 pt-0.5"
-            >
+        ${this.renderAirlineNote()} ${this.renderBatchCount()}
+      </div>
+    `;
+  }
+
+  /**
+   * Why no airliner flies yet, as a small pill that opens the explanation on
+   * tap. Nothing is shown once the problem is solved.
+   */
+  private renderAirlineNote() {
+    if (this.airlineNote === null) return null;
+    const toggle = () => {
+      this.airlineOpen = !this.airlineOpen;
+      this.requestUpdate();
+    };
+    return html`
+      <div class="flex flex-col items-center gap-0.5 pt-0.5">
+        <button
+          class="min-h-8 px-2 rounded-full border border-amber-300/60 bg-amber-300/10 text-[11px] text-amber-200"
+          aria-expanded=${this.airlineOpen ? "true" : "false"}
+          @click=${toggle}
+        >
+          ✈ ${translateText("build_menu.airliners_short")}
+          ${this.airlineOpen ? "▴" : "▾"}
+        </button>
+        ${this.airlineOpen
+          ? html`<div class="text-[11px] text-amber-200/90 text-center px-1">
               ${this.airlineNote}
             </div>`
           : null}
-        ${this.renderBatchCount()}
       </div>
     `;
   }
@@ -328,20 +351,35 @@ export class UnitDisplay extends LitElement implements Controller {
     const ghost = this.uiState.ghostStructure;
     if (ghost === null || !isNavalCombatant(ghost)) return null;
     const on = this.uiState.batchPlace;
-    return html`
+    // A two-way choice, so the current mode is always readable: one ship per
+    // tap, or a lot. Tapping the active side does nothing.
+    const choose = (lot: boolean) => {
+      if (lot === on) return;
+      this.eventBus.emit(new ToggleBatchPlaceEvent());
+      this.requestUpdate();
+    };
+    const segment = (label: string, active: boolean, lot: boolean) => html`
       <button
-        class="flex items-center justify-center min-w-0 w-full min-h-11 border rounded-sm text-xs font-bold lg:hidden ${on
-          ? "border-sky-400 bg-sky-400/20 text-white"
-          : "border-slate-500 text-gray-300"}"
-        title=${translateText("build_menu.multi_place_title")}
-        aria-pressed=${on ? "true" : "false"}
-        @click=${() => {
-          this.eventBus.emit(new ToggleBatchPlaceEvent());
-          this.requestUpdate();
-        }}
+        class="flex-1 min-h-11 text-xs font-bold ${active
+          ? "bg-sky-400/25 text-white"
+          : "text-gray-400"}"
+        aria-pressed=${active ? "true" : "false"}
+        @click=${() => choose(lot)}
       >
-        ${translateText("build_menu.multi_place")}
+        ${label}
       </button>
+    `;
+    return html`
+      <div
+        class="col-span-6 flex w-full border rounded-sm overflow-hidden lg:hidden ${on
+          ? "border-sky-400"
+          : "border-slate-500"}"
+        role="group"
+        title=${translateText("build_menu.multi_place_title")}
+      >
+        ${segment(translateText("build_menu.multi_single"), !on, false)}
+        ${segment(translateText("build_menu.multi_place"), on, true)}
+      </div>
     `;
   }
 

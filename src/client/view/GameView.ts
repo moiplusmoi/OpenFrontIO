@@ -1,4 +1,5 @@
 import { GameMap, TileRef } from "@openfront/engine-api/game/GameMap";
+import { DefenseBlocks } from "./DefenseBlocks";
 import {
   Cell,
   formatPlayerDisplayName,
@@ -60,6 +61,7 @@ function readCosmeticVisibility(): CosmeticVisibility {
 
 export class GameView implements GameLike {
   private lastUpdate: GameUpdateViewData | null;
+  private defenseBlocks: DefenseBlocks | null = null;
   private startTick: Tick | null = null;
   private smallIDToID = new Map<number, PlayerID>();
   private _players = new Map<PlayerID, PlayerView>();
@@ -244,10 +246,22 @@ export class GameView implements GameLike {
     this.updatedTiles = [];
     this.updatedTerrainTiles = [];
     const packed = this.lastUpdate.packedTileUpdates;
+    this.defenseBlocks ??= new DefenseBlocks(
+      this._map.width(),
+      this._map.height(),
+    );
     for (let i = 0; i + 1 < packed.length; i += 2) {
       const tile = packed[i];
       const state = packed[i + 1];
+      const ownerBefore = this._map.ownerID(tile);
       const terrainChanged = this.updateTile(tile, state);
+      if (this._map.ownerID(tile) !== ownerBefore) {
+        this.defenseBlocks.markChanged(
+          this.x(tile),
+          this.y(tile),
+          this.ticks(),
+        );
+      }
       this.updatedTiles.push(tile);
       if (terrainChanged) {
         this.updatedTerrainTiles.push(tile);
@@ -837,6 +851,17 @@ export class GameView implements GameLike {
   ticks(): Tick {
     if (this.lastUpdate === null) return 0;
     return this.lastUpdate.tick;
+  }
+
+  /** GalloFront: defence bonus (percent) of the tile's block, as attacks see it. */
+  fortifyPctAt(tile: TileRef): number {
+    if (this.defenseBlocks === null) return 0;
+    const held = this.defenseBlocks.heldTicks(
+      this.x(tile),
+      this.y(tile),
+      this.ticks(),
+    );
+    return this.config().fortifyBonusPct(held);
   }
   // Set once the sim has decided the game (WinUpdate). Play may go on for
   // those who stay, but the server archives the record at that point.

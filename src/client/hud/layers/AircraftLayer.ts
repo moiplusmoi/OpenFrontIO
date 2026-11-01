@@ -40,6 +40,8 @@ export class AircraftLayer implements Controller {
   /** The tick last seen, and when it arrived (performance.now()). */
   private lastTick = -1;
   private lastTickAt = 0;
+  /** Cargo of each airliner, read off its origin airport the first time it is seen. */
+  private cargoByPlane = new Map<number, "gold" | "troops" | null>();
 
   constructor(
     private game: GameView,
@@ -162,10 +164,20 @@ export class AircraftLayer implements Controller {
         case UnitType.Fighter:
           drawPlane(ctx, from.x, from.y, size * 0.7, heading, "#e2e8f0", mine);
           break;
-        case UnitType.CommercialAircraft:
-          // Airliners are white with a gold wash, so they read as civil traffic.
-          drawPlane(ctx, from.x, from.y, size * 0.8, heading, "#fde68a", mine);
+        case UnitType.CommercialAircraft: {
+          // Gold airliners glow gold, troop airliners (reinforcements) read green.
+          const troops = this.cargoOf(plane) === "troops";
+          drawPlane(
+            ctx,
+            from.x,
+            from.y,
+            size * 0.8,
+            heading,
+            troops ? "#bbf7d0" : "#fde68a",
+            mine,
+          );
           break;
+        }
         case UnitType.AirTransport: {
           drawPlane(ctx, from.x, from.y, size * 0.9, heading, "#64748b", mine);
           drawLabel(
@@ -179,6 +191,27 @@ export class AircraftLayer implements Controller {
         }
       }
     }
+  }
+
+  /**
+   * The route's cargo. An airliner is built on its origin airport, so the
+   * first sighting, on that tile, names the route; a plane first seen in
+   * mid-flight has no origin and stays unlabelled.
+   */
+  private cargoOf(plane: UnitView): "gold" | "troops" | null {
+    const known = this.cargoByPlane.get(plane.id());
+    if (known !== undefined) return known;
+    if (this.cargoByPlane.size > 2000) this.cargoByPlane.clear();
+    const dst = plane.targetUnitId();
+    const origin = this.game
+      .units(UnitType.Airport)
+      .find((a) => a.tile() === plane.tile());
+    const cargo =
+      origin !== undefined && dst !== undefined
+        ? this.game.config().airlinerCargo(origin.id(), dst)
+        : null;
+    this.cargoByPlane.set(plane.id(), cargo);
+    return cargo;
   }
 
   /** Where to draw a plane between ticks: part-way from its last tile to its current one. */

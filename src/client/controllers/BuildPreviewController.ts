@@ -8,6 +8,7 @@
  */
 
 import { TileRef } from "@openfront/engine-api/game/GameMap";
+import { batchOffsets } from "@openfront/engine-lib/game/BatchOffsets";
 import {
   BuildableUnit,
   bulkCost,
@@ -34,6 +35,7 @@ import { buildNukeTrajectory, MapRenderer } from "../render/gl";
 import type { SAMInfo } from "../render/gl/utils/NukeTrajectory";
 import type { GhostPreviewData } from "../render/types";
 import { TransformHandler } from "../TransformHandler";
+import { showToast, translateText } from "../Utils";
 import {
   BuildBatchIntentEvent,
   BuildUnitIntentEvent,
@@ -99,6 +101,13 @@ export function samThreatensNukePreview(
   );
 }
 
+/** GalloFront: a right-click lot builds structures or upgrades them. */
+type LotKind = "build" | "upgrade";
+/** How long the lot result toast stays up. */
+const LOT_TOAST_MS = 4000;
+/** Lot mode switches off after this long without a placement. */
+const LOT_IDLE_MS = 30_000;
+
 export class BuildPreviewController implements Controller {
   /** Current ghost (null when no build type is active). */
   private ghostUnit: { buildableUnit: BuildableUnit } | null = null;
@@ -108,6 +117,15 @@ export class BuildPreviewController implements Controller {
   private lastGhostQueryAt: number = 0;
   private pendingConfirm: MouseUpEvent | null = null;
   private lastBatchPlaceAt = -Infinity;
+  /** GalloFront: a lot in flight, reported once it has settled. */
+  private pendingLot: {
+    kind: LotKind;
+    unit: UnitType;
+    requested: number;
+    before: number;
+    at: number;
+  } | null = null;
+  private previewKey = "";
 
   // Buildable validation runs on the snapped tile under the cursor, but the
   // rendered icon follows the cursor at sub-tile precision so motion is
@@ -144,6 +162,8 @@ export class BuildPreviewController implements Controller {
     );
     this.eventBus.on(ToggleBatchPlaceEvent, () => {
       this.uiState.batchPlace = !this.uiState.batchPlace;
+      // Idle time counts from switching the lot mode on.
+      if (this.uiState.batchPlace) this.lastBatchPlaceAt = performance.now();
     });
     this.eventBus.on(ConfirmGhostStructureEvent, () =>
       this.requestConfirmStructure(
@@ -219,6 +239,9 @@ export class BuildPreviewController implements Controller {
     // become buildable as troops/territory move).
     this.syncGhostState();
     this.renderGhost();
+    this.settleLot();
+    this.disarmIdleLot();
+    this.updateBatchPreview();
   }
 
   /**
@@ -696,13 +719,11 @@ export class BuildPreviewController implements Controller {
     if (type === null) return;
     const tile = this.transformHandler.screenToWorldCoordinates(e.x, e.y);
     if (!this.game.isValidCoord(tile.x, tile.y)) return;
+    const count = this.userSettings.batchBuildCount();
     this.eventBus.emit(
-      new BuildBatchIntentEvent(
-        type,
-        this.game.ref(tile.x, tile.y),
-        this.userSettings.batchBuildCount(),
-      ),
+      new BuildBatchIntentEvent(type, this.game.ref(tile.x, tile.y), count),
     );
+    this.startLot("build", type, count);
   }
 
   /**
@@ -722,13 +743,108 @@ export class BuildPreviewController implements Controller {
       );
     const target = near[0];
     if (target === undefined) return;
+    const count = this.userSettings.batchBuildCount();
     this.eventBus.emit(
-      new UpgradeBatchIntentEvent(
-        target.type(),
-        target.tile(),
-        this.userSettings.batchBuildCount(),
-      ),
+      new UpgradeBatchIntentEvent(target.type(), target.tile(), count),
     );
+    this.startLot("upgrade", target.type(), count);
+  }
+
+  /** Remember a lot just asked for, to report how many of it landed. */
+  private startLot(kind: LotKind, unit: UnitType, requested: number) {
+    this.pendingLot = {
+      kind,
+      unit,
+      requested,
+      before: this.lotCount(kind, unit),
+      at: this.game.ticks(),
+    };
+  }
+
+  /** Structures of the type (build) or total levels of it (upgrade), mine. */
+  private lotCount(kind: LotKind, unit: UnitType): number {
+    const units = this.game.myPlayer()?.units(unit) ?? [];
+    if (kind === "build") return units.length;
+    return units.reduce((sum, u) => sum + u.level(), 0);
+  }
+
+  /** Two seconds after a lot, report how many of it were placed. */
+  private settleLot() {
+    const lot = this.pendingLot;
+    if (lot === null || this.game.ticks() - lot.at < 20) return;
+    this.pendingLot = null;
+    const placed = Math.max(0, this.lotCount(lot.kind, lot.unit) - lot.before);
+    const key =
+      lot.kind === "build" ? "build_menu.lot_built" : "build_menu.lot_upgraded";
+    showToast(
+      translateText(key, { placed, requested: lot.requested }),
+      placed === lot.requested ? "green" : "red",
+      LOT_TOAST_MS,
+    );
+  }
+
+  /** Lot mode switches itself off after 30 s without a placement. */
+  private disarmIdleLot() {
+    if (!this.uiState.batchPlace) return;
+    if (performance.now() - this.lastBatchPlaceAt < LOT_IDLE_MS) return;
+    this.uiState.batchPlace = false;
+  }
+
+  /**
+   * Dots on the tiles a right-click lot would take from the cursor: your land,
+   * spaced like the server spaces them. An estimate: the server still decides
+   * (it can refuse a tile for reasons not shown here). Naval lots are skipped.
+   */
+  private updateBatchPreview() {
+    const type = this.uiState.ghostStructure;
+    const player = this.game.myPlayer();
+    if (type === null || player === null || isNavalCombatant(type)) {
+      if (this.uiState.batchPreview?.length) this.uiState.batchPreview = [];
+      return;
+    }
+    const tile = this.transformHandler.screenToWorldCoordinates(
+      this.mousePos.x,
+      this.mousePos.y,
+    );
+    if (!this.game.isValidCoord(tile.x, tile.y)) return;
+    const count = this.userSettings.batchBuildCount();
+    const key = `${type}:${tile.x}:${tile.y}:${count}`;
+    if (key === this.previewKey) return;
+    this.previewKey = key;
+
+    const minDist = this.game.config().structureMinDist();
+    const taken = player
+      .units(type)
+      .map((u) => [this.game.x(u.tile()), this.game.y(u.tile())] as const);
+    const picked: number[] = [];
+    const near = (
+      x: number,
+      y: number,
+      pts: readonly (readonly [number, number])[],
+    ) =>
+      pts.some(([px, py]) => {
+        const dx = px - x;
+        const dy = py - y;
+        return dx * dx + dy * dy <= minDist * minDist;
+      });
+    const placed: (readonly [number, number])[] = [];
+    for (const [dx, dy] of batchOffsets()) {
+      if (picked.length >= count) break;
+      const x = tile.x + dx;
+      const y = tile.y + dy;
+      if (!this.game.isValidCoord(x, y)) continue;
+      const ref = this.game.ref(x, y);
+      if (
+        !this.game.isLand(ref) ||
+        this.game.ownerID(ref) !== player.smallID()
+      ) {
+        continue;
+      }
+      if (near(x, y, taken) || near(x, y, placed)) continue;
+      picked.push(ref);
+      placed.push([x, y]);
+    }
+    this.uiState.batchPreview = picked;
   }
 
   private moveGhost(e: MouseMoveEvent) {
