@@ -67,6 +67,14 @@ export class MouseMoveEvent implements GameEvent {
   ) {}
 }
 
+/** GalloFront: right-click with a structure armed builds a lot around the click. */
+export class BatchBuildRequestEvent implements GameEvent {
+  constructor(
+    public readonly x: number,
+    public readonly y: number,
+  ) {}
+}
+
 export class ContextMenuEvent implements GameEvent {
   constructor(
     public readonly x: number,
@@ -1359,7 +1367,9 @@ export class InputHandler {
       return;
     }
     if (this.uiState.ghostStructure !== null) {
-      this.setGhostStructure(null);
+      this.eventBus.emit(
+        new BatchBuildRequestEvent(event.clientX, event.clientY),
+      );
       return;
     }
     // If a warship/boat is selected, right-click cancels the selection rather

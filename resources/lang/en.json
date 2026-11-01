@@ -213,6 +213,8 @@
     "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several",
     "multi_place": "Multi",
     "multi_place_title": "Keep the ship armed after each placement, to place several",
+    "batch_count": "Batch",
+    "batch_count_title": "Right-click with a structure armed builds this many around the click (1–200)",
     "airliners_need_partner": "Airliners need a second airport: your own, or one of a player you can trade with."
   },
   "change_username_modal": {

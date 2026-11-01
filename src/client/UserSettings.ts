@@ -426,6 +426,21 @@ export class UserSettings {
     this.setFloat("settings.hudOpacity", value);
   }
 
+  // GalloFront: structures one right-click builds, 1–200 (see build_batch).
+  batchBuildCount() {
+    return Math.max(
+      1,
+      Math.min(200, Math.round(this.getFloat("settings.batchBuildCount", 50))),
+    );
+  }
+
+  setBatchBuildCount(value: number) {
+    this.setFloat(
+      "settings.batchBuildCount",
+      Math.max(1, Math.min(200, value)),
+    );
+  }
+
   // GalloFront: UI scale (0.8–1.4) applied as the root font-size; Tailwind
   // sizes are rem-based, so the whole HUD scales while the map canvas does not.
   uiScale() {

@@ -138,6 +138,15 @@ export class BuildUnitIntentEvent implements GameEvent {
   ) {}
 }
 
+/** GalloFront: a right-click lot — up to `count` structures around `tile`. */
+export class BuildBatchIntentEvent implements GameEvent {
+  constructor(
+    public readonly unit: UnitType,
+    public readonly tile: TileRef,
+    public readonly count: number,
+  ) {}
+}
+
 /** GalloFront: start researching a technology. */
 export class SendResearchIntentEvent implements GameEvent {
   constructor(public readonly tech: TechId) {}
@@ -360,6 +369,7 @@ export class Transport {
       this.onSendEmbargoAllIntent(e),
     );
     this.subscribe(BuildUnitIntentEvent, (e) => this.onBuildUnitIntent(e));
+    this.subscribe(BuildBatchIntentEvent, (e) => this.onBuildBatchIntent(e));
     this.subscribe(SendResearchIntentEvent, (e) => this.onResearchIntent(e));
     this.subscribe(SendSetCapitalIntentEvent, (e) =>
       this.onSetCapitalIntent(e),
@@ -917,6 +927,15 @@ export class Transport {
     this.sendIntent({
       type: "embargo_all",
       action: event.action,
+    });
+  }
+
+  private onBuildBatchIntent(event: BuildBatchIntentEvent) {
+    this.sendIntent({
+      type: "build_batch",
+      unit: event.unit,
+      tile: event.tile,
+      count: event.count,
     });
   }
 

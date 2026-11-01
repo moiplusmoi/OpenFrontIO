@@ -23,6 +23,7 @@ import {
 import { EventBus } from "@openfront/shared/EventBus";
 import { Controller } from "../Controller";
 import {
+  BatchBuildRequestEvent,
   ConfirmGhostStructureEvent,
   MouseMoveEvent,
   MouseUpEvent,
@@ -33,6 +34,7 @@ import type { SAMInfo } from "../render/gl/utils/NukeTrajectory";
 import type { GhostPreviewData } from "../render/types";
 import { TransformHandler } from "../TransformHandler";
 import {
+  BuildBatchIntentEvent,
   BuildUnitIntentEvent,
   SendUpgradeStructureIntentEvent,
 } from "../Transport";
@@ -134,6 +136,7 @@ export class BuildPreviewController implements Controller {
   init() {
     this.eventBus.on(MouseMoveEvent, (e) => this.moveGhost(e));
     this.eventBus.on(MouseUpEvent, (e) => this.requestConfirmStructure(e));
+    this.eventBus.on(BatchBuildRequestEvent, (e) => this.requestBatchBuild(e));
     this.eventBus.on(ToggleBatchPlaceEvent, () => {
       this.uiState.batchPlace = !this.uiState.batchPlace;
     });
@@ -680,6 +683,21 @@ export class BuildPreviewController implements Controller {
       );
     }
     return blocked;
+  }
+
+  /** Right-click with a structure armed: a lot of them around the click. */
+  private requestBatchBuild(e: BatchBuildRequestEvent) {
+    const type = this.uiState.ghostStructure;
+    if (type === null) return;
+    const tile = this.transformHandler.screenToWorldCoordinates(e.x, e.y);
+    if (!this.game.isValidCoord(tile.x, tile.y)) return;
+    this.eventBus.emit(
+      new BuildBatchIntentEvent(
+        type,
+        this.game.ref(tile.x, tile.y),
+        this.userSettings.batchBuildCount(),
+      ),
+    );
   }
 
   private moveGhost(e: MouseMoveEvent) {

@@ -84,6 +84,7 @@ export class UnitDisplay extends LitElement implements Controller {
   private _airports = 0;
   /** Shown under the bar when an airport cannot yet launch airliners. */
   private airlineNote: string | null = null;
+  private userSettings = new UserSettings();
   private allDisabled = false;
   private _hoveredUnit: PlayerBuildableUnitType | null = null;
   private tutorialHighlight: PlayerBuildableUnitType | null = null;
@@ -283,6 +284,38 @@ export class UnitDisplay extends LitElement implements Controller {
               ${this.airlineNote}
             </div>`
           : null}
+        ${this.renderBatchCount()}
+      </div>
+    `;
+  }
+
+  /** How many a right-click builds with a structure armed (1–200). */
+  private renderBatchCount() {
+    if (this.uiState.ghostStructure === null) return null;
+    const count = this.userSettings.batchBuildCount();
+    const step = (delta: number) => {
+      this.userSettings.setBatchBuildCount(count + delta);
+      this.requestUpdate();
+    };
+    return html`
+      <div
+        class="flex items-center justify-center gap-1 pt-0.5 text-xs text-gray-200"
+        title=${translateText("build_menu.batch_count_title")}
+      >
+        <span>${translateText("build_menu.batch_count")}</span>
+        <button
+          class="min-h-8 min-w-8 border border-slate-500 rounded-sm"
+          @click=${() => step(-10)}
+        >
+          −
+        </button>
+        <span class="tabular-nums w-8 text-center">${count}</span>
+        <button
+          class="min-h-8 min-w-8 border border-slate-500 rounded-sm"
+          @click=${() => step(10)}
+        >
+          +
+        </button>
       </div>
     `;
   }

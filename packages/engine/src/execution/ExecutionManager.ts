@@ -6,7 +6,9 @@ import {
 } from "@openfront/engine-api/Schemas";
 import { PseudoRandom } from "@openfront/engine-lib/PseudoRandom";
 import { simpleHash } from "@openfront/engine-lib/Util";
-import { Execution, Game } from "../game/Game";
+import { TileRef } from "@openfront/engine-api/game/GameMap";
+import { UnitType } from "@openfront/engine-api/game/GameTypes";
+import { Execution, Game, Player } from "../game/Game";
 import { AllianceExtensionExecution } from "./alliance/AllianceExtensionExecution";
 import { AllianceRejectExecution } from "./alliance/AllianceRejectExecution";
 import { AllianceRequestExecution } from "./alliance/AllianceRequestExecution";
@@ -38,6 +40,68 @@ import { TribeSpawner } from "./TribeSpawner";
 import { UpgradeStructureExecution } from "./UpgradeStructureExecution";
 import { PlayerSpawner } from "./utils/PlayerSpawner";
 
+/** GalloFront batch build: offsets around a click, nearest first (ties by x, then y). */
+const BATCH_RADIUS = 30;
+const BATCH_OFFSETS: [number, number][] = [];
+for (let dy = -BATCH_RADIUS; dy <= BATCH_RADIUS; dy++) {
+  for (let dx = -BATCH_RADIUS; dx <= BATCH_RADIUS; dx++) {
+    BATCH_OFFSETS.push([dx, dy]);
+  }
+}
+BATCH_OFFSETS.sort(
+  (a, b) =>
+    a[0] * a[0] + a[1] * a[1] - (b[0] * b[0] + b[1] * b[1]) ||
+    a[1] - b[1] ||
+    a[0] - b[0],
+);
+
+/**
+ * Up to `count` structures of one type on the valid tiles nearest `tile`,
+ * stopping when the player can no longer pay for the next one.
+ */
+export function batchBuildExecutions(
+  mg: Game,
+  player: Player,
+  unit: UnitType,
+  tile: TileRef,
+  count: number,
+): Execution[] {
+  const x0 = mg.x(tile);
+  const y0 = mg.y(tile);
+  const cost = mg.unitInfo(unit).cost(mg, player);
+  const minDist = mg.config().structureMinDist();
+  const out: Execution[] = [];
+  const queued: TileRef[] = [];
+  let spent = 0n;
+  for (const [dx, dy] of BATCH_OFFSETS) {
+    if (out.length >= count) break;
+    const x = x0 + dx;
+    const y = y0 + dy;
+    if (!mg.isValidCoord(x, y)) continue;
+    const target = mg.ref(x, y);
+    if (player.canBuild(unit, target) === false) continue;
+    // Too close to one of its kind (built or queued here) would upgrade it
+    // rather than add a new one, so the batch keeps its distance.
+    if (mg.nearbyUnits(target, minDist, unit, undefined, true).length > 0) {
+      continue;
+    }
+    if (
+      queued.some((q) => {
+        const qx = mg.x(q) - x;
+        const qy = mg.y(q) - y;
+        return qx * qx + qy * qy <= minDist * minDist;
+      })
+    ) {
+      continue;
+    }
+    if (spent + cost > player.gold()) break;
+    spent += cost;
+    queued.push(target);
+    out.push(new ConstructionExecution(player, unit, target));
+  }
+  return out;
+}
+
 export class Executor {
   // private random = new PseudoRandom(999)
   private random: PseudoRandom;
@@ -58,7 +122,12 @@ export class Executor {
   }
 
   createExecs(turn: Turn): Execution[] {
-    return turn.intents.map((i) => this.createExec(i));
+    return turn.intents.flatMap((i) => {
+      if (i.type !== "build_batch") return [this.createExec(i)];
+      const player = this.mg.playerByClientID(i.clientID);
+      if (!player) return [this.createExec(i)];
+      return batchBuildExecutions(this.mg, player, i.unit, i.tile, i.count);
+    });
   }
 
   createExec(intent: StampedIntent): Execution {
@@ -117,6 +186,9 @@ export class Executor {
         return new EmbargoExecution(player, intent.targetID, intent.action);
       case "embargo_all":
         return new EmbargoAllExecution(player, intent.action);
+      case "build_batch":
+        // Expanded by createExecs into one ConstructionExecution per structure.
+        return new NoOpExecution();
       case "build_unit":
         return new ConstructionExecution(
           player,
