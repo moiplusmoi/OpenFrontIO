@@ -402,6 +402,10 @@ export class AttackExecution implements Execution {
         defender.capitalTile() !== null &&
         this.mg.manhattanDist(tile, defender.capitalTile()!) <=
           this.mg.config().capitalRange(),
+      defenderFortifyPct:
+        defender === null
+          ? 0
+          : this.mg.config().fortifyBonusPct(this.mg.tileHeldTicks(tile)),
       falloutRatio: this.mg.hasFallout(tile)
         ? this.mg.numTilesWithFallout() / this.mg.numLandTiles()
         : null,

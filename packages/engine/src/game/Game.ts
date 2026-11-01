@@ -714,6 +714,8 @@ export interface Game extends GameLike {
   capitalFallen(victim: Player, conqueror: Player | null): void;
   /** GalloFront: current season (null when seasons are disabled). */
   season(): Season | null;
+  /** GalloFront: ticks since the tile's defence block last changed hands. */
+  tileHeldTicks(tile: TileRef): number;
   /** GalloFront: the world event running now (null when calm or seasons are off). */
   worldEvent(): WorldEvent | null;
   miniWaterHPA(): PathFinder<number> | null;

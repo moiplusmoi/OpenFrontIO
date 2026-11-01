@@ -282,6 +282,16 @@ export class Config {
     return 100;
   }
 
+  // ---- GalloFront fortification ----
+  /**
+   * Defence a block gains the longer it stays with one owner: +2% of the
+   * attacker's losses per full minute held, capped at +40%.
+   */
+  fortifyBonusPct(heldTicks: number): number {
+    const minutes = Math.floor(heldTicks / 600);
+    return Math.min(40, minutes * 2);
+  }
+
   // ---- GalloFront aviation ----
   airportRange(level: number): number {
     return Math.min(300, 200 + 25 * (level - 1));

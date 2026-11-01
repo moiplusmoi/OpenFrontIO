@@ -124,6 +124,9 @@ export function createGame(
 
 export type CellString = string;
 
+/** GalloFront: tiles per side of a defence block (a fortification unit). */
+const DEFENSE_BLOCK_SIZE = 16;
+
 export class GameImpl implements Game {
   private _ticks = 0;
   private startTick: number | null = null;
@@ -152,6 +155,8 @@ export class GameImpl implements Game {
   private motionPlanRecords: MotionPlanRecord[] = [];
   private planDrivenUnitIds = new Set<number>();
   private unitGrid: UnitGrid<Unit>;
+  /** GalloFront: tick each block of DEFENSE_BLOCK_SIZE² tiles last changed hands. */
+  private blockLastChange: Uint32Array;
   private _unitMap = new Map<number, Unit>();
 
   private playerTeams: Team[] = [];
@@ -192,6 +197,10 @@ export class GameImpl implements Game {
     this._width = _map.width();
     this._height = _map.height();
     this.unitGrid = new UnitGrid<Unit>(this._map);
+    this.blockLastChange = new Uint32Array(
+      Math.ceil(this._width / DEFENSE_BLOCK_SIZE) *
+        Math.ceil(this._height / DEFENSE_BLOCK_SIZE),
+    );
     this._waterManager = new WaterManager(
       this._map,
       this.miniGameMap,
@@ -833,6 +842,7 @@ export class GameImpl implements Game {
     }
     this._territoryVersion++;
     this._map.setOwnerID(tile, owner.smallID());
+    this.blockLastChange[this.blockOf(tile)] = this._ticks;
     owner._tiles.add(tile);
     owner._lastTileChange = this._ticks;
     owner._tileChangeVersion++;
@@ -856,6 +866,7 @@ export class GameImpl implements Game {
     previousOwner._borderTiles.delete(tile);
 
     this._territoryVersion++;
+    this.blockLastChange[this.blockOf(tile)] = this._ticks;
     this._map.setOwnerID(tile, 0);
     this.updateBorders(tile);
     this.recordTileUpdate(tile);
@@ -1485,6 +1496,7 @@ export class GameImpl implements Game {
       unitsVersion: this._unitsVersion,
       territoryVersion: this._territoryVersion,
       shipStaggers: { ...this.shipStaggers },
+      blockLastChange: Array.from(this.blockLastChange),
       nationMirvTargets: [...this._nationMirvTargets],
       mirvsLaunched: this._mirvsLaunched,
       rail: w.versioned(
@@ -1528,6 +1540,10 @@ export class GameImpl implements Game {
       }),
     );
     this.planDrivenUnitIds = new Set(s.planDrivenUnitIds);
+    this.blockLastChange =
+      s.blockLastChange === undefined
+        ? new Uint32Array(this.blockLastChange.length)
+        : Uint32Array.from(s.blockLastChange);
     this.unitGrid.restoreSnapshot(s.unitGrid, (i) => r.unit(i));
     this.playerTeams = [...s.playerTeams];
     this.botTeam = s.botTeam;
@@ -1561,6 +1577,19 @@ export class GameImpl implements Game {
 
   season(): Season | null {
     return this._config.seasonsEnabled() ? seasonAt(this._ticks) : null;
+  }
+
+  /** GalloFront: ticks since the tile's block last changed hands. */
+  tileHeldTicks(tile: TileRef): number {
+    return this._ticks - this.blockLastChange[this.blockOf(tile)];
+  }
+
+  private blockOf(tile: TileRef): number {
+    const blocksPerRow = Math.ceil(this._width / DEFENSE_BLOCK_SIZE);
+    return (
+      Math.floor(this.y(tile) / DEFENSE_BLOCK_SIZE) * blocksPerRow +
+      Math.floor(this.x(tile) / DEFENSE_BLOCK_SIZE)
+    );
   }
 
   worldEvent(): WorldEvent | null {
@@ -1761,6 +1790,8 @@ export const GameSnapshot = snapshotType({
     unitsVersion: zInt(),
     territoryVersion: zInt(),
     shipStaggers: z.object({ tradeShip: zInt(), transportShip: zInt() }),
+    // Absent from snapshots written before fortification: blocks restart at 0.
+    blockLastChange: z.array(zInt()).optional(),
     nationMirvTargets: z.array(z.tuple([z.string(), zInt()])),
     mirvsLaunched: zInt(),
     rail: VersionedSchema,

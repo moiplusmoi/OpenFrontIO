@@ -56,6 +56,8 @@ export interface AttackLogicInput {
   defenderDefenseTech?: number;
   /** GalloFront: the tile lies within the defender's capital influence. */
   defenderHasCapital?: boolean;
+  /** GalloFront: defence bonus of the tile's block, in percent (see fortifyBonusPct). */
+  defenderFortifyPct?: number;
 }
 
 export interface AttackLogicResult {
@@ -620,6 +622,9 @@ export class EngineConfig extends Config {
     if (defender !== null && input.defenderHasCapital === true) {
       mag *= this.capitalDefenseBonus();
       tileCost *= this.capitalSpeedBonus();
+    }
+    if (defender !== null && input.defenderFortifyPct) {
+      mag *= 1 + input.defenderFortifyPct / 100;
     }
     if (input.falloutRatio !== null) {
       const fallout = this.falloutDefenseModifier(input.falloutRatio);
