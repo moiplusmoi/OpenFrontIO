@@ -344,7 +344,7 @@ export class PlayerInfoOverlay extends LitElement implements Controller {
   private displayUnitCount(player: PlayerView, type: UnitType, icon: string) {
     return !this.game.config().isUnitDisabled(type)
       ? html`<div
-          class="flex items-center justify-center gap-0.5 lg:gap-1 p-0.5 lg:p-1 border rounded-md border-gray-500 text-[10px] lg:text-xs w-9 lg:w-12 h-6 lg:h-7"
+          class="flex items-center justify-center gap-0.5 lg:gap-1 p-0.5 lg:p-1 border rounded-md border-gray-500 text-xs lg:text-xs w-11 lg:w-12 h-11 lg:h-7"
           translate="no"
         >
           <img
@@ -505,7 +505,7 @@ export class PlayerInfoOverlay extends LitElement implements Controller {
       <img src=${icon} alt="" class="size-5 object-contain" />
       ${key
         ? html`<span
-            class="pointer-events-none absolute -bottom-1 -right-1 px-0.5 rounded-sm bg-gray-800 text-[9px] leading-tight font-mono text-gray-300"
+            class="pointer-events-none absolute -bottom-1 -right-1 px-0.5 rounded-sm bg-gray-800 text-xs lg:text-[9px] leading-tight font-mono text-gray-100"
             translate="no"
             >${key}</span
           >`
@@ -578,7 +578,7 @@ export class PlayerInfoOverlay extends LitElement implements Controller {
                 height="14"
                 class="shrink-0"
               />
-              <span class="text-[10px] leading-tight"
+              <span class="text-xs lg:text-[10px] leading-tight"
                 >${this.allianceExpirationText(alliance)}</span
               >
             </div>`

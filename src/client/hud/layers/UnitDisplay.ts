@@ -296,7 +296,7 @@ export class UnitDisplay extends LitElement implements Controller {
     return html`
       <div class="flex flex-col items-center gap-0.5 pt-0.5">
         <button
-          class="min-h-8 px-2 rounded-full border border-amber-300/60 bg-amber-300/10 text-[11px] text-amber-200"
+          class="min-h-11 lg:min-h-8 px-2 rounded-full border border-amber-300/60 bg-amber-300/10 text-[11px] text-amber-200"
           aria-expanded=${this.airlineOpen ? "true" : "false"}
           @click=${toggle}
         >
@@ -327,14 +327,14 @@ export class UnitDisplay extends LitElement implements Controller {
       >
         <span>${translateText("build_menu.batch_count")}</span>
         <button
-          class="min-h-8 min-w-8 border border-slate-500 rounded-sm"
+          class="min-h-11 min-w-11 lg:min-h-8 lg:min-w-8 border border-slate-500 rounded-sm"
           @click=${() => step(-10)}
         >
           −
         </button>
         <span class="tabular-nums w-8 text-center">${count}</span>
         <button
-          class="min-h-8 min-w-8 border border-slate-500 rounded-sm"
+          class="min-h-11 min-w-11 lg:min-h-8 lg:min-w-8 border border-slate-500 rounded-sm"
           @click=${() => step(10)}
         >
           +
@@ -409,7 +409,7 @@ export class UnitDisplay extends LitElement implements Controller {
         </div>
         ${isNavalCombatant(unitType)
           ? html`<div
-              class="mt-1 px-2 py-1 text-[10px] text-cyan-300 border-t border-white/10"
+              class="mt-1 px-2 py-1 text-xs lg:text-[10px] text-cyan-300 border-t border-white/10"
             >
               ⇧ ${translateText("build_menu.warship_shift_hint")}
             </div>`
@@ -530,7 +530,9 @@ export class UnitDisplay extends LitElement implements Controller {
               : translateText("unit_type." + structureKey)}
           @click=${() => this.onItemClick(unitType, locked)}
         >
-          <div class="ml-0.5 text-[10px] relative -top-1 text-gray-400">
+          <div
+            class="ml-0.5 text-xs lg:text-[10px] relative -top-1 text-gray-300"
+          >
             ${displayHotkey}
           </div>
           <div class="flex items-center gap-0.5 pt-0.5">
@@ -549,7 +551,7 @@ export class UnitDisplay extends LitElement implements Controller {
         ${hover
           ? null
           : html`<div
-              class="h-3.5 max-w-full lg:max-w-12 truncate text-[9px] leading-[14px] tabular-nums ${locked !==
+              class="h-4 max-w-full lg:max-w-12 truncate text-xs lg:text-[9px] leading-4 tabular-nums ${locked !==
               null
                 ? "text-amber-300"
                 : "text-yellow-300"}"

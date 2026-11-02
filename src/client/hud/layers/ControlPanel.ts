@@ -443,7 +443,7 @@ export class ControlPanel extends LitElement implements Controller {
               class="brightness-0 invert drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]"
             />
             <span
-              class="text-[10px] font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] ${this
+              class="text-xs lg:text-[10px] font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] ${this
                 ._troopRateIsIncreasing
                 ? "text-green-400"
                 : "text-orange-400"}"
@@ -613,7 +613,7 @@ export class ControlPanel extends LitElement implements Controller {
           .value=${String(Math.round(this.attackRatio * 100))}
           @input=${(e: Event) => this.handleRatioSliderInput(e)}
           @pointerup=${(e: Event) => this.handleRatioSliderPointerUp(e)}
-          class="flex-1 h-1.5 accent-aquarius cursor-pointer"
+          class="flex-1 h-4 lg:h-1.5 accent-aquarius cursor-pointer touch-slider"
         />
       </div>
     `;
@@ -643,7 +643,7 @@ export class ControlPanel extends LitElement implements Controller {
           <span class="px-0.5">${renderNumber(this._gold)}</span>
           <span
             data-gold-rate
-            class="text-[9px] leading-none text-green-400 tabular-nums whitespace-nowrap"
+            class="text-xs lg:text-[9px] leading-none text-green-400 tabular-nums whitespace-nowrap"
             >+${renderNumber(Math.round(this._goldRate))}/s</span
           >
         </div>
