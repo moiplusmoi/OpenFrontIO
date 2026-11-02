@@ -742,8 +742,12 @@ export class NationStructureBehavior {
 
   /** Whether the nation has the technology `type` requires, if any. */
   private hasTechFor(type: UnitType): boolean {
-    const tech = this.game.config().unitRequiredTech(type);
-    return tech === null || this.player.hasTech(tech);
+    const cfg = this.game.config();
+    const tech = cfg.unitRequiredTech(type);
+    return (
+      (tech === null || this.player.hasTech(tech)) &&
+      cfg.eraOf(this.player) >= cfg.unitRequiredEra(type)
+    );
   }
 
   // Cities owned, or a territory-based equivalent when cities are disabled

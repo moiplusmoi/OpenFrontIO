@@ -1,8 +1,16 @@
-import { TechId, UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  TECH_TREE,
+  TechId,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { translateText } from "../../Utils";
 
 /** The slices of Config / PlayerView the lock check reads (stubs in tests may lack them). */
-type ConfigLike = { unitRequiredTech?: (type: UnitType) => TechId | null };
+type ConfigLike = {
+  unitRequiredTech?: (type: UnitType) => TechId | null;
+  unitRequiredEra?: (type: UnitType) => number;
+  eraOf?: (player: { hasTech(id: TechId): boolean }) => number;
+};
 type PlayerLike = { hasTech?: (id: TechId) => boolean } | null | undefined;
 
 /**
@@ -17,10 +25,20 @@ export function missingTech(
   unit: UnitType,
 ): TechId | null {
   if (typeof config?.unitRequiredTech !== "function") return null;
-  const required = config.unitRequiredTech(unit);
-  if (required === null) return null;
   if (typeof player?.hasTech !== "function") return null;
-  return player.hasTech(required) ? null : required;
+  const owns = (id: TechId) => player.hasTech!(id);
+  const required = config.unitRequiredTech(unit);
+  if (required !== null && !owns(required)) return required;
+  // GalloFront eras: a unit can also wait for the era. The way on is the next
+  // technology not yet owned, so tapping the lock opens the panel to earn it.
+  if (
+    typeof config.eraOf === "function" &&
+    typeof config.unitRequiredEra === "function" &&
+    config.eraOf({ hasTech: owns }) < config.unitRequiredEra(unit)
+  ) {
+    return TECH_TREE.find((t) => !owns(t.id))?.id ?? null;
+  }
+  return null;
 }
 
 /** Localized name of a technology. */

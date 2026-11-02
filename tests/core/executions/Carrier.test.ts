@@ -34,7 +34,15 @@ async function seaGame(): Promise<{ game: Game; p1: Player; p2: Player }> {
 // Bombers need Aviation (mil_3) and fighters Air Superiority (mil_4); buying
 // a sortie also needs gold.
 function equip(game: Game, p: Player) {
-  for (const id of [TechId.Mil1, TechId.Mil2, TechId.Mil3, TechId.Mil4]) {
+  // Carriers need era 3, which takes six technologies: two more than Mil4 alone.
+  for (const id of [
+    TechId.Mil1,
+    TechId.Mil2,
+    TechId.Mil3,
+    TechId.Mil4,
+    TechId.Eco1,
+    TechId.Def1,
+  ]) {
     p.addGold(game.config().techCost(id));
     game.addExecution(new ResearchExecution(p, id));
     executeTicks(game, game.config().techDuration(id) + 3);

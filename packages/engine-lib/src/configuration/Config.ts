@@ -7,6 +7,7 @@ import {
   UnitType,
   TechBranch,
   TechId,
+  TECH_TREE,
   techDef,
   Gold,
   SpyMission,
@@ -290,6 +291,30 @@ export class Config {
   fortifyBonusPct(heldTicks: number): number {
     const minutes = Math.floor(heldTicks / 600);
     return Math.min(40, minutes * 2);
+  }
+
+  // ---- GalloFront eras ----
+  /**
+   * Era reached: one more for every three technologies owned, up to era 3.
+   * Progress comes from research, so the eras are what a player has earned.
+   */
+  eraOf(player: { hasTech(id: TechId): boolean }): number {
+    const owned = TECH_TREE.filter((t) => player.hasTech(t.id)).length;
+    return Math.min(3, 1 + Math.floor(owned / 3));
+  }
+
+  /** Era a unit needs on top of its technology (1 when it needs none). */
+  unitRequiredEra(type: UnitType): number {
+    switch (type) {
+      case UnitType.Bomber:
+      case UnitType.Submarine:
+        return 2;
+      case UnitType.Fighter:
+      case UnitType.Carrier:
+        return 3;
+      default:
+        return 1;
+    }
   }
 
   // ---- GalloFront aviation ----

@@ -22,7 +22,11 @@ let a: Player;
 let b: Player;
 
 function learn(p: Player, ids: TechId[]) {
-  for (const id of ids) {
+  // Fighters need era 3, which takes six technologies: Mil4 comes with two more.
+  const all = ids.includes(TechId.Mil4)
+    ? [...ids, TechId.Eco1, TechId.Def1]
+    : ids;
+  for (const id of all) {
     p.addGold(game.config().techCost(id));
     game.addExecution(new ResearchExecution(p, id));
     executeTicks(game, game.config().techDuration(id) + 3);

@@ -1483,6 +1483,10 @@ export class PlayerImpl implements Player {
     if (requiredTech !== null && !this.hasTech(requiredTech)) {
       return false;
     }
+    const cfg = this.mg.config();
+    if (cfg.eraOf(this) < cfg.unitRequiredEra(unitType)) {
+      return false;
+    }
     const cost = knownCost ?? this.mg.unitInfo(unitType).cost(this.mg, this);
     if (this._gold < cost) {
       return false;
