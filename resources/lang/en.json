@@ -2720,6 +2720,16 @@
     "desktop": "A new version of OpenFront is available. It will download in the background; reload from the update bar once it is ready.",
     "message": "A new version of OpenFront is available. The page will now refresh to update."
   },
+  "quick_settings": {
+    "title": "Quick settings",
+    "size": "Interface size",
+    "size_normal": "Normal",
+    "size_large": "Large",
+    "size_xl": "Extra large",
+    "music": "Music",
+    "effects": "Sound effects",
+    "haptics": "Vibrations"
+  },
   "user_setting": {
     "alert_frame_desc": "Toggle the alert frame. When enabled, the frame will be displayed when you are betrayed or attacked over land.",
     "alert_frame_label": "Alert Frame",

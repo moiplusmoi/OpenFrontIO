@@ -728,6 +728,12 @@ export class ControlPanel extends LitElement implements Controller {
         .gold-gain-pop {
           animation: gold-gain-pop 0.25s ease-out;
         }
+        /* GalloFront: respect the OS "reduce motion" setting */
+        @media (prefers-reduced-motion: reduce) {
+          .gold-gain-pop {
+            animation: none;
+          }
+        }
         /* GalloFront: finger-sized attack-ratio slider on phones */
         .touch-slider {
           -webkit-appearance: none;

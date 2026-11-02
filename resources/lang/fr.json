@@ -2356,6 +2356,16 @@
     "desktop": "Une nouvelle version d’OpenFront est disponible. Elle sera téléchargée en arrière-plan ; une fois prête, rechargez la page depuis la barre de mise à jour.",
     "message": "Une nouvelle version d'OpenFront est disponible. La page va maintenant se rafraîchir pour se mettre à jour."
   },
+  "quick_settings": {
+    "title": "Réglages rapides",
+    "size": "Taille de l'interface",
+    "size_normal": "Normal",
+    "size_large": "Grand",
+    "size_xl": "Très grand",
+    "music": "Musique",
+    "effects": "Effets sonores",
+    "haptics": "Vibrations"
+  },
   "user_setting": {
     "alert_frame_desc": "Activer/Désactiver le cadre d'alerte. Lorsqu'il est activé, le cadre s'affichera lorsque vous serez trahi ou attaqué par la terre.",
     "alert_frame_label": "Fenêtre d'alertes",

@@ -10,6 +10,7 @@ import {
   AlternateViewEvent,
   ToggleRenderDebugGuiEvent,
 } from "../../InputHandler";
+import { UserSettings } from "../../UserSettings";
 import type { UserSettingModal } from "../../UserSettingModal";
 import { homeHref, translateText } from "../../Utils";
 import {
@@ -51,6 +52,8 @@ export class SettingsModal extends LitElement implements Controller {
 
   @state()
   private alternateView: boolean = false;
+  // GalloFront: quick settings reachable without leaving the match.
+  private userSettings = new UserSettings();
 
   @query(".modal-overlay")
   private modalOverlay!: HTMLElement;
@@ -139,6 +142,112 @@ export class SettingsModal extends LitElement implements Controller {
     if (this.shouldPause && !this.wasPausedWhenOpened) {
       this.eventBus.emit(new PauseGameIntentEvent(pause));
     }
+  }
+
+  private setQuickUiScale(scale: number) {
+    this.userSettings.setUiScale(scale);
+    this.userSettings.applyUiScale();
+    this.requestUpdate();
+  }
+
+  private setQuickVolume(category: "music" | "effects", percent: number) {
+    this.userSettings.setAudioVolume(category, percent / 100);
+    this.requestUpdate();
+  }
+
+  private renderQuickSettings() {
+    const scale = this.userSettings.uiScale();
+    const scales: Array<[number, string]> = [
+      [1, translateText("quick_settings.size_normal")],
+      [1.15, translateText("quick_settings.size_large")],
+      [1.3, translateText("quick_settings.size_xl")],
+    ];
+    const sizeClass = (on: boolean) =>
+      `flex-1 min-h-11 rounded border text-sm font-semibold ${
+        on
+          ? "border-sky-400 bg-sky-400/20 text-white"
+          : "border-slate-600 text-slate-300 hover:bg-slate-700"
+      }`;
+    const music = Math.round(this.userSettings.audioVolume("music") * 100);
+    const effects = Math.round(this.userSettings.audioVolume("effects") * 100);
+    return html`
+      <div class="border-t border-slate-600 pt-3 mt-2 flex flex-col gap-3 px-1">
+        <div
+          class="text-xs font-semibold text-slate-400 uppercase tracking-wider"
+        >
+          ${translateText("quick_settings.title")}
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-sm text-slate-300"
+            >${translateText("quick_settings.size")}</span
+          >
+          <div class="flex gap-2">
+            ${scales.map(
+              ([value, label]) => html`<button
+                class="${sizeClass(Math.abs(scale - value) < 0.01)}"
+                aria-pressed=${Math.abs(scale - value) < 0.01
+                  ? "true"
+                  : "false"}
+                @click=${() => this.setQuickUiScale(value)}
+              >
+                ${label}
+              </button>`,
+            )}
+          </div>
+        </div>
+
+        <label class="flex flex-col gap-1 text-sm text-slate-300">
+          <span>${translateText("quick_settings.music")} · ${music}%</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            class="w-full min-h-11 accent-sky-400"
+            .value=${String(music)}
+            @input=${(e: Event) =>
+              this.setQuickVolume(
+                "music",
+                Number((e.target as HTMLInputElement).value),
+              )}
+          />
+        </label>
+
+        <label class="flex flex-col gap-1 text-sm text-slate-300">
+          <span>${translateText("quick_settings.effects")} · ${effects}%</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            class="w-full min-h-11 accent-sky-400"
+            .value=${String(effects)}
+            @input=${(e: Event) =>
+              this.setQuickVolume(
+                "effects",
+                Number((e.target as HTMLInputElement).value),
+              )}
+          />
+        </label>
+
+        <button
+          class="flex gap-3 items-center w-full min-h-11 text-left px-1 text-white"
+          aria-pressed=${this.userSettings.haptics() ? "true" : "false"}
+          @click=${() => {
+            this.userSettings.toggleHaptics();
+            this.requestUpdate();
+          }}
+        >
+          <span class="flex-1 text-sm"
+            >${translateText("quick_settings.haptics")}</span
+          >
+          <span class="text-sm text-slate-400">
+            ${this.userSettings.haptics()
+              ? translateText("user_setting.on")
+              : translateText("user_setting.off")}
+          </span>
+        </button>
+      </div>
+    `;
   }
 
   private onTerrainButtonClick() {
@@ -287,7 +396,7 @@ export class SettingsModal extends LitElement implements Controller {
               </div>
             </button>
 
-            ${this.renderModifiers()}
+            ${this.renderQuickSettings()} ${this.renderModifiers()}
 
             <div class="border-t border-slate-600 pt-3 mt-4">
               <div
