@@ -733,7 +733,15 @@ export class GameModeSelector extends LitElement {
                   TUTORIAL_ACTION,
                 )}
               </div>`
-            : nothing}
+            : html`<div class="flex-1 min-w-0">
+                <button
+                  type="button"
+                  class="w-full h-full min-h-11 rounded border border-hud-line text-sm text-slate-300 underline hover:text-white hover:bg-hud"
+                  @click=${this.startTutorial}
+                >
+                  ${translateText("main.tutorial_replay")}
+                </button>
+              </div>`}
         </div>
         <div
           class="grid ${isStandalone()

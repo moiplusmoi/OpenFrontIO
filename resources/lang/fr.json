@@ -196,7 +196,16 @@
     "upgrade_amount": "x{amount}",
     "warship_shift_hint": "Maj + clic : poser plusieurs navires ; Maj + glisser : en sélectionner plusieurs",
     "requires_tech": "Nécessite : {tech}",
-    "requires_tech_tap": "Touche pour ouvrir les Technologies"
+    "requires_tech_tap": "Touche pour ouvrir les Technologies",
+    "multi_place": "Lot",
+    "multi_single": "Un",
+    "airliners_short": "Avions de ligne",
+    "lot_built": "{placed}/{requested} construits",
+    "lot_upgraded": "{placed}/{requested} améliorés",
+    "multi_place_title": "Garde le navire armé après chaque pose, pour en poser plusieurs",
+    "batch_count": "Lot",
+    "batch_count_title": "Clic droit avec une structure armée : en construit ce nombre autour du clic. Maj + clic droit sur ta structure : améliore ce nombre de structures du même type (1–200)",
+    "airliners_need_partner": "Les avions de ligne ont besoin d'un deuxième aéroport : le tien, ou celui d'un joueur avec qui tu peux commercer."
   },
   "change_username_modal": {
     "title": "Changer le nom d'utilisateur",
@@ -791,7 +800,8 @@
   },
   "reconnect_banner": {
     "text": "Connexion perdue, reconnexion… ({attempt}/{max})",
-    "retry": "Réessayer maintenant"
+    "retry": "Réessayer maintenant",
+    "slow": "Connexion lente (~{ms} ms)"
   },
   "error_modal": {
     "connection_error": "Erreur de connexion !",
@@ -1444,7 +1454,8 @@
     "play_now_solo": "Aucune partie publique : solo rapide",
     "play_now_in": "{mode} · départ dans {time}",
     "play_now_starting": "{mode} · ça démarre",
-    "solo_quick": "Solo rapide"
+    "solo_quick": "Solo rapide",
+    "tutorial_replay": "Revoir le tutoriel"
   },
   "map": {
     "achiran": "Achiran",
@@ -1771,7 +1782,8 @@
     "intel_gold": "Or exact",
     "intel_troops": "Troupes exactes",
     "intel_ready": "Silos / SAM prêts",
-    "gallofront": "GalloFront"
+    "gallofront": "GalloFront",
+    "cosmetics": "Équipé"
   },
   "player_profile": {
     "loading": "Chargement du profil...",
@@ -2732,5 +2744,16 @@
       "spy": "Espions : menu radial sur un ennemi.",
       "attacked": "Tu es attaqué ! Un poste défensif double la défense autour de lui."
     }
+  },
+  "world_event": {
+    "boom": "Essor économique",
+    "crisis": "Crise économique",
+    "drought": "Sécheresse",
+    "effect": {
+      "boom": "or des ouvriers +50 %",
+      "crisis": "or des ouvriers −40 %",
+      "drought": "croissance des troupes −40 %"
+    },
+    "started": "{event} commence"
   }
 }

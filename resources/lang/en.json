@@ -873,7 +873,8 @@
   },
   "reconnect_banner": {
     "text": "Connection lost, reconnecting… ({attempt}/{max})",
-    "retry": "Retry now"
+    "retry": "Retry now",
+    "slow": "Slow connection (~{ms} ms)"
   },
   "error_modal": {
     "connection_error": "Connection error!",
@@ -1541,7 +1542,8 @@
     "troubleshooting": "Troubleshooting",
     "tutorial": "Tutorial",
     "user_avatar_alt": "{username}'s avatar",
-    "wiki": "Wiki"
+    "wiki": "Wiki",
+    "tutorial_replay": "Replay the tutorial"
   },
   "map": {
     "achiran": "Achiran",

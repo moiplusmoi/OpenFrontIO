@@ -916,7 +916,11 @@ async function createClientGame(
   }
 }
 
+const SLOW_RTT_MS = 800;
+
 export class ClientGameRunner {
+  // GalloFront: consecutive slow round-trips (see the pong handler).
+  private slowPongs = 0;
   private myPlayer: PlayerView | null = null;
   private isActive = false;
 
@@ -1152,8 +1156,14 @@ export class ClientGameRunner {
         );
       }
       if (message.type === "pong") {
-        this.metrics?.recordRoundTrip(
-          Math.floor(performance.now()) - message.sentAt,
+        const rtt = Math.floor(performance.now()) - message.sentAt;
+        this.metrics?.recordRoundTrip(rtt);
+        // GalloFront: three slow pongs in a row show the "slow connection" pill.
+        this.slowPongs = rtt > SLOW_RTT_MS ? this.slowPongs + 1 : 0;
+        window.dispatchEvent(
+          new CustomEvent("network-slow", {
+            detail: this.slowPongs >= 3 ? rtt : null,
+          }),
         );
       }
       if (message.type === "new_lobby") {

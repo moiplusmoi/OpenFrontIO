@@ -345,6 +345,11 @@ export class Transport {
     // GalloFront: the reconnect banner's "retry now" button.
     if (!this.isLocal && typeof window !== "undefined") {
       window.addEventListener("transport-retry-now", () => this.retryNow());
+      // Back online, or back on screen after a sleep: do not wait out the backoff.
+      window.addEventListener("online", () => this.retryNow());
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") this.retryNow();
+      });
     }
 
     this.subscribe(SendAllianceRequestIntentEvent, (e) =>
@@ -719,7 +724,9 @@ export class Transport {
   // Player pressed "retry now": skip the backoff wait and open a socket.
   private retryNow(): void {
     if (this.isLocal || this.connectionRefused) return;
-    if (this.socket?.readyState === WebSocket.CONNECTING) return;
+    // Only a socket that already existed and dropped; never open one early.
+    if (this.socket === null) return;
+    if (this.socket.readyState === WebSocket.CONNECTING) return;
     if (this.socket?.readyState === WebSocket.OPEN) return;
     this.cancelReconnect();
     this.connectRemote(this.onconnect, this.onmessage);
