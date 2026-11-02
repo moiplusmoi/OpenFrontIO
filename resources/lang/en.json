@@ -871,6 +871,10 @@
     "ranks": "Ranks",
     "things": "Things"
   },
+  "reconnect_banner": {
+    "text": "Connection lost, reconnecting… ({attempt}/{max})",
+    "retry": "Retry now"
+  },
   "error_modal": {
     "connection_error": "Connection error!",
     "connection_lost": "Lost connection to the game server and could not reconnect. Refresh the page to try rejoining.",

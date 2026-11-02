@@ -342,6 +342,11 @@ export class Transport {
       this.lobbyConfig.gameRecord !== undefined ||
       this.lobbyConfig.gameStartInfo?.config.gameType === GameType.Singleplayer;
 
+    // GalloFront: the reconnect banner's "retry now" button.
+    if (!this.isLocal && typeof window !== "undefined") {
+      window.addEventListener("transport-retry-now", () => this.retryNow());
+    }
+
     this.subscribe(SendAllianceRequestIntentEvent, (e) =>
       this.onSendAllianceRequest(e),
     );
@@ -546,6 +551,9 @@ export class Transport {
       // budget and settles any retry the watchdog scheduled while this
       // socket was silent — left armed, it would tear down the socket that
       // just recovered.
+      if (this.reconnectAttempts > 0) {
+        this.emitReconnectState(null);
+      }
       this.reconnectAttempts = 0;
       this.cancelReconnect();
       try {
@@ -698,6 +706,25 @@ export class Transport {
     });
   }
 
+  // GalloFront: tells the reconnect banner where we are (null = settled).
+  private emitReconnectState(
+    state: { attempt: number; max: number } | null,
+  ): void {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+      new CustomEvent("transport-reconnect", { detail: state }),
+    );
+  }
+
+  // Player pressed "retry now": skip the backoff wait and open a socket.
+  private retryNow(): void {
+    if (this.isLocal || this.connectionRefused) return;
+    if (this.socket?.readyState === WebSocket.CONNECTING) return;
+    if (this.socket?.readyState === WebSocket.OPEN) return;
+    this.cancelReconnect();
+    this.connectRemote(this.onconnect, this.onmessage);
+  }
+
   // Ask for a reconnect. Callers do not decide when (or whether) it happens:
   // one attempt is scheduled at a time, on the backoff schedule, until the
   // budget runs out.
@@ -723,10 +750,15 @@ export class Transport {
       );
       this.connectionRefused = true;
       this.stopPing();
+      this.emitReconnectState(null);
       this.showTerminalDialog(translateText("error_modal.connection_lost"));
       return;
     }
     this.reconnectAttempts++;
+    this.emitReconnectState({
+      attempt: this.reconnectAttempts,
+      max: Transport.RECONNECT_MAX_ATTEMPTS,
+    });
     const delay = Transport.reconnectDelay(this.reconnectAttempts);
     console.log(
       `reconnect attempt ${this.reconnectAttempts}/${Transport.RECONNECT_MAX_ATTEMPTS} in ${delay} ms`,

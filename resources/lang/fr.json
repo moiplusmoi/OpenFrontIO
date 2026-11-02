@@ -789,6 +789,10 @@
       "warship": "Navire de guerre"
     }
   },
+  "reconnect_banner": {
+    "text": "Connexion perdue, reconnexion… ({attempt}/{max})",
+    "retry": "Réessayer maintenant"
+  },
   "error_modal": {
     "connection_error": "Erreur de connexion !",
     "connection_lost": "La connexion au serveur est perdue et il est impossible de se reconnecter. Rafraîchissez la page pour essayer de revenir dans le serveur.",

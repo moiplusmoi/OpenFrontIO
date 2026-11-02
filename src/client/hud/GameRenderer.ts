@@ -24,6 +24,7 @@ import { GameView } from "../view";
 import { FrameProfiler } from "./FrameProfiler";
 import { ActionableEvents } from "./layers/ActionableEvents";
 import { AlertFrame } from "./layers/AlertFrame";
+import "./layers/ReconnectBanner";
 import { AttacksDisplay } from "./layers/AttacksDisplay";
 import { BuildMenu } from "./layers/BuildMenu";
 import { AircraftLayer } from "./layers/AircraftLayer";
