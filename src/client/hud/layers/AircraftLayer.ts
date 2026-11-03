@@ -1,13 +1,15 @@
 /**
  * AircraftLayer — GalloFront aviation overlay.
  *
- * A Canvas 2D layer over the WebGL map (like SpyLayer / CapitalLayer) that
- * draws every aircraft in the view, for every player — the WebGL unit pass
- * has no sprite for them:
- *  - a bomber: a dark triangle pointing at its target, a dashed red line to
- *    the target and the impact circle (bomberRadius tiles);
- *  - a fighter: a small light triangle, nose along its last move;
- *  - an air transport: a triangle with the troops it carries.
+ * A Canvas 2D layer over the WebGL map (like FleetLayer) that draws every
+ * aircraft in the view, for every player — the WebGL unit pass has no sprite
+ * for them. Each aircraft is a top-down silhouette with a ground shadow:
+ *  - a bomber: a four-engined heavy bomber, dashed red line to its target
+ *    and the impact circle (bomberRadius tiles);
+ *  - a fighter: a slim delta-wing jet with an afterburner glow;
+ *  - an air transport: a broad high-wing cargo plane with the troops it carries;
+ *  - an airliner: a white airliner with a cargo stripe (gold or troops).
+ * Wings and tail take the owner's colour, as ships do.
  * Aircraft move every tick: between two ticks each one glides from the tile
  * it held at the previous tick to its current one, so the layer repaints
  * every frame while aircraft are in view.
@@ -21,9 +23,9 @@ import type { GameView, UnitView } from "../../view";
 
 /** Below this zoom (screen pixels per tile) the aircraft are hidden. */
 const MIN_SCALE = 0.6;
-const PLANE_TILES = 3.2;
-const PLANE_MIN_PX = 9;
-const PLANE_MAX_PX = 30;
+const PLANE_TILES = 3.6;
+const PLANE_MIN_PX = 10;
+const PLANE_MAX_PX = 34;
 /** One simulation tick (10 per second): the time an aircraft glides over. */
 const TICK_MS = 100;
 
@@ -157,38 +159,54 @@ export class AircraftLayer implements Controller {
 
       if (!th.isOnScreen(this.cellOf(tile))) continue;
 
+      let kind: PlaneKind;
+      let scale = 1;
+      let accent: string | null = null;
       switch (type) {
         case UnitType.Bomber:
-          drawPlane(ctx, from.x, from.y, size, heading, "#1e293b", mine);
+          kind = "bomber";
           break;
         case UnitType.Fighter:
-          drawPlane(ctx, from.x, from.y, size * 0.7, heading, "#e2e8f0", mine);
+          kind = "fighter";
+          scale = 0.8;
           break;
-        case UnitType.CommercialAircraft: {
-          // Gold airliners glow gold, troop airliners (reinforcements) read green.
-          const troops = this.cargoOf(plane) === "troops";
-          drawPlane(
-            ctx,
-            from.x,
-            from.y,
-            size * 0.8,
-            heading,
-            troops ? "#bbf7d0" : "#fde68a",
-            mine,
-          );
+        case UnitType.AirTransport:
+          kind = "transport";
+          scale = 0.95;
           break;
-        }
-        case UnitType.AirTransport: {
-          drawPlane(ctx, from.x, from.y, size * 0.9, heading, "#64748b", mine);
-          drawLabel(
-            ctx,
-            from.x,
-            from.y + size * 0.75,
-            renderNumber(plane.troops()),
-            size,
-          );
+        case UnitType.CommercialAircraft:
+          kind = "airliner";
+          scale = 0.9;
+          // Gold airliners carry gold; troop airliners (reinforcements) carry green.
+          accent = this.cargoOf(plane) === "troops" ? "#86efac" : "#fbbf24";
           break;
-        }
+        default:
+          continue;
+      }
+      const span = size * scale;
+      const fill = owner.territoryColor().toHex();
+      drawPlane(
+        ctx,
+        from.x + span * 0.12,
+        from.y + span * 0.2,
+        span,
+        heading,
+        kind,
+        fill,
+        accent,
+        mine,
+        true,
+      );
+      drawPlane(ctx, from.x, from.y, span, heading, kind, fill, accent, mine);
+
+      if (type === UnitType.AirTransport) {
+        drawLabel(
+          ctx,
+          from.x,
+          from.y + span * 0.75,
+          renderNumber(plane.troops()),
+          span,
+        );
       }
     }
   }
@@ -243,10 +261,24 @@ export class AircraftLayer implements Controller {
   }
 }
 
+type Pt = [number, number];
+type PlaneKind = "bomber" | "fighter" | "transport" | "airliner";
+
+const SHADOW = "rgba(0, 0, 0, 0.3)";
+
+/** Allies get a white outline, enemies a red one, so they read on any land. */
+function strokeStyleFor(mine: boolean): string {
+  return mine ? "rgba(255, 255, 255, 0.9)" : "rgba(239, 68, 68, 0.95)";
+}
+
 /**
- * A simple delta-wing silhouette centred on (x, y), nose along `heading`
- * (radians, screen space); `s` is its length. Friendly aircraft get a
- * light outline, enemy ones a red one, so they read on any territory.
+ * A top-down aircraft silhouette centred on (x, y), nose along `heading`
+ * (radians, screen space); `s` is its span. Shapes are written in half-spans
+ * (h): +x is the nose, y runs port to starboard, and wings are drawn with
+ * their mirror image. Wings and tail take the owner's colour; the outline
+ * shows allies (white) and enemies (red) apart. With `shadow` set, the same
+ * shape is drawn flat black for the ground shadow. Small aircraft skip the
+ * details (engines, canopy) to stay legible.
  */
 function drawPlane(
   ctx: CanvasRenderingContext2D,
@@ -254,27 +286,223 @@ function drawPlane(
   y: number,
   s: number,
   heading: number,
-  fill: string,
+  kind: PlaneKind,
+  owner: string,
+  accent: string | null,
   mine: boolean,
+  shadow = false,
 ) {
-  const half = s / 2;
+  const h = s / 2;
+  const detail = !shadow && s >= 14;
+  const paint = (c: string) => (shadow ? SHADOW : c);
+
+  const trace = (pts: Pt[]) => {
+    ctx.beginPath();
+    pts.forEach(([px, py], i) => {
+      if (i === 0) ctx.moveTo(px * h, py * h);
+      else ctx.lineTo(px * h, py * h);
+    });
+    ctx.closePath();
+  };
+  const shape = (pts: Pt[], fill: string) => {
+    trace(pts);
+    ctx.fillStyle = paint(fill);
+    ctx.fill();
+    if (!shadow) ctx.stroke();
+  };
+  // A wing or tail given once on one side; its mirror image is drawn too.
+  const pair = (pts: Pt[], fill: string) => {
+    shape(pts, fill);
+    shape(
+      pts.map(([px, py]): Pt => [px, -py]),
+      fill,
+    );
+  };
+  const dot = (cx: number, cy: number, r: number, fill: string) => {
+    ctx.beginPath();
+    ctx.arc(cx * h, cy * h, Math.max(1, r * h), 0, Math.PI * 2);
+    ctx.fillStyle = paint(fill);
+    ctx.fill();
+    if (!shadow) ctx.stroke();
+  };
+
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(heading);
   ctx.lineJoin = "round";
-  ctx.lineWidth = Math.max(1, s * 0.09);
-  ctx.strokeStyle = mine
-    ? "rgba(255, 255, 255, 0.9)"
-    : "rgba(239, 68, 68, 0.95)";
-  ctx.fillStyle = fill;
-  ctx.beginPath();
-  ctx.moveTo(half, 0); // nose
-  ctx.lineTo(-half * 0.7, half * 0.6);
-  ctx.lineTo(-half * 0.4, 0);
-  ctx.lineTo(-half * 0.7, -half * 0.6);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.fill();
+  ctx.lineWidth = Math.max(1, s * 0.05);
+  ctx.strokeStyle = strokeStyleFor(mine);
+
+  switch (kind) {
+    case "bomber":
+      pair(
+        [
+          [0.15, -0.12],
+          [-0.35, -0.95],
+          [-0.62, -0.95],
+          [-0.3, -0.1],
+        ],
+        owner,
+      );
+      pair(
+        [
+          [-0.7, -0.1],
+          [-0.95, -0.42],
+          [-1, -0.42],
+          [-0.9, -0.08],
+        ],
+        owner,
+      );
+      shape(
+        [
+          [1, 0],
+          [0.8, -0.14],
+          [-0.4, -0.13],
+          [-0.95, -0.06],
+          [-0.95, 0.06],
+          [-0.4, 0.13],
+          [0.8, 0.14],
+        ],
+        "#475569",
+      );
+      if (detail) {
+        dot(0, -0.5, 0.09, "#1e293b");
+        dot(0, 0.5, 0.09, "#1e293b");
+        dot(0.78, 0, 0.09, "rgba(186, 230, 253, 0.85)");
+      }
+      break;
+
+    case "fighter":
+      pair(
+        [
+          [0.3, -0.1],
+          [-0.55, -0.95],
+          [-0.8, -0.9],
+          [-0.5, -0.1],
+        ],
+        owner,
+      );
+      pair(
+        [
+          [-0.7, -0.08],
+          [-1, -0.45],
+          [-0.85, -0.45],
+          [-0.6, -0.08],
+        ],
+        owner,
+      );
+      shape(
+        [
+          [1, 0],
+          [0.5, -0.14],
+          [-0.6, -0.12],
+          [-1, -0.05],
+          [-1, 0.05],
+          [-0.6, 0.12],
+          [0.5, 0.14],
+        ],
+        "#cbd5e1",
+      );
+      if (detail) {
+        dot(0.35, 0, 0.12, "rgba(186, 230, 253, 0.9)");
+        dot(-1, 0, 0.12, "rgba(251, 146, 60, 0.9)");
+      }
+      break;
+
+    case "transport":
+      pair(
+        [
+          [0.25, -0.2],
+          [0.12, -0.98],
+          [-0.22, -0.98],
+          [-0.26, -0.2],
+        ],
+        owner,
+      );
+      pair(
+        [
+          [-0.72, -0.18],
+          [-0.96, -0.5],
+          [-1, -0.5],
+          [-0.94, -0.16],
+        ],
+        owner,
+      );
+      shape(
+        [
+          [0.92, -0.2],
+          [0.98, 0],
+          [0.92, 0.2],
+          [-0.9, 0.22],
+          [-1, 0],
+          [-0.9, -0.22],
+        ],
+        "#94a3b8",
+      );
+      if (detail) {
+        dot(0.2, -0.6, 0.1, "#334155");
+        dot(0.2, 0.6, 0.1, "#334155");
+        // Rear ramp.
+        shape(
+          [
+            [-0.72, -0.14],
+            [-0.9, -0.14],
+            [-0.9, 0.14],
+            [-0.72, 0.14],
+          ],
+          "#334155",
+        );
+      }
+      break;
+
+    case "airliner":
+      pair(
+        [
+          [0.15, -0.15],
+          [-0.25, -0.92],
+          [-0.5, -0.92],
+          [-0.36, -0.15],
+        ],
+        owner,
+      );
+      pair(
+        [
+          [-0.7, -0.1],
+          [-0.92, -0.36],
+          [-1, -0.36],
+          [-0.88, -0.08],
+        ],
+        owner,
+      );
+      shape(
+        [
+          [1, 0],
+          [0.82, -0.17],
+          [-0.7, -0.17],
+          [-1, -0.07],
+          [-1, 0.07],
+          [-0.7, 0.17],
+          [0.82, 0.17],
+        ],
+        "#f8fafc",
+      );
+      if (accent !== null) {
+        shape(
+          [
+            [0.55, -0.07],
+            [-0.7, -0.07],
+            [-0.7, 0.07],
+            [0.55, 0.07],
+          ],
+          accent,
+        );
+      }
+      if (detail) {
+        dot(0.1, -0.5, 0.1, "#cbd5e1");
+        dot(0.1, 0.5, 0.1, "#cbd5e1");
+      }
+      break;
+  }
   ctx.restore();
 }
 
