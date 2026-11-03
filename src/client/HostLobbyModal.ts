@@ -255,7 +255,7 @@ export class HostLobbyModal extends BaseModal {
     return modalHeader({
       titleContent: html`
         <span
-          class="text-white text-xl lg:text-2xl font-bold uppercase tracking-widest break-words hyphens-auto"
+          class="text-white text-xl lg:text-2xl font-bold  tracking-wide break-words hyphens-auto"
         >
           ${translateText("host_modal.title")}
         </span>
@@ -298,7 +298,7 @@ export class HostLobbyModal extends BaseModal {
   private renderVisibilityToggle() {
     const segment = (labelKey: string, isPublic: boolean) => html`
       <button
-        class="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all ${this
+        class="px-3 py-1 text-[10px] font-bold  tracking-wide rounded-full transition-all ${this
           .publiclyListed === isPublic
           ? "bg-malibu-blue text-white"
           : "text-white/50 hover:text-white"}"
@@ -326,7 +326,7 @@ export class HostLobbyModal extends BaseModal {
     if (!this.publiclyListed) return nothing;
     if (this.queued) {
       return html`<span
-        class="px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-green-500/15 text-green-400 border border-green-500/30 shrink-0"
+        class="px-3 py-1 text-[10px] font-bold  tracking-wide rounded-full bg-green-500/15 text-green-400 border border-green-500/30 shrink-0"
         >${translateText("host_modal.queued")}</span
       >`;
     }
@@ -347,7 +347,7 @@ export class HostLobbyModal extends BaseModal {
       return nothing;
     }
     return html`<button
-      class="flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-green-500/15 text-green-400 border border-green-500/30 hover:bg-green-500/25 transition-all shrink-0 disabled:opacity-50"
+      class="flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold  tracking-wide rounded-full bg-green-500/15 text-green-400 border border-green-500/30 hover:bg-green-500/25 transition-all shrink-0 disabled:opacity-50"
       title=${translateText("host_modal.queue_tooltip")}
       ?disabled=${this.queueRequestInFlight}
       @click=${() => (this.showQueueConfirm = true)}

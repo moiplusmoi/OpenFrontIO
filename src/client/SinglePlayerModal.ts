@@ -327,7 +327,7 @@ export class SinglePlayerModal extends BaseModal {
       return html``;
     }
     return html`<button
-      class="px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-200 rounded-lg bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 whitespace-nowrap shrink-0 cursor-pointer hover:bg-yellow-500/30"
+      class="px-3 py-2 text-xs font-bold  tracking-wide transition-colors duration-200 rounded-lg bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 whitespace-nowrap shrink-0 cursor-pointer hover:bg-yellow-500/30"
       @click=${() => {
         this.close();
         window.showPage?.("page-account");
@@ -383,8 +383,7 @@ export class SinglePlayerModal extends BaseModal {
                 class="w-4 h-4 opacity-80 shrink-0"
                 style="${this.showAchievements ? "" : "filter: grayscale(1);"}"
               />
-              <span
-                class="text-xs font-bold uppercase tracking-wider whitespace-nowrap"
+              <span class="text-xs font-bold  tracking-wide whitespace-nowrap"
                 >${translateText("single_modal.toggle_achievements")}</span
               >
             </button>
@@ -404,7 +403,7 @@ export class SinglePlayerModal extends BaseModal {
         class="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 rounded-xl border border-yellow-500/20 bg-yellow-500/5"
       >
         <span
-          class="text-[11px] font-bold uppercase tracking-wider text-yellow-400/80 shrink-0"
+          class="text-[11px] font-bold  tracking-wide text-yellow-400/80 shrink-0"
         >
           ${translateText("single_modal.medals_earned")}
         </span>
@@ -414,7 +413,7 @@ export class SinglePlayerModal extends BaseModal {
           )}
         </div>
         <span
-          class="ml-auto text-[11px] font-semibold uppercase tracking-wider text-white/40 shrink-0"
+          class="ml-auto text-[11px] font-semibold  tracking-wide text-white/40 shrink-0"
         >
           ${translateText("single_modal.medals_of_maps", {
             total: total ?? "…",
@@ -621,7 +620,7 @@ export class SinglePlayerModal extends BaseModal {
           ${responseHasLinkedIdentity(this.userMeResponse) &&
           this.hasOptionsChanged()
             ? html`<div
-                class="mb-4 px-4 py-3 rounded-xl bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-xs font-bold uppercase tracking-wider text-center"
+                class="mb-4 px-4 py-3 rounded-xl bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-xs font-bold  tracking-wide text-center"
               >
                 ${translateText("single_modal.options_changed_no_achievements")}
               </div>`

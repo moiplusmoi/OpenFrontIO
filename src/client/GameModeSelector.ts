@@ -69,7 +69,7 @@ const TUTORIAL_ACTION =
 const TUTORIAL_CARD_MAX_GAMES = 5;
 /** GalloFront: the one-tap "Play now" hero button. */
 const PLAY_NOW_ACTION =
-  "bg-malibu-blue hover:brightness-110 active:brightness-95";
+  "bg-linear-to-br from-aquarius to-malibu-blue shadow-lg shadow-malibu-blue/25 hover:brightness-110 active:brightness-95";
 /** Quick solo: the Solo card's little sibling. */
 const QUICK_SOLO_ACTION =
   "bg-malibu-blue/60 hover:bg-malibu-blue active:bg-malibu-blue/80";
@@ -976,7 +976,7 @@ export class GameModeSelector extends LitElement {
             ? "opacity-50 cursor-not-allowed"
             : ""}"
       >
-        <span class="text-lg lg:text-xl font-bold uppercase tracking-widest"
+        <span class="text-xl lg:text-2xl font-bold tracking-tight"
           >${translateText("main.play_now")}</span
         >
         <span class="text-xs font-medium text-white/80 truncate max-w-full px-2"
@@ -1034,11 +1034,11 @@ export class GameModeSelector extends LitElement {
             : DISABLED}"
         >
           <span
-            class="truncate text-sm font-bold uppercase tracking-widest text-white/70 group-hover/upcoming:text-white"
+            class="truncate text-sm font-semibold tracking-normal text-white/70 group-hover/upcoming:text-white"
             >${translateText("public_lobby.upcoming")}</span
           >
           <span
-            class="flex shrink-0 items-center gap-0.5 rounded bg-malibu-blue py-0.5 pl-2 pr-1 text-xs font-bold uppercase tracking-wider text-white group-hover/upcoming:bg-aquarius"
+            class="flex shrink-0 items-center gap-0.5 rounded bg-malibu-blue py-0.5 pl-2 pr-1 text-xs font-semibold tracking-normal text-white group-hover/upcoming:bg-aquarius"
           >
             ${count > 0
               ? translateText("public_lobby.see_all", { count })
@@ -1094,7 +1094,7 @@ export class GameModeSelector extends LitElement {
         @click=${onClick}
         ?disabled=${!this.inputValid}
         aria-disabled=${blocked}
-        class="relative flex items-center justify-center w-full h-full min-w-0 px-2 rounded-md ${bgClass} transition-colors duration-150 text-sm lg:text-base font-semibold text-white uppercase tracking-wide whitespace-nowrap truncate text-center ${!this
+        class="relative flex items-center justify-center w-full h-full min-w-0 px-2 rounded-md ${bgClass} transition-colors duration-150 text-sm lg:text-base font-semibold text-white tracking-normal whitespace-nowrap truncate text-center ${!this
           .inputValid
           ? DISABLED
           : blocked

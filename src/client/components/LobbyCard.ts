@@ -164,13 +164,13 @@ export interface LobbyCardOptions {
  * line box and renders short and low.
  */
 const PILL =
-  "rounded bg-malibu-blue px-2 py-1 text-xs font-bold tracking-widest text-white";
+  "rounded bg-malibu-blue px-2 py-1 text-xs font-bold tracking-wide text-white";
 // No backdrop-filter anywhere in the card: under a transformed ancestor
 // Chrome clips it with a separate mask and the map leaks at the corners.
 const BADGE = "rounded bg-black/70";
 /** A player's listed lobby, so it can't pass for a scheduled public game. */
 const CUSTOM_PILL =
-  "rounded bg-orange-500 px-2 py-1 text-xs font-bold tracking-widest text-white";
+  "rounded bg-orange-500 px-2 py-1 text-xs font-bold tracking-wide text-white";
 
 /** Extreme aspect ratios (Amazon River is ~20:1) show whole rather than cropped. */
 function fitsByContain(mapType: GameMapType): boolean {
@@ -233,7 +233,7 @@ export function lobbyCard({
       @click=${onClick}
       ?disabled=${disabled}
       aria-disabled=${blocked}
-      class="group @container relative block w-full ${heightClass} overflow-hidden rounded-lg bg-surface text-left uppercase text-white transition-shadow duration-200 hover:shadow-[var(--shadow-lobby-card-hover)] ${state}"
+      class="group @container relative block w-full ${heightClass} overflow-hidden rounded-lg bg-surface text-left  text-white transition-shadow duration-200 hover:shadow-[var(--shadow-lobby-card-hover)] ${state}"
     >
       <img
         src=${terrainMapFileLoader.getMapData(mapType).webpPath}
@@ -270,7 +270,7 @@ export function lobbyCard({
             : ""}"
       >
         <span
-          class="${BADGE} absolute bottom-full right-2 mb-1 flex items-center gap-1 px-2 py-0.5 text-xs font-bold tabular-nums tracking-widest"
+          class="${BADGE} absolute bottom-full right-2 mb-1 flex items-center gap-1 px-2 py-0.5 text-xs font-bold tabular-nums tracking-wide"
         >
           ${playerCount}
           <svg
@@ -288,12 +288,12 @@ export function lobbyCard({
         ${custom ? customInfoIcon(lobby, trustedOnly) : nothing}
         ${title
           ? html`<p
-              class="text-sm font-bold leading-tight tracking-wider @[20rem]:text-base"
+              class="text-sm font-bold leading-tight tracking-wide @[20rem]:text-base"
             >
               ${title}
             </p>`
           : nothing}
-        <h3 class="text-xs tracking-wider text-white/70">${subtitleLine}</h3>
+        <h3 class="text-xs tracking-wide text-white/70">${subtitleLine}</h3>
       </div>
     </button>
   `;

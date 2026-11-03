@@ -21,8 +21,8 @@ const DEFAULT_BUTTON_CLASS =
   "group flex items-center justify-center w-10 h-10 rounded-full shrink-0 " +
   "bg-white/5 hover:bg-white/10 transition-all border border-white/10";
 export const DEFAULT_TITLE_CLASS =
-  "text-white text-xl lg:text-2xl font-bold uppercase " +
-  "tracking-widest break-words hyphens-auto";
+  "text-white text-xl lg:text-2xl font-bold  " +
+  "tracking-wide break-words hyphens-auto";
 
 const withClasses = (...classes: Array<string | undefined>) =>
   classes.filter(Boolean).join(" ");

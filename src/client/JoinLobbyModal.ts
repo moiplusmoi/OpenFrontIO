@@ -167,7 +167,7 @@ export class JoinLobbyModal extends BaseModal {
     if (this.isConnecting) return html``;
     const spectating = this.isSpectating;
     const cls = (on: boolean) =>
-      `px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest transition ${
+      `px-3 py-1 rounded-lg text-xs font-bold  tracking-wide transition ${
         on ? "bg-white text-black" : "text-white/60 hover:text-white"
       }`;
     return html`
@@ -269,8 +269,7 @@ export class JoinLobbyModal extends BaseModal {
               class="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 flex items-center justify-between gap-3"
             >
               <div class="flex flex-col">
-                <span
-                  class="text-[10px] font-bold uppercase tracking-widest text-white/40"
+                <span class="text-[10px] font-bold  tracking-wide text-white/40"
                   >${translateText("public_lobby.status")}</span
                 >
                 <span class="text-sm font-bold text-white">${statusLabel}</span>
@@ -279,7 +278,7 @@ export class JoinLobbyModal extends BaseModal {
               ${maxPlayers > 0
                 ? html`
                     <div
-                      class="flex items-center gap-2 text-white/80 text-xs font-bold uppercase tracking-widest"
+                      class="flex items-center gap-2 text-white/80 text-xs font-bold  tracking-wide"
                     >
                       <span>${playerCount}/${maxPlayers}</span>
                       <svg
@@ -312,7 +311,7 @@ export class JoinLobbyModal extends BaseModal {
                 id="lobbyIdInput"
                 placeholder=${translateText("private_lobby.enter_id")}
                 @keyup=${this.handleChange}
-                class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-sm tracking-wider"
+                class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-sm tracking-wide"
               />
               <o-button
                 variant="ghost"
@@ -378,9 +377,7 @@ export class JoinLobbyModal extends BaseModal {
     }
     return html`
       <div class="pt-2">
-        <div
-          class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2"
-        >
+        <div class="text-[10px] font-bold  tracking-wide text-white/40 mb-2">
           ${translateText("private_lobby.open_lobbies")}
         </div>
         ${content}
@@ -446,7 +443,7 @@ export class JoinLobbyModal extends BaseModal {
             >
             ${lobby.custom
               ? html`<span
-                  class="px-1.5 py-0.5 bg-orange-500 text-white text-[10px] rounded font-bold uppercase tracking-wider shrink-0"
+                  class="px-1.5 py-0.5 bg-orange-500 text-white text-[10px] rounded font-bold  tracking-wide shrink-0"
                   >${translateText("public_lobby.custom")}</span
                 >`
               : ""}
@@ -734,7 +731,7 @@ export class JoinLobbyModal extends BaseModal {
         ${tags.length > 0
           ? html`<div
               data-test-lobby-settings
-              class="flex flex-wrap content-start gap-1 min-w-0 flex-1 uppercase"
+              class="flex flex-wrap content-start gap-1 min-w-0 flex-1 "
             >
               ${tags}
             </div>`
