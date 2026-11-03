@@ -86,9 +86,7 @@ function statsSection(
 ): TemplateResult {
   return html`
     <div class="w-full">
-      <div
-        class="text-gray-400 text-sm font-bold uppercase tracking-wider mb-2"
-      >
+      <div class="text-gray-400 text-sm font-bold  tracking-wide mb-2">
         ${translateText(heading)}
       </div>
       <div class="overflow-x-auto rounded-lg border border-white/5 bg-black/20">

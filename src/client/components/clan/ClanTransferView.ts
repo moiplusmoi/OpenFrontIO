@@ -203,7 +203,7 @@ export class ClanTransferView extends LitElement {
                   </span>
                 </div>
                 <span
-                  class="relative pointer-events-none text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0
+                  class="relative pointer-events-none text-[10px] font-bold  tracking-wide px-2 py-0.5 rounded-full shrink-0
                         ${m.role === "officer"
                     ? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
                     : "bg-white/10 text-white/40 border border-white/10"}"
@@ -239,7 +239,7 @@ export class ClanTransferView extends LitElement {
 
         <button
           @click=${() => (this.confirmAction = "transfer")}
-          class="w-full px-6 py-3 text-sm font-bold text-white uppercase tracking-wider rounded-xl transition-all border disabled:opacity-50 disabled:pointer-events-none
+          class="w-full px-6 py-3 text-sm font-bold text-white  tracking-wide rounded-xl transition-all border disabled:opacity-50 disabled:pointer-events-none
                 ${this.transferTarget && !this.actionPending
             ? "bg-gradient-to-r bg-origin-border from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 shadow-lg hover:shadow-amber-900/40 border-white/5"
             : "bg-white/5 border-white/10 text-white/30 cursor-not-allowed"}"

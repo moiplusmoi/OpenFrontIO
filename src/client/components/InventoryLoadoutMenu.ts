@@ -50,7 +50,7 @@ export class InventoryLoadoutMenu extends LitElement {
         data-loadout-slot=${name}
         aria-pressed=${isActive ? "true" : "false"}
         aria-label=${translateText("inventory.loadout_slot", { name })}
-        class="px-3 py-1.5 text-xs font-black uppercase tracking-wider transition-colors ${isActive
+        class="px-3 py-1.5 text-xs font-black  tracking-wide transition-colors ${isActive
           ? "text-white"
           : "text-white/75 hover:bg-white/10"}"
         @click=${() => this.onSelect?.(name)}
@@ -94,7 +94,7 @@ export class InventoryLoadoutMenu extends LitElement {
         type="button"
         data-inventory-unequip-all
         ?disabled=${!this.canUnequip}
-        class="ml-auto rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+        class="ml-auto rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-black  tracking-wide text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
         @click=${() => this.onUnequipAll?.()}
       >
         ${translateText("inventory.unequip_all")}

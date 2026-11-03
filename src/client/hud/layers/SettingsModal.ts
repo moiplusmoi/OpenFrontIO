@@ -172,9 +172,7 @@ export class SettingsModal extends LitElement implements Controller {
     const effects = Math.round(this.userSettings.audioVolume("effects") * 100);
     return html`
       <div class="border-t border-slate-600 pt-3 mt-2 flex flex-col gap-3 px-1">
-        <div
-          class="text-xs font-semibold text-slate-400 uppercase tracking-wider"
-        >
+        <div class="text-xs font-semibold text-slate-400  tracking-wide">
           ${translateText("quick_settings.title")}
         </div>
 
@@ -301,13 +299,13 @@ export class SettingsModal extends LitElement implements Controller {
     return html`
       <div class="border-t border-slate-600 pt-3 mt-4" data-game-modifiers>
         <div
-          class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider"
+          class="px-3 py-1 text-xs font-semibold text-slate-400  tracking-wide"
         >
           ${translateText("user_setting.modifiers")}
         </div>
         ${settings.length > 0
           ? html`<div
-              class="flex flex-wrap gap-1 px-3 pt-1 uppercase"
+              class="flex flex-wrap gap-1 px-3 pt-1 "
               data-modifier-tags
             >
               ${settings.map(
@@ -400,7 +398,7 @@ export class SettingsModal extends LitElement implements Controller {
 
             <div class="border-t border-slate-600 pt-3 mt-4">
               <div
-                class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider"
+                class="px-3 py-1 text-xs font-semibold text-slate-400  tracking-wide"
               >
                 ${translateText("user_setting.development_only")}
               </div>

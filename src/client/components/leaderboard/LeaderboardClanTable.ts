@@ -120,7 +120,7 @@ export class LeaderboardClanTable extends LitElement {
         <div
           class="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-6"
         ></div>
-        <p class="text-blue-200/80 text-sm font-bold tracking-widest uppercase">
+        <p class="text-blue-200/80 text-sm font-bold tracking-wide ">
           ${translateText("common.loading")}
         </p>
       </div>
@@ -154,7 +154,7 @@ export class LeaderboardClanTable extends LitElement {
           ${this.error ?? translateText("leaderboard_modal.error")}
         </p>
         <button
-          class="px-8 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-sm font-bold uppercase transition-all active:scale-95"
+          class="px-8 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-sm font-bold  transition-all active:scale-95"
           @click=${() => this.loadClanLeaderboard()}
         >
           ${translateText("leaderboard_modal.try_again")}
@@ -222,7 +222,7 @@ export class LeaderboardClanTable extends LitElement {
               </colgroup>
               <thead class="sticky top-0 z-10">
                 <tr
-                  class="text-white/40 text-[10px] uppercase tracking-wider border-b border-white/5 bg-[#1e2433]"
+                  class="text-white/40 text-[10px]  tracking-wide border-b border-white/5 bg-[#1e2433]"
                 >
                   <th class="py-4 px-4 text-center font-bold">
                     ${translateText("leaderboard_modal.rank")}
@@ -234,7 +234,7 @@ export class LeaderboardClanTable extends LitElement {
                     class="py-4 px-4 text-right font-bold cursor-pointer hover:text-white/60 transition-colors"
                   >
                     <button
-                      class="whitespace-nowrap uppercase"
+                      class="whitespace-nowrap "
                       @click=${() => this.handleSort("elo")}
                       aria-sort=${this.sortBy === "elo"
                         ? this.sortOrder === "asc"
@@ -254,7 +254,7 @@ export class LeaderboardClanTable extends LitElement {
                     class="py-4 px-4 text-right font-bold cursor-pointer hover:text-white/60 transition-colors"
                   >
                     <button
-                      class="whitespace-nowrap uppercase"
+                      class="whitespace-nowrap "
                       @click=${() => this.handleSort("games")}
                       aria-sort=${this.sortBy === "games"
                         ? this.sortOrder === "asc"
@@ -277,7 +277,7 @@ export class LeaderboardClanTable extends LitElement {
                     )}
                   >
                     <button
-                      class="whitespace-nowrap uppercase"
+                      class="whitespace-nowrap "
                       @click=${() => this.handleSort("winScore")}
                       aria-sort=${this.sortBy === "winScore"
                         ? this.sortOrder === "asc"
@@ -300,7 +300,7 @@ export class LeaderboardClanTable extends LitElement {
                     )}
                   >
                     <button
-                      class="whitespace-nowrap uppercase"
+                      class="whitespace-nowrap "
                       @click=${() => this.handleSort("lossScore")}
                       aria-sort=${this.sortBy === "lossScore"
                         ? this.sortOrder === "asc"
@@ -320,7 +320,7 @@ export class LeaderboardClanTable extends LitElement {
                     class="py-4 px-4 text-right font-bold pr-6 cursor-pointer hover:text-white/60 transition-colors"
                   >
                     <button
-                      class="whitespace-nowrap uppercase"
+                      class="whitespace-nowrap "
                       @click=${() => this.handleSort("ratio")}
                       aria-sort=${this.sortBy === "ratio"
                         ? this.sortOrder === "asc"
@@ -418,7 +418,7 @@ export class LeaderboardClanTable extends LitElement {
                             })}</span
                           >
                           <span
-                            class="text-[10px] uppercase text-white/30 font-bold tracking-wider"
+                            class="text-[10px]  text-white/30 font-bold tracking-wide"
                             >${translateText("leaderboard_modal.ratio")}</span
                           >
                         </div>

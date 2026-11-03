@@ -97,8 +97,7 @@ export class CustomCurrencyCard extends LitElement {
               .value=${String(this.amount)}
               @change=${this.onInputChange}
             />
-            <span
-              class="text-[10px] font-bold leading-none text-white/50 uppercase"
+            <span class="text-[10px] font-bold leading-none text-white/50 "
               >${translateText("cosmetics.hard")}</span
             >
             <span

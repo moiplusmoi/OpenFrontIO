@@ -7,7 +7,7 @@ import { UserSettings } from "./UserSettings";
 import { translateText } from "./Utils";
 
 const BUTTON_BASE =
-  "flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl " +
+  "flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl " +
   "transition-all border-0";
 const BUTTON_SECONDARY =
   "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80";

@@ -198,7 +198,7 @@ export class ClanBrowseView extends LitElement {
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <label
-              class="text-[10px] font-bold text-white/40 uppercase tracking-wider hidden sm:inline"
+              class="text-[10px] font-bold text-white/40  tracking-wide hidden sm:inline"
             >
               ${translateText("clan_modal.sort_by")}
             </label>
@@ -264,7 +264,7 @@ export class ClanBrowseView extends LitElement {
               class="space-y-3 rounded-2xl border border-malibu-blue/50 bg-malibu-blue/5 shadow-malibu-blue p-3"
             >
               <h3
-                class="text-[10px] font-bold text-aquarius uppercase tracking-wider px-1"
+                class="text-[10px] font-bold text-aquarius  tracking-wide px-1"
               >
                 ${translateText("clan_modal.boosted_clans")}
               </h3>

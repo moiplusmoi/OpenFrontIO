@@ -413,7 +413,7 @@ export class CosmeticCard extends LitElement {
         ${isEquipped
           ? html`<span
               data-cosmetic-equipped="true"
-              class="absolute bottom-1 left-1 z-[4] rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white shadow-lg shadow-emerald-950/60 ring-1 ring-emerald-200/70"
+              class="absolute bottom-1 left-1 z-[4] rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black  tracking-wide text-white shadow-lg shadow-emerald-950/60 ring-1 ring-emerald-200/70"
               >✓ ${translateText("inventory.equipped")}</span
             >`
           : nothing}

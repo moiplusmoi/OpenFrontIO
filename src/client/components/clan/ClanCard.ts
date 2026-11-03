@@ -35,7 +35,7 @@ export class ClanCard extends LitElement {
 
   private renderBadge() {
     const base =
-      "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0";
+      "text-[10px] font-bold  tracking-wide px-2 py-0.5 rounded-full shrink-0";
     if (this.clanRole) {
       const colors =
         this.clanRole === "leader"
@@ -102,7 +102,7 @@ export class ClanCard extends LitElement {
           ${this.clan.boosted
             ? html`<span
                 data-boosted
-                class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 bg-malibu-blue/15 text-aquarius border border-malibu-blue/40 shadow-malibu-blue-pill"
+                class="text-[10px] font-bold  tracking-wide px-2 py-0.5 rounded-full shrink-0 bg-malibu-blue/15 text-aquarius border border-malibu-blue/40 shadow-malibu-blue-pill"
                 >${translateText("clan_modal.boosted")}</span
               >`
             : ""}

@@ -207,13 +207,13 @@ export class ProfileCard extends LitElement {
   // "PRESTIGE 3 · LEVEL 47", "LEVEL 47", or "LEGEND · PRESTIGE 10".
   private renderLevelLine(progress: ProfileCardProgress): TemplateResult {
     const size = this.compact
-      ? "text-sm tracking-wider"
-      : "text-lg tracking-widest sm:text-xl";
+      ? "text-sm tracking-wide"
+      : "text-lg tracking-wide sm:text-xl";
     const prestige = clampPrestige(progress.prestige);
     if (progress.legend) {
       return html`<div
         data-profile-level-line
-        class="bg-gradient-to-r from-yellow-300 via-fuchsia-300 to-yellow-300 bg-clip-text font-black uppercase text-transparent ${size}"
+        class="bg-gradient-to-r from-yellow-300 via-fuchsia-300 to-yellow-300 bg-clip-text font-black  text-transparent ${size}"
       >
         ${translateText("progression.legend")}
         <span class="text-white/40">·</span>
@@ -222,7 +222,7 @@ export class ProfileCard extends LitElement {
     }
     return html`<div
       data-profile-level-line
-      class="font-black uppercase text-white ${size}"
+      class="font-black  text-white ${size}"
     >
       ${prestige > 0
         ? html`<span class="text-yellow-300"
@@ -285,8 +285,7 @@ export class ProfileCard extends LitElement {
     const lifetime = this.compact
       ? nothing
       : html`<div data-profile-lifetime class="truncate">
-          <span
-            class="text-[10px] font-bold uppercase tracking-wider text-blue-200/55"
+          <span class="text-[10px] font-bold  tracking-wide text-blue-200/55"
             >${translateText("profile_card.lifetime_xp")}</span
           >
           <span class="ml-1 font-black tabular-nums text-yellow-300"
@@ -341,7 +340,7 @@ export class ProfileCard extends LitElement {
     return html`<button
       type="button"
       data-profile-prestige
-      class="profile-prestige-button rounded-xl border border-yellow-300/70 bg-gradient-to-b from-yellow-300 to-amber-500 px-6 py-2.5 text-sm font-black uppercase tracking-widest text-zinc-900 transition-transform hover:-translate-y-0.5"
+      class="profile-prestige-button rounded-xl border border-yellow-300/70 bg-gradient-to-b from-yellow-300 to-amber-500 px-6 py-2.5 text-sm font-black  tracking-wide text-zinc-900 transition-transform hover:-translate-y-0.5"
       @click=${() =>
         this.dispatchEvent(
           new CustomEvent("prestige-request", {
@@ -462,7 +461,7 @@ export class ProfileCard extends LitElement {
         ? nothing
         : html`<span
             data-profile-clan
-            class="font-black tracking-wider text-aquarius ${this.compact
+            class="font-black tracking-wide text-aquarius ${this.compact
               ? "shrink-0 text-sm"
               : "block text-sm"}"
             >[${this.clanTag}]</span

@@ -321,7 +321,7 @@ export class PlayerGameHistoryView extends LitElement {
               role="tab"
               aria-selected=${isActive}
               @click=${() => onSelect(tab.key)}
-              class="grow ${basis} px-3 py-1.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap rounded-lg transition-colors ${isActive
+              class="grow ${basis} px-3 py-1.5 text-xs font-bold  tracking-wide whitespace-nowrap rounded-lg transition-colors ${isActive
                 ? "bg-malibu-blue/20 text-aquarius border border-malibu-blue/30"
                 : "text-white/50 hover:text-white hover:bg-white/5 border border-transparent"}"
             >
@@ -348,7 +348,7 @@ export class PlayerGameHistoryView extends LitElement {
           <button
             type="button"
             @click=${() => this.reload()}
-            class="text-xs font-bold text-white/60 hover:text-white uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
+            class="text-xs font-bold text-white/60 hover:text-white  tracking-wide px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
           >
             ${translateText("leaderboard_modal.try_again")}
           </button>
@@ -385,7 +385,7 @@ export class PlayerGameHistoryView extends LitElement {
               >
                 <span class="h-px flex-1 bg-white/10"></span>
                 <h3
-                  class="text-xs font-bold uppercase tracking-widest text-white/70 whitespace-nowrap"
+                  class="text-xs font-bold  tracking-wide text-white/70 whitespace-nowrap"
                 >
                   ${formatDayHeader(group.day)}
                 </h3>
@@ -419,7 +419,7 @@ export class PlayerGameHistoryView extends LitElement {
           <button
             type="button"
             @click=${() => this.load({ append: true })}
-            class="text-xs font-bold text-white/60 hover:text-white uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
+            class="text-xs font-bold text-white/60 hover:text-white  tracking-wide px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
           >
             ${translateText("leaderboard_modal.try_again")}
           </button>
@@ -473,7 +473,7 @@ export class PlayerGameHistoryView extends LitElement {
               ></div>
               ${mapDisplayName
                 ? html`<div
-                    class="absolute bottom-2 left-3 text-xs font-bold text-white uppercase tracking-wider drop-shadow"
+                    class="absolute bottom-2 left-3 text-xs font-bold text-white  tracking-wide drop-shadow"
                   >
                     ${mapDisplayName}
                   </div>`
@@ -589,9 +589,7 @@ export class PlayerGameHistoryView extends LitElement {
   private renderField(label: string, value: string): TemplateResult {
     return html`
       <div class="min-w-0">
-        <div
-          class="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-0.5"
-        >
+        <div class="text-[10px] font-bold  tracking-wide text-white/40 mb-0.5">
           ${label}
         </div>
         <div class="text-sm text-white truncate" title=${value}>${value}</div>
@@ -616,7 +614,7 @@ export class PlayerGameHistoryView extends LitElement {
       tint = "text-white bg-gray-500 border-gray-400";
     }
     return html`<span
-      class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border shadow-lg ${tint}"
+      class="text-xs font-bold  tracking-wide px-2.5 py-1 rounded-full border shadow-lg ${tint}"
       >${label}</span
     >`;
   }

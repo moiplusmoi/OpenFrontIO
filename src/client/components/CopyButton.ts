@@ -177,7 +177,7 @@ export class CopyButton extends LitElement {
           @click=${this.handleCopy}
           @dblclick=${this.enableSelectAll}
           @mouseleave=${this.clearSelectAll}
-          class="font-mono text-xs font-bold text-white px-2 cursor-pointer select-none min-w-[80px] text-center truncate tracking-wider bg-transparent border-0 ${disabledClass}"
+          class="font-mono text-xs font-bold text-white px-2 cursor-pointer select-none min-w-[80px] text-center truncate tracking-wide bg-transparent border-0 ${disabledClass}"
           title="${translateText("common.click_to_copy")}"
           aria-label="${translateText("common.click_to_copy")}"
           ?disabled=${!canCopy}

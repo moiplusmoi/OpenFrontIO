@@ -139,7 +139,7 @@ function reasonMessage(
 }
 
 const BUTTON_BASE =
-  "flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl " +
+  "flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl " +
   "transition-all disabled:opacity-50 disabled:pointer-events-none border-0";
 
 /**
@@ -867,7 +867,7 @@ export class SteamLinkModal extends BaseModal {
           </p>
           <input
             type="text"
-            class="steam-link-code-input w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-center tracking-widest uppercase placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-malibu-blue/50 focus:border-malibu-blue/50 transition-all font-medium"
+            class="steam-link-code-input w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-center tracking-wide  placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-malibu-blue/50 focus:border-malibu-blue/50 transition-all font-medium"
             placeholder=${translateText("steam_link_modal.code_placeholder")}
             .value=${this.codeDraft}
             @input=${(e: Event) => this.handleCodeInput(e)}

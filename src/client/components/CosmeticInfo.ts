@@ -64,7 +64,7 @@ export class CosmeticInfo extends LitElement {
         class="pointer-events-none absolute right-0 top-9 hidden w-max max-w-full flex-col gap-0.5 whitespace-normal rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-left text-xs text-white shadow-xl group-hover/cosmetic-info:flex group-focus-within/cosmetic-info:flex"
       >
         ${this.rarity
-          ? html`<div class="font-bold uppercase tracking-wider ${rarityColor}">
+          ? html`<div class="font-bold  tracking-wide ${rarityColor}">
               ${translateText(`cosmetics.${this.rarity}`)}
             </div>`
           : nothing}

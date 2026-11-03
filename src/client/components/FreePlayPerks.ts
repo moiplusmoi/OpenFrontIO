@@ -34,7 +34,7 @@ export function renderFreePlayPerks(
   ];
   return html`
     <div class="flex flex-col gap-1.5">
-      <div class="text-[10px] uppercase tracking-wider text-white/50">
+      <div class="text-[10px]  tracking-wide text-white/50">
         ${translateText(headingKey)}
       </div>
       <ul class="flex flex-col gap-1 text-sm text-white/70">

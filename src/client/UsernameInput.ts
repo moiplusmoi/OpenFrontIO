@@ -123,7 +123,7 @@ const NAME_BOX =
 // box; the span only lands on the same pixel when it sizes from font metrics
 // too. Any fixed leading drifts a pixel under some fonts.
 const NAME_TEXT =
-  "text-xl/[normal] sm:text-2xl/[normal] font-medium tracking-wider " +
+  "text-xl/[normal] sm:text-2xl/[normal] font-medium tracking-wide " +
   "[text-shadow:0_1px_2px_rgba(0,0,0,0.9)]";
 
 @customElement("username-input")
@@ -880,7 +880,7 @@ export class UsernameInput extends LitElement {
           @click=${this.toggleClanMenu}
         >
           <span
-            class="min-w-0 flex-1 truncate text-base font-semibold uppercase text-left ${tag
+            class="min-w-0 flex-1 truncate text-base font-semibold  text-left ${tag
               ? "text-white"
               : "text-white/45"}"
             >${tag || translateText("username.tag")}</span
@@ -924,7 +924,7 @@ export class UsernameInput extends LitElement {
         ${clans.length > 0
           ? html`
               <div
-                class="px-2 pt-1 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-white/40"
+                class="px-2 pt-1 pb-1.5 text-[11px] font-bold  tracking-wide text-white/40"
               >
                 ${translateText("username.clan_your_clans")}
               </div>
@@ -940,7 +940,7 @@ export class UsernameInput extends LitElement {
                       @click=${() => this.selectClan(clan.tag)}
                     >
                       <span
-                        class="shrink-0 rounded bg-white/10 px-1.5 py-0.5 text-sm font-bold uppercase tracking-wider text-white"
+                        class="shrink-0 rounded bg-white/10 px-1.5 py-0.5 text-sm font-bold  tracking-wide text-white"
                         >${clan.tag}</span
                       >
                       <span
@@ -973,7 +973,7 @@ export class UsernameInput extends LitElement {
             </div>`}
         <div class="mt-1.5 border-t border-white/10 pt-1.5">
           <label
-            class="block px-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-white/40"
+            class="block px-2 pb-1 text-[11px] font-bold  tracking-wide text-white/40"
             for="clan-tag-manual"
             >${translateText("username.clan_custom")}</label
           >
@@ -985,7 +985,7 @@ export class UsernameInput extends LitElement {
             placeholder=${translateText("username.tag")}
             minlength="${MIN_CLAN_TAG_LENGTH}"
             maxlength="${MAX_CLAN_TAG_LENGTH}"
-            class="w-full rounded-lg border border-white/15 bg-black/30 px-2 py-1.5 text-base font-semibold uppercase tracking-wider text-white placeholder-white/30 focus:border-malibu-blue/60 focus:outline-none"
+            class="w-full rounded-lg border border-white/15 bg-black/30 px-2 py-1.5 text-base font-semibold  tracking-wide text-white placeholder-white/30 focus:border-malibu-blue/60 focus:outline-none"
           />
         </div>
         <div

@@ -136,7 +136,7 @@ export class MapDisplay extends LitElement {
       >
         ${this.isLoading
           ? html`<div
-              class="w-full aspect-[2/1] text-white/40 transition-transform duration-200 rounded-lg bg-black/20 text-xs font-bold uppercase tracking-wider flex items-center justify-center animate-pulse"
+              class="w-full aspect-[2/1] text-white/40 transition-transform duration-200 rounded-lg bg-black/20 text-xs font-bold  tracking-wide flex items-center justify-center animate-pulse"
             >
               ${translateText("common.loading")}
             </div>`
@@ -156,7 +156,7 @@ export class MapDisplay extends LitElement {
                 ${this.renderFavoriteButton()}
               </div>`
             : html`<div
-                class="w-full aspect-[2/1] text-red-400 transition-transform duration-200 rounded-lg bg-red-500/10 text-xs font-bold uppercase tracking-wider flex items-center justify-center"
+                class="w-full aspect-[2/1] text-red-400 transition-transform duration-200 rounded-lg bg-red-500/10 text-xs font-bold  tracking-wide flex items-center justify-center"
               >
                 ${translateText("map_component.error")}
               </div>`}
@@ -166,7 +166,7 @@ export class MapDisplay extends LitElement {
             </div>`
           : null}
         <div
-          class="text-xs font-bold text-white uppercase tracking-wider text-center leading-tight break-words hyphens-auto"
+          class="text-xs font-bold text-white  tracking-wide text-center leading-tight break-words hyphens-auto"
         >
           ${this.translation || this.mapName}
         </div>

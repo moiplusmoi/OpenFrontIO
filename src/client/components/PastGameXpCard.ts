@@ -65,7 +65,7 @@ export class PastGameXpCard extends LitElement {
 
   private heading(extra = ""): TemplateResult {
     return html`<div
-      class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200/55 ${extra}"
+      class="text-[10px] font-bold  tracking-[0.18em] text-blue-200/55 ${extra}"
     >
       ${translateText("progression.xp_heading")}
     </div>`;
@@ -208,7 +208,7 @@ export class PastGameXpCard extends LitElement {
       ${milestone
         ? html`<span
             data-past-xp-milestone
-            class="ml-1 rounded-full border border-yellow-400/45 bg-yellow-400/10 px-2 py-[3px] text-[10px] font-extrabold uppercase tracking-[0.14em] text-yellow-300"
+            class="ml-1 rounded-full border border-yellow-400/45 bg-yellow-400/10 px-2 py-[3px] text-[10px] font-extrabold  tracking-[0.14em] text-yellow-300"
           >
             ${translateText("progression.milestone_chip")}
           </span>`
@@ -234,7 +234,7 @@ export class PastGameXpCard extends LitElement {
         class="mt-1.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-[13px] leading-relaxed"
       >
         <span
-          class="font-extrabold uppercase italic tracking-[0.04em] ${cut
+          class="font-extrabold  italic tracking-[0.04em] ${cut
             ? "text-sky-300"
             : "bg-clip-text text-transparent"}"
           style=${cut

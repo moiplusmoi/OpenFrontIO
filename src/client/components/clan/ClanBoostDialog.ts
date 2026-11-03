@@ -260,7 +260,7 @@ export class ClanBoostDialog extends LitElement {
           ? "bg-malibu-blue/15 border-aquarius/70 ring-2 ring-malibu-blue/40 text-white"
           : "bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white"} disabled:opacity-50 disabled:pointer-events-none"
       >
-        <span class="text-xs font-bold uppercase tracking-wider">
+        <span class="text-xs font-bold  tracking-wide">
           ${translateText(`clan_modal.boost_tier_${tier.tier}`)}
         </span>
         <span class="text-[11px]">${formatDuration(tier.durationMs)}</span>
@@ -411,7 +411,7 @@ export class ClanBoostDialog extends LitElement {
               type="button"
               @click=${() => this.cancel()}
               ?disabled=${this.submitting}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-50 disabled:pointer-events-none"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-50 disabled:pointer-events-none"
             >
               ${translateText("common.cancel")}
             </button>
@@ -420,7 +420,7 @@ export class ClanBoostDialog extends LitElement {
               data-action="buy-boost"
               @click=${() => void this.submit()}
               ?disabled=${!this.canSubmit()}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl text-white transition-all disabled:opacity-50 disabled:pointer-events-none border-0 bg-malibu-blue hover:bg-aquarius"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl text-white transition-all disabled:opacity-50 disabled:pointer-events-none border-0 bg-malibu-blue hover:bg-aquarius"
             >
               ${translateText(
                 this.submitting

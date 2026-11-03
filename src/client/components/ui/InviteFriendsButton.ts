@@ -25,7 +25,7 @@ export function inviteFriendsButton(): TemplateResult | undefined {
     data-test-invite-friends
     type="button"
     @click=${() => void desktopPresence.openInviteDialog()}
-    class="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 rounded-lg px-2 py-1 border border-white/10 text-white/60 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
+    class="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 rounded-lg px-2 py-1 border border-white/10 text-white/60 hover:text-white text-xs font-bold  tracking-wide transition-colors"
     title=${label}
     aria-label=${label}
   >

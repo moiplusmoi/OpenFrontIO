@@ -158,9 +158,7 @@ export class LobbyTeamView extends LitElement {
     return html`
       <div class="border-t border-white/10 pt-6">
         <div class="flex justify-between items-center mb-4">
-          <div
-            class="text-xs font-bold text-white/40 uppercase tracking-widest"
-          >
+          <div class="text-xs font-bold text-white/40  tracking-wide">
             ${this.activePlayers.length}
             ${this.activePlayers.length === 1
               ? translateText("host_modal.player")
@@ -194,9 +192,7 @@ export class LobbyTeamView extends LitElement {
     if (spectators.length === 0) return html``;
     return html`
       <div class="mt-4">
-        <div
-          class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4"
-        >
+        <div class="text-xs font-bold text-white/40  tracking-wide mb-4">
           ${spectators.length}
           ${spectators.length === 1
             ? translateText("host_modal.spectator")

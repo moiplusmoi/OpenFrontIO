@@ -462,7 +462,7 @@ export class PrestigeFlow extends LitElement {
       >
         <h2
           id="prestige-confirm-title"
-          class="prestige-title m-0 text-4xl font-black uppercase italic tracking-wide sm:text-6xl"
+          class="prestige-title m-0 text-4xl font-black  italic tracking-wide sm:text-6xl"
         >
           ${translateText("prestige.title", { rank })}
         </h2>
@@ -508,7 +508,7 @@ export class PrestigeFlow extends LitElement {
         <div class="mt-6 flex w-full max-w-md gap-3">
           <button
             type="button"
-            class="prestige-cut flex-1 border-0 bg-white/10 px-4 py-3 text-sm font-bold uppercase tracking-wider text-white/75 transition-colors hover:bg-white/20 hover:text-white disabled:opacity-50"
+            class="prestige-cut flex-1 border-0 bg-white/10 px-4 py-3 text-sm font-bold  tracking-wide text-white/75 transition-colors hover:bg-white/20 hover:text-white disabled:opacity-50"
             ?disabled=${submitting}
             @click=${() => this.close()}
           >
@@ -518,7 +518,7 @@ export class PrestigeFlow extends LitElement {
             type="button"
             data-prestige-confirm-button
             ?data-holding=${holding}
-            class="prestige-cut prestige-hold relative flex-[2] select-none border-0 bg-gradient-to-b from-yellow-300 to-amber-500 px-4 py-3 text-sm font-black uppercase tracking-wider text-zinc-900 disabled:cursor-wait disabled:opacity-80"
+            class="prestige-cut prestige-hold relative flex-[2] select-none border-0 bg-gradient-to-b from-yellow-300 to-amber-500 px-4 py-3 text-sm font-black  tracking-wide text-zinc-900 disabled:cursor-wait disabled:opacity-80"
             ?disabled=${submitting}
             @pointerdown=${(e: PointerEvent) => {
               if (e.button === 0) this.startHold();
@@ -551,9 +551,7 @@ export class PrestigeFlow extends LitElement {
             </span>
           </button>
         </div>
-        <p
-          class="m-0 mt-3 text-xs font-bold uppercase tracking-wider text-amber-300/90"
-        >
+        <p class="m-0 mt-3 text-xs font-bold  tracking-wide text-amber-300/90">
           ${translateText("prestige.irreversible")}
         </p>
       </div>
@@ -655,9 +653,7 @@ export class PrestigeFlow extends LitElement {
       });
     }
     return html`<div class="mt-6 w-full">
-      <div
-        class="text-[11px] font-bold uppercase tracking-[0.3em] text-white/50"
-      >
+      <div class="text-[11px] font-bold  tracking-[0.3em] text-white/50">
         ${translateText("prestige.unlocks")}
       </div>
       <div class="mt-2 flex flex-wrap justify-center gap-2 sm:gap-3">
@@ -668,9 +664,7 @@ export class PrestigeFlow extends LitElement {
                 class="prestige-tile-inner flex h-full flex-col items-center justify-center gap-2 px-3 py-3"
               >
                 <div class="grid h-12 place-items-center">${tile.icon}</div>
-                <div
-                  class="text-xs font-bold uppercase leading-tight text-white/85"
-                >
+                <div class="text-xs font-bold  leading-tight text-white/85">
                   ${tile.label}
                 </div>
               </div>
@@ -956,7 +950,7 @@ export class PrestigeFlow extends LitElement {
               data-prestige-title
               class="${done
                 ? ""
-                : "ceremony-slam"} prestige-title text-5xl font-black uppercase italic tracking-wide sm:text-7xl"
+                : "ceremony-slam"} prestige-title text-5xl font-black  italic tracking-wide sm:text-7xl"
             >
               ${translateText("prestige.ceremony_title", { rank })}
             </div>`
@@ -966,7 +960,7 @@ export class PrestigeFlow extends LitElement {
           ? html`<button
               type="button"
               data-prestige-continue
-              class="prestige-fade prestige-cut mt-6 border-0 bg-gradient-to-b from-yellow-300 to-amber-500 px-10 py-3 text-base font-black uppercase tracking-wider text-zinc-900 transition-transform hover:-translate-y-0.5"
+              class="prestige-fade prestige-cut mt-6 border-0 bg-gradient-to-b from-yellow-300 to-amber-500 px-10 py-3 text-base font-black  tracking-wide text-zinc-900 transition-transform hover:-translate-y-0.5"
               @click=${(e: Event) => {
                 e.stopPropagation();
                 this.close();

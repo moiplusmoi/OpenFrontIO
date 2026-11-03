@@ -527,7 +527,7 @@ export class StoreModal extends BaseModal {
         ? options.trailingContent
           ? html``
           : html`<div
-              class=${`${options.emptyClass ?? "col-span-full"} py-8 text-center text-sm font-bold uppercase tracking-wider text-white/40`}
+              class=${`${options.emptyClass ?? "col-span-full"} py-8 text-center text-sm font-bold  tracking-wide text-white/40`}
             >
               ${translateText(options.emptyTranslationKey)}
             </div>`
@@ -559,7 +559,7 @@ export class StoreModal extends BaseModal {
         ${COSMETICS_SUB_TABS.map((tab) => {
           const active = this.cosmeticsSubTab === tab;
           return html`<button
-            class="-mb-px whitespace-nowrap border-b-2 px-4 py-3 text-sm font-bold uppercase tracking-wider transition-colors ${active
+            class="-mb-px whitespace-nowrap border-b-2 px-4 py-3 text-sm font-bold  tracking-wide transition-colors ${active
               ? "border-malibu-blue text-aquarius"
               : "border-transparent text-white/40 hover:text-white/70"}"
             @click=${() => this.setCosmeticsSubTab(tab)}
@@ -608,7 +608,7 @@ export class StoreModal extends BaseModal {
         "flex flex-wrap items-stretch justify-center content-start gap-4 p-4 sm:p-8",
       cardClass: "block w-[calc(50%-0.5rem)] max-w-48 shrink-0 sm:w-48",
       emptyClass:
-        "w-full py-8 text-center text-sm font-bold uppercase tracking-wider text-white/40",
+        "w-full py-8 text-center text-sm font-bold  tracking-wide text-white/40",
     });
   }
 
@@ -650,7 +650,7 @@ export class StoreModal extends BaseModal {
         : "block w-[calc(50%-0.5rem)] max-w-48 shrink-0 sm:w-48",
       previewSize: lone ? "detail" : "card",
       emptyClass:
-        "w-full py-8 text-center text-sm font-bold uppercase tracking-wider text-white/40",
+        "w-full py-8 text-center text-sm font-bold  tracking-wide text-white/40",
     });
   }
 

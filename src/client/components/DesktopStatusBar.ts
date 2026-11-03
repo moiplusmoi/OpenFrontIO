@@ -364,7 +364,7 @@ export class DesktopStatusBar extends LitElement {
     const disabled = this.retryDisabled();
     return html`<button
       class="shrink-0 px-4 py-2 rounded-md bg-malibu-blue hover:bg-aquarius
-             text-sm font-medium uppercase tracking-wider
+             text-sm font-medium  tracking-wide
              disabled:opacity-50 disabled:cursor-not-allowed
              disabled:hover:bg-malibu-blue"
       ?disabled=${disabled}
@@ -428,7 +428,7 @@ export class DesktopStatusBar extends LitElement {
     if (s.status === "staged") {
       return html`<button
         class="shrink-0 px-4 py-2 rounded-md bg-malibu-blue hover:bg-aquarius
-               text-sm font-medium uppercase tracking-wider"
+               text-sm font-medium  tracking-wide"
         @click=${() => {
           bridge.apply().catch((err: unknown) => {
             console.error("desktop-status-bar: apply failed", err);
@@ -441,7 +441,7 @@ export class DesktopStatusBar extends LitElement {
     if (s.status === "failed") {
       return html`<button
         class="shrink-0 px-4 py-2 rounded-md bg-surface hover:brightness-110
-               text-sm font-medium uppercase tracking-wider"
+               text-sm font-medium  tracking-wide"
         @click=${() => {
           bridge.retry().catch((err: unknown) => {
             console.error("desktop-status-bar: retry failed", err);
@@ -485,7 +485,7 @@ export class DesktopStatusBar extends LitElement {
     if (s.status === "signed-out" && s.reason === "needs-account") {
       return html`<button
         class="shrink-0 px-4 py-2 rounded-md bg-malibu-blue hover:bg-aquarius
-               text-sm font-medium uppercase tracking-wider"
+               text-sm font-medium  tracking-wide"
         @click=${() => {
           // desktopLinkGate() is null on the web and on a shell too old to
           // expose showLinkGate -- see its own doc comment in DesktopShell.ts.
@@ -511,7 +511,7 @@ export class DesktopStatusBar extends LitElement {
     }
     return html`<button
       class="shrink-0 px-4 py-2 rounded-md bg-malibu-blue hover:bg-aquarius
-             text-sm font-medium uppercase tracking-wider"
+             text-sm font-medium  tracking-wide"
       @click=${() => {
         this.sessionAtRetry = s;
         // Main.ts owns the retry, because a successful sign-in also has to

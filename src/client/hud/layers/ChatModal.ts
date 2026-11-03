@@ -218,7 +218,7 @@ export class ChatModal extends LitElement {
             ({ id, phrases }) => html`
               <section>
                 <h3
-                  class="mb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400"
+                  class="mb-1 text-[11px] font-semibold  tracking-wide text-zinc-400"
                 >
                   ${translateText(`chat.cat.${id}`)}
                 </h3>

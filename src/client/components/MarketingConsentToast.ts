@@ -132,14 +132,14 @@ export class MarketingConsentToast extends LitElement {
         </div>
         <div class="flex gap-2">
           <button
-            class="flex-1 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            class="flex-1 px-2 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg border border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
             ?disabled=${this.busy}
             @click=${() => this.decide(false)}
           >
             ${translateText("marketing_consent.no")}
           </button>
           <button
-            class="flex-1 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-transparent bg-malibu-blue text-white shadow-[var(--shadow-malibu-blue-pill)] hover:bg-aquarius transition-all cursor-pointer whitespace-nowrap"
+            class="flex-1 px-2 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg border border-transparent bg-malibu-blue text-white shadow-[var(--shadow-malibu-blue-pill)] hover:bg-aquarius transition-all cursor-pointer whitespace-nowrap"
             ?disabled=${this.busy}
             @click=${() => this.decide(true)}
           >

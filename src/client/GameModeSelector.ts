@@ -633,7 +633,7 @@ export class GameModeSelector extends LitElement {
       ${translateText(message)}
       ${canRetry
         ? html`<button
-            class="px-4 py-2 rounded-md bg-malibu-blue hover:bg-aquarius text-white text-sm font-medium uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-malibu-blue"
+            class="px-4 py-2 rounded-md bg-malibu-blue hover:bg-aquarius text-white text-sm font-medium  tracking-wide disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-malibu-blue"
             ?disabled=${this.retryCoolingDown}
             @click=${this.retryLobbies}
           >
@@ -1013,7 +1013,7 @@ export class GameModeSelector extends LitElement {
   /**
    * The heading over the upcoming column, and the way to the lobby browser now
    * that the Detailed View button is gone. Heading and link are one control:
-   * side by side they were two runs of small uppercase text, and neither read
+   * side by side they were two runs of small  text, and neither read
    * as clickable. A heading may hold a button, so the h2 survives.
    *
    * Dims and stops responding on an invalid username, as the button it

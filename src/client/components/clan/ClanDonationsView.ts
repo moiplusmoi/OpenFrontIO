@@ -123,7 +123,7 @@ export class ClanDonationsView extends LitElement {
               aria-selected=${active}
               data-currency-filter=${tab.key}
               @click=${() => this.setFilter(tab.key)}
-              class="flex-1 px-3 py-1.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap rounded-lg transition-colors ${active
+              class="flex-1 px-3 py-1.5 text-xs font-bold  tracking-wide whitespace-nowrap rounded-lg transition-colors ${active
                 ? "bg-malibu-blue/20 text-aquarius border border-malibu-blue/30"
                 : "text-white/50 hover:text-white hover:bg-white/5 border border-transparent"}"
             >
@@ -150,7 +150,7 @@ export class ClanDonationsView extends LitElement {
           <button
             type="button"
             @click=${() => this.load()}
-            class="text-xs font-bold text-white/60 hover:text-white uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
+            class="text-xs font-bold text-white/60 hover:text-white  tracking-wide px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 hover:bg-white/5 transition-colors"
           >
             ${translateText("leaderboard_modal.try_again")}
           </button>

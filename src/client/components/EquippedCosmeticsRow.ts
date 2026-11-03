@@ -162,9 +162,7 @@ export class EquippedCosmeticsRow extends LitElement {
 
     return html`
       <div class="flex items-center gap-2">
-        <span
-          class="text-xs font-semibold uppercase tracking-wider text-zinc-400"
-        >
+        <span class="text-xs font-semibold  tracking-wide text-zinc-400">
           ${translateText("player_panel.cosmetics")}
         </span>
         <div class="flex flex-wrap items-center gap-1.5">

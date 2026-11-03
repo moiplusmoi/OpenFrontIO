@@ -89,9 +89,7 @@ export class StreamingNow extends LitElement {
       >
         <div class="mb-2 flex items-center gap-2">
           <span class="h-2 w-2 animate-pulse rounded-full bg-red-500"></span>
-          <span
-            class="text-xs font-bold uppercase tracking-wider text-white/70"
-          >
+          <span class="text-xs font-bold  tracking-wide text-white/70">
             ${translateText("streaming_now.title")}
           </span>
           <span

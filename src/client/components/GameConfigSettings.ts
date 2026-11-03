@@ -41,7 +41,7 @@ function cardClass(active: boolean, extra = ""): string {
 }
 
 const CARD_LABEL_CLASS =
-  "text-xs uppercase font-bold tracking-wider leading-tight break-words hyphens-auto";
+  "text-xs  font-bold tracking-wide leading-tight break-words hyphens-auto";
 
 const DIFFICULTY_OPTIONS = Object.entries(Difficulty).filter(([key]) =>
   isNaN(Number(key)),
@@ -186,7 +186,7 @@ function renderSectionHeader(
           ${iconSvg}
         </svg>
       </div>
-      <h3 class="text-lg font-bold text-white uppercase tracking-wider">
+      <h3 class="text-lg font-bold text-white  tracking-wide">
         ${translateText(titleKey)}
       </h3>
       ${headerAction ? html`<div class="ml-auto">${headerAction}</div>` : null}
@@ -524,9 +524,7 @@ export class GameConfigSettings extends LitElement {
                     class="${cardClass(isSelected, "py-6 text-center")}"
                     @click=${() => this.handleGameModeSelect(mode)}
                   >
-                    <span
-                      class="text-sm font-bold text-white uppercase tracking-widest"
-                    >
+                    <span class="text-sm font-bold text-white  tracking-wide">
                       ${mode === GameMode.FFA
                         ? translateText("game_mode.ffa")
                         : translateText("game_mode.teams")}
@@ -542,7 +540,7 @@ export class GameConfigSettings extends LitElement {
           : html`
               <section class="space-y-6">
                 <div
-                  class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4 pl-2"
+                  class="text-xs font-bold text-white/40  tracking-wide mb-4 pl-2"
                 >
                   ${translateText("host_modal.team_count")}
                 </div>

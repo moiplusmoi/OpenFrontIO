@@ -462,8 +462,7 @@ describe("StoreModal cosmetic browser", () => {
       "py-3",
       "text-sm",
       "font-bold",
-      "uppercase",
-      "tracking-wider",
+      "tracking-wide",
       "whitespace-nowrap",
     ]) {
       expect(subTab.classList.contains(token)).toBe(true);

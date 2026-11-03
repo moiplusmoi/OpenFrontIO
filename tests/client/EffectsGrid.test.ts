@@ -255,8 +255,7 @@ describe("EffectsGrid", () => {
       "py-3",
       "text-sm",
       "font-bold",
-      "uppercase",
-      "tracking-wider",
+      "tracking-wide",
       "whitespace-normal",
     ]) {
       expect(tab.classList.contains(token)).toBe(true);

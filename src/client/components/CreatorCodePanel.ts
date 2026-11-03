@@ -257,9 +257,7 @@ export class CreatorCodePanel extends LitElement {
         class="rounded-xl border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.02] p-5 flex flex-col gap-4"
       >
         <div class="flex flex-col gap-1">
-          <span
-            class="text-[10px] uppercase tracking-widest text-white/40 font-bold"
-          >
+          <span class="text-[10px]  tracking-wide text-white/40 font-bold">
             ${translateText("creator_code.title")}
           </span>
           ${this.creator ? this.renderStatus(this.creator, locked) : nothing}
@@ -272,7 +270,7 @@ export class CreatorCodePanel extends LitElement {
         >
           <label
             for="creator-code-panel-input"
-            class="text-[10px] uppercase tracking-widest text-white/40 font-bold"
+            class="text-[10px]  tracking-wide text-white/40 font-bold"
           >
             ${translateText("creator_code.input_label")}
           </label>

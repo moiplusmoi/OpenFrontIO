@@ -105,9 +105,7 @@ export class ClanBansView extends LitElement {
 
     return html`
       <div>
-        <div
-          class="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2"
-        >
+        <div class="text-[10px] font-bold  tracking-wide text-white/40 mb-2">
           ${translateText("clan_modal.banned_players_count", {
             count: this.bansTotal,
           })}
@@ -167,7 +165,7 @@ export class ClanBansView extends LitElement {
                         <button
                           @click=${() => this.handleUnban(ban.publicId)}
                           ?disabled=${this.memberActionPending}
-                          class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none shrink-0"
+                          class="px-3 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none shrink-0"
                         >
                           ${translateText("clan_modal.unban")}
                         </button>

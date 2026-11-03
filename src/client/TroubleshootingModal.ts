@@ -36,7 +36,7 @@ export class TroubleshootingModal extends BaseModal {
         class="w-full flex flex-col sm:flex-row justify-between gap-2"
       >
         <span
-          class="text-white text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-widest break-words hyphens-auto"
+          class="text-white text-xl sm:text-2xl md:text-3xl font-bold  tracking-wide break-words hyphens-auto"
         >
           <a
             class="hover:text-blue-200 text-blue-400 cursor-pointer"
@@ -169,9 +169,7 @@ export class TroubleshootingModal extends BaseModal {
   private section(title: string, content: unknown) {
     return html`
       <div class="px-4 py-3">
-        <h4
-          class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400"
-        >
+        <h4 class="mb-2 text-xs font-semibold  tracking-wide text-slate-400">
           ${title}
         </h4>
         <div class="space-y-1">${content}</div>

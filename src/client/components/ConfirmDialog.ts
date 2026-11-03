@@ -128,7 +128,7 @@ export class ConfirmDialog extends LitElement {
                   ? html`<button
                       @click=${() => this.handleCancel()}
                       ?disabled=${this.disabled}
-                      class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                      class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-50 disabled:pointer-events-none"
                     >
                       ${this.cancelText || translateText("common.cancel")}
                     </button>`
@@ -136,7 +136,7 @@ export class ConfirmDialog extends LitElement {
                 <button
                   @click=${() => this.handleConfirm()}
                   ?disabled=${this.disabled}
-                  class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl ${btnClass} transition-all disabled:opacity-50 disabled:pointer-events-none border-0"
+                  class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl ${btnClass} transition-all disabled:opacity-50 disabled:pointer-events-none border-0"
                 >
                   ${this.confirmText || translateText("common.confirm")}
                 </button>

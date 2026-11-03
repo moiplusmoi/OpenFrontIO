@@ -325,7 +325,7 @@ export class UsernamePanel extends LitElement {
   // Cooldown state as a pill: locked until a date, or free to change now.
   private renderCooldownPill(cooldownEnd: Date | null): TemplateResult {
     const base =
-      "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider border shrink-0";
+      "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold  tracking-wide border shrink-0";
     if (cooldownEnd === null) {
       return html`<span
         class="${base} bg-green-500/10 border-green-500/30 text-green-300"
@@ -363,9 +363,7 @@ export class UsernamePanel extends LitElement {
         >
           <div class="flex items-start justify-between gap-3 flex-wrap">
             <div class="flex flex-col gap-1 min-w-0">
-              <span
-                class="text-[10px] uppercase tracking-widest text-white/40 font-bold"
-              >
+              <span class="text-[10px]  tracking-wide text-white/40 font-bold">
                 ${translateText("account_modal.username_current_label")}
               </span>
               ${this.player.username
@@ -385,7 +383,7 @@ export class UsernamePanel extends LitElement {
           <div class="border-t border-white/10 pt-4 flex flex-col gap-2">
             <label
               for="username-panel-input"
-              class="text-[10px] uppercase tracking-widest text-white/40 font-bold"
+              class="text-[10px]  tracking-wide text-white/40 font-bold"
             >
               ${translateText("account_modal.username_new_label")}
             </label>

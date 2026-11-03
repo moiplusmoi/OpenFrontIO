@@ -192,12 +192,12 @@ export class RankedModal extends BaseModal {
       >
         <div class="flex flex-col items-center gap-1 text-center">
           <h3
-            class="text-lg sm:text-xl font-bold text-white uppercase tracking-widest leading-tight"
+            class="text-lg sm:text-xl font-bold text-white  tracking-wide leading-tight"
           >
             ${title}
           </h3>
           <p
-            class="text-xs text-white/80 uppercase tracking-wider whitespace-pre-line leading-tight"
+            class="text-xs text-white/80  tracking-wide whitespace-pre-line leading-tight"
           >
             ${subtitle}
           </p>

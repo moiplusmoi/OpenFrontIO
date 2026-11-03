@@ -333,7 +333,7 @@ export class FriendsList extends LitElement {
         ${this.incoming.length > 0
           ? html`
               <div
-                class="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2"
+                class="text-[10px] font-bold  tracking-wide text-white/40 mb-2"
               >
                 ${translateText("friends.incoming")}
               </div>
@@ -347,7 +347,7 @@ export class FriendsList extends LitElement {
         ${this.outgoing.length > 0
           ? html`
               <div
-                class="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2"
+                class="text-[10px] font-bold  tracking-wide text-white/40 mb-2"
               >
                 ${translateText("friends.outgoing")}
               </div>
@@ -382,7 +382,7 @@ export class FriendsList extends LitElement {
                 <button
                   @click=${() => void this.handleAccept(entry.publicId)}
                   ?disabled=${this.actionPending}
-                  class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                  class="px-3 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none"
                 >
                   ${translateText("friends.accept")}
                 </button>
@@ -390,7 +390,7 @@ export class FriendsList extends LitElement {
                   @click=${() =>
                     void this.handleDenyOrWithdraw(entry.publicId, "incoming")}
                   ?disabled=${this.actionPending}
-                  class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                  class="px-3 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none"
                 >
                   ${translateText("friends.deny")}
                 </button>
@@ -400,7 +400,7 @@ export class FriendsList extends LitElement {
                   @click=${() =>
                     void this.handleDenyOrWithdraw(entry.publicId, "outgoing")}
                   ?disabled=${this.actionPending}
-                  class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-white/10 text-white/70 border border-white/10 hover:bg-white/20 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                  class="px-3 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg bg-white/10 text-white/70 border border-white/10 hover:bg-white/20 transition-all disabled:opacity-50 disabled:pointer-events-none"
                 >
                   ${translateText("friends.withdraw")}
                 </button>
@@ -450,7 +450,7 @@ export class FriendsList extends LitElement {
                 <button
                   @click=${() => void this.handleRemove(f.publicId)}
                   ?disabled=${this.actionPending}
-                  class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none shrink-0"
+                  class="px-3 py-1.5 text-[10px] font-bold  tracking-wide rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all disabled:opacity-50 disabled:pointer-events-none shrink-0"
                 >
                   ${translateText("friends.remove")}
                 </button>
@@ -464,7 +464,7 @@ export class FriendsList extends LitElement {
                 <button
                   @click=${() => void this.loadMore()}
                   ?disabled=${this.actionPending}
-                  class="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-lg bg-white/10 text-white/80 border border-white/10 hover:bg-white/20 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                  class="px-4 py-2 text-xs font-bold  tracking-wide rounded-lg bg-white/10 text-white/80 border border-white/10 hover:bg-white/20 transition-all disabled:opacity-50 disabled:pointer-events-none"
                 >
                   ${translateText("friends.load_more")}
                 </button>

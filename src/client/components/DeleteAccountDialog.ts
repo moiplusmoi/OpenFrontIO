@@ -93,14 +93,14 @@ export class DeleteAccountDialog extends LitElement {
           <div class="flex gap-3">
             <button
               @click=${() => this.handleCancel()}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all"
             >
               ${translateText("common.cancel")}
             </button>
             <button
               @click=${() => this.handleConfirm()}
               ?disabled=${!this.wordMatches()}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all disabled:opacity-50 disabled:pointer-events-none border-0"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all disabled:opacity-50 disabled:pointer-events-none border-0"
             >
               ${translateText("account_modal.delete_account_confirm_button")}
             </button>

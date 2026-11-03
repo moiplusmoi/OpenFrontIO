@@ -103,7 +103,7 @@ function renderBlankPreview(): TemplateResult {
       class="hidden md:flex items-center justify-center h-full w-full rounded overflow-hidden relative text-center p-1"
     >
       <span
-        class="text-[10px] font-black text-white/40 uppercase leading-none break-words w-full"
+        class="text-[10px] font-black text-white/40  leading-none break-words w-full"
       >
         ${translateText("territory_patterns.select_skin")}
       </span>

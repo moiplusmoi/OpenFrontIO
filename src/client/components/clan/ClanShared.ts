@@ -74,9 +74,7 @@ export function renderRoleIcon(role: string): TemplateResult {
 export function renderStat(label: string, value: string): TemplateResult {
   return html`
     <div class="bg-white/5 rounded-xl border border-white/10 p-4 text-center">
-      <div
-        class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-1"
-      >
+      <div class="text-[10px] font-bold text-white/40  tracking-wide mb-1">
         ${label}
       </div>
       <div class="text-white font-bold text-sm truncate">${value}</div>
@@ -257,7 +255,7 @@ export function renderMemberSortControl(
   return html`
     <div class="flex items-center gap-2 shrink-0">
       <label
-        class="text-[10px] font-bold text-white/40 uppercase tracking-wider hidden sm:inline"
+        class="text-[10px] font-bold text-white/40  tracking-wide hidden sm:inline"
       >
         ${translateText("clan_modal.sort_by")}
       </label>
@@ -314,9 +312,7 @@ export function renderMemberPagination(
       class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/10"
     >
       <div class="flex items-center gap-2">
-        <span
-          class="text-[10px] font-bold text-white/40 uppercase tracking-wider"
-        >
+        <span class="text-[10px] font-bold text-white/40  tracking-wide">
           ${translateText("clan_modal.per_page")}
         </span>
         ${perPageOptions.map(
@@ -356,7 +352,7 @@ export function renderWLBarRow(
   return html`
     <div class="flex items-center gap-2">
       <span
-        class="text-[10px] font-bold uppercase tracking-wider text-white/50 w-14 shrink-0 truncate"
+        class="text-[10px] font-bold  tracking-wide text-white/50 w-14 shrink-0 truncate"
         title=${label}
       >
         ${label}

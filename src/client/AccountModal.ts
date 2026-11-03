@@ -345,7 +345,7 @@ export class AccountModal extends BaseModal {
         <div class="bg-white/5 rounded-xl border border-white/10 p-6">
           <div class="flex flex-col items-center gap-4">
             <div
-              class="text-xs text-white/40 uppercase tracking-widest font-bold border-b border-white/5 pb-2 px-8"
+              class="text-xs text-white/40  tracking-wide font-bold border-b border-white/5 pb-2 px-8"
             >
               ${translateText("account_modal.connected_as")}
             </div>
@@ -411,7 +411,7 @@ export class AccountModal extends BaseModal {
         <div class="bg-white/5 rounded-xl border border-white/10 p-6">
           <div class="flex flex-col items-center gap-4">
             <div
-              class="text-xs text-white/40 uppercase tracking-widest font-bold border-b border-white/5 pb-2 px-8"
+              class="text-xs text-white/40  tracking-wide font-bold border-b border-white/5 pb-2 px-8"
             >
               ${translateText("account_modal.connected_as")}
             </div>
@@ -1083,9 +1083,7 @@ export class AccountModal extends BaseModal {
             <!-- Divider -->
             <div class="flex items-center gap-4 py-2">
               <div class="h-px bg-white/10 flex-1"></div>
-              <span
-                class="text-[10px] uppercase tracking-widest text-white/30 font-bold"
-              >
+              <span class="text-[10px]  tracking-wide text-white/30 font-bold">
                 ${translateText("account_modal.or")}
               </span>
               <div class="h-px bg-white/10 flex-1"></div>
@@ -1101,7 +1099,7 @@ export class AccountModal extends BaseModal {
             : html`<div class="mt-8 text-center border-t border-white/10 pt-6">
                 <button
                   @click="${this.handleLogout}"
-                  class="text-[10px] font-bold text-white/20 hover:text-red-400 transition-colors uppercase tracking-widest pb-0.5"
+                  class="text-[10px] font-bold text-white/20 hover:text-red-400 transition-colors  tracking-wide pb-0.5"
                 >
                   ${translateText("account_modal.clear_session")}
                 </button>

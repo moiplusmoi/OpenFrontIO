@@ -63,7 +63,7 @@ describe("o-modal tab row", () => {
           "sm:px-4",
           "sm:text-sm",
           "sm:leading-5",
-          "sm:tracking-wider",
+          "sm:tracking-wide",
         ]),
       );
     }

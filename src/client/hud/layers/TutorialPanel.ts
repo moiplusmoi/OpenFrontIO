@@ -423,8 +423,7 @@ export class TutorialPanel extends LitElement implements Controller {
         @contextmenu=${(e: MouseEvent) => e.preventDefault()}
       >
         <div class="flex items-center justify-between gap-2 mb-1">
-          <span
-            class="font-bold text-cyber-yellow uppercase tracking-wide text-sm"
+          <span class="font-bold text-cyber-yellow  tracking-wide text-sm"
             >${translateText("tutorial.title")}</span
           >
           <span class="flex items-center gap-2 text-sm text-gray-300">

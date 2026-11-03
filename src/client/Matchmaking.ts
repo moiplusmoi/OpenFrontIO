@@ -133,7 +133,7 @@ export class MatchmakingModal extends BaseModal {
           </p>
           <button
             @click=${this.openSubscriptions}
-            class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold uppercase tracking-wider rounded-xl transition-colors"
+            class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold  tracking-wide rounded-xl transition-colors"
           >
             ${translateText("matchmaking_modal.limit_upsell")}
           </button>

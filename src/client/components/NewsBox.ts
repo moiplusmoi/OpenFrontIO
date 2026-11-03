@@ -137,7 +137,7 @@ export class NewsBox extends LitElement {
       >
         <div class="flex items-center gap-3">
           <span
-            class="shrink-0 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded ${typeLabelColors[
+            class="shrink-0 text-[10px] font-bold tracking-wide px-2 py-0.5 rounded ${typeLabelColors[
               item.type
             ] ?? typeLabelColors["announcement"]}"
             >${translateText(

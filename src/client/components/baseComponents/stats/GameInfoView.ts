@@ -151,7 +151,7 @@ export class GameInfoView extends LitElement {
         <button
           type="button"
           @click=${() => this.retry()}
-          class="rounded-lg border border-malibu-blue/40 bg-malibu-blue/20 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-aquarius transition-colors hover:border-malibu-blue/60 hover:bg-malibu-blue/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aquarius/70"
+          class="rounded-lg border border-malibu-blue/40 bg-malibu-blue/20 px-5 py-2.5 text-xs font-bold  tracking-wide text-aquarius transition-colors hover:border-malibu-blue/60 hover:bg-malibu-blue/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aquarius/70"
         >
           ${translateText("game_info_modal.retry")}
         </button>
@@ -213,7 +213,7 @@ export class GameInfoView extends LitElement {
             <div>
               <div class="mb-2 flex flex-wrap items-center gap-2">
                 <span
-                  class="rounded-md border border-malibu-blue/25 bg-malibu-blue/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-aquarius"
+                  class="rounded-md border border-malibu-blue/25 bg-malibu-blue/15 px-2.5 py-1 text-[10px] font-bold  tracking-wide text-aquarius"
                 >
                   ${translateText(
                     info.config.gameMode === GameMode.Team
@@ -222,7 +222,7 @@ export class GameInfoView extends LitElement {
                   )}
                 </span>
                 <span
-                  class="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white/45"
+                  class="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold  tracking-wide text-white/45"
                 >
                   ${this.gameTypeLabel(info.config.gameType)}
                 </span>
@@ -272,7 +272,7 @@ export class GameInfoView extends LitElement {
     return html`
       <div class="rounded-xl border border-white/[0.08] bg-black/15 p-2.5">
         <div
-          class="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-white/35"
+          class="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold  tracking-wide text-white/35"
         >
           <span class="text-aquarius/70" aria-hidden="true">${icon}</span>
           ${label}

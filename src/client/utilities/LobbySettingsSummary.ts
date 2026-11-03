@@ -11,7 +11,7 @@ import { renderDuration, translateText } from "../../client/Utils";
 // The homepage lobby card's modifier pill, one size down: a lobby can run a
 // dozen settings and they all have to fit beside the preview.
 export const LOBBY_SETTING_TAG =
-  "rounded bg-malibu-blue px-1.5 py-0.5 text-[11px] font-bold tracking-widest text-white";
+  "rounded bg-malibu-blue px-1.5 py-0.5 text-[11px] font-bold tracking-wide text-white";
 
 const DISABLED_UNIT_KEYS: Record<string, string> = {
   City: "unit_type.city",
@@ -217,9 +217,7 @@ export function disabledUnitsBox(
       data-disabled-units
       class="${className} p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
     >
-      <div
-        class="text-xs font-bold text-red-400 uppercase tracking-widest mb-2"
-      >
+      <div class="text-xs font-bold text-red-400  tracking-wide mb-2">
         ${translateText("private_lobby.disabled_units")}
       </div>
       <div class="flex flex-wrap gap-2">
@@ -261,9 +259,7 @@ export function hostCheatsBox(
       data-host-cheats
       class="${className} p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg"
     >
-      <div
-        class="text-xs font-bold text-yellow-400 uppercase tracking-widest mb-2"
-      >
+      <div class="text-xs font-bold text-yellow-400  tracking-wide mb-2">
         ${translateText("private_lobby.host_cheats")}
       </div>
       <div class="flex flex-wrap gap-2">

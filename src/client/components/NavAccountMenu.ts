@@ -821,7 +821,7 @@ export class NavAccountMenu extends LitElement {
         <span
           id="nav-account-signin-text"
           data-account-signin-text
-          class="hidden text-xs font-bold tracking-widest"
+          class="hidden text-xs font-bold tracking-wide"
           data-i18n="main.sign_in"
         >
         </span>

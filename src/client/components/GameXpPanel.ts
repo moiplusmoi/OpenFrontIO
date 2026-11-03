@@ -933,7 +933,7 @@ export class GameXpPanel extends LitElement {
       // Becoming a Legend: the biggest moment on the track.
       key = "legend";
       content = html`<div
-        class="xp-levelup-in xp-legend-text text-center text-2xl font-black uppercase italic tracking-wide sm:text-3xl"
+        class="xp-levelup-in xp-legend-text text-center text-2xl font-black  italic tracking-wide sm:text-3xl"
         data-xp-caption-levelup=${levelUp}
         data-xp-caption-legend
       >
@@ -943,7 +943,7 @@ export class GameXpPanel extends LitElement {
       // The level-up moment: a big "LEVEL 24!" that slams in.
       key = `lvl-${levelUp}`;
       content = html`<div
-        class="xp-levelup-in text-center text-2xl font-black uppercase italic tracking-wide text-yellow-300 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)] sm:text-3xl"
+        class="xp-levelup-in text-center text-2xl font-black  italic tracking-wide text-yellow-300 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)] sm:text-3xl"
         data-xp-caption-levelup=${levelUp}
       >
         ${translateText("progression.level_reached", { level: levelUp })}
@@ -962,14 +962,14 @@ export class GameXpPanel extends LitElement {
         content = html`<div
           class="xp-levelup-in xp-bonus-text ${boost
             ? ""
-            : "xp-bonus-text-cut"} text-center text-xl font-black uppercase italic tracking-wide sm:text-2xl"
+            : "xp-bonus-text-cut"} text-center text-xl font-black  italic tracking-wide sm:text-2xl"
           data-xp-caption-step=${r?.step ?? REST_STEP}
         >
           ${this.captionContent(caption)}
         </div>`;
       } else if (caption !== null) {
         content = html`<div
-          class="xp-caption-in text-center text-lg font-black uppercase italic tracking-wide sm:text-xl"
+          class="xp-caption-in text-center text-lg font-black  italic tracking-wide sm:text-xl"
           data-xp-caption-step=${r?.step ?? REST_STEP}
         >
           ${this.captionContent(caption)}
@@ -1166,7 +1166,7 @@ export class GameXpPanel extends LitElement {
     if (s.kind === "provisional") {
       return html`<div
         data-xp-provisional
-        class="mb-1 flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-wider text-amber-300"
+        class="mb-1 flex items-center justify-center gap-2 text-[11px] font-bold  tracking-wide text-amber-300"
       >
         ${s.confirming
           ? html`<span
@@ -1187,7 +1187,7 @@ export class GameXpPanel extends LitElement {
     if (s.kind === "result" && s.reconciled?.outcome.matched) {
       return html`<div
         data-xp-confirmed
-        class="mb-1 text-center text-[11px] font-bold uppercase tracking-wider text-green-400"
+        class="mb-1 text-center text-[11px] font-bold  tracking-wide text-green-400"
       >
         ${translateText("progression.xp_confirmed")}
       </div>`;
@@ -1769,9 +1769,7 @@ export class GameXpPanel extends LitElement {
           .size=${48}
         ></level-badge>
         <div class="min-w-0">
-          <div
-            class="text-[10px] font-bold uppercase tracking-[0.18em] text-yellow-300"
-          >
+          <div class="text-[10px] font-bold  tracking-[0.18em] text-yellow-300">
             ${translateText("progression.legend")}
           </div>
           <div class="text-sm text-white/80">
@@ -1841,9 +1839,7 @@ export class GameXpPanel extends LitElement {
           ></level-badge>
         </span>
         <div class="min-w-0">
-          <div
-            class="text-[10px] font-bold uppercase tracking-[0.18em] text-yellow-300"
-          >
+          <div class="text-[10px] font-bold  tracking-[0.18em] text-yellow-300">
             ${translateText("progression.new_milestone")}
           </div>
           <div class="text-lg font-black leading-tight text-white">
@@ -1923,7 +1919,7 @@ export class GameXpPanel extends LitElement {
             </span>
             <div class="min-w-0 text-left">
               <div
-                class="text-[10px] font-bold uppercase tracking-[0.18em] text-purple-300"
+                class="text-[10px] font-bold  tracking-[0.18em] text-purple-300"
               >
                 ${translateText("progression.unlocked")}
               </div>
@@ -1988,7 +1984,7 @@ export class GameXpPanel extends LitElement {
         <div class="min-w-0 flex-[1_1_220px]">
           <div
             data-xp-rewards-heading
-            class="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/50"
+            class="mb-1 text-[10px] font-bold  tracking-[0.18em] text-white/50"
           >
             ${translateText(summary.headingKey, summary.headingParams)}
           </div>
@@ -2278,7 +2274,7 @@ export class GameXpPanel extends LitElement {
       >
         <div
           data-xp-line=${attrs.line ?? nothing}
-          class="truncate text-[10px] font-bold uppercase tracking-wider text-blue-200/55"
+          class="truncate text-[10px] font-bold  tracking-wide text-blue-200/55"
         >
           ${label}
         </div>
@@ -2318,7 +2314,7 @@ export class GameXpPanel extends LitElement {
             style=${accent === null
               ? nothing
               : `--accent-a: ${accent[0]}; --accent-b: ${accent[1]}`}
-            class="inline-block text-sm font-bold uppercase italic tracking-wide ${m.permille >
+            class="inline-block text-sm font-bold  italic tracking-wide ${m.permille >
             1000
               ? "xp-bonus-line"
               : "text-sky-300"} ${this.slideSlotClass(shown)}"

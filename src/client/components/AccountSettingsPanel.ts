@@ -171,9 +171,7 @@ export class AccountSettingsPanel extends LitElement {
     }
     return html`
       <div class="bg-white/5 rounded-xl border border-white/10 p-6">
-        <div
-          class="text-xs text-white/40 uppercase tracking-widest font-bold mb-4"
-        >
+        <div class="text-xs text-white/40  tracking-wide font-bold mb-4">
           ${translateText("account_modal.privacy_title")}
         </div>
         ${levelHidden === undefined
@@ -252,8 +250,7 @@ export class AccountSettingsPanel extends LitElement {
         class="level-visibility-preview mt-4 flex items-center gap-3 rounded-lg bg-black/20 border border-white/5 px-4 py-3"
         aria-hidden="true"
       >
-        <span
-          class="text-[10px] uppercase tracking-widest font-bold text-white/40"
+        <span class="text-[10px]  tracking-wide font-bold text-white/40"
           >${translateText("account_modal.level_visibility_others_see")}</span
         >
         <span class="flex items-center gap-1.5 text-white font-semibold">
@@ -287,9 +284,7 @@ export class AccountSettingsPanel extends LitElement {
         ${this.renderEmailField()}
         <div class="flex items-center gap-4 py-1">
           <div class="h-px bg-white/10 flex-1"></div>
-          <span
-            class="text-[10px] uppercase tracking-widest text-white/30 font-bold"
-          >
+          <span class="text-[10px]  tracking-wide text-white/30 font-bold">
             ${translateText("account_modal.or")}
           </span>
           <div class="h-px bg-white/10 flex-1"></div>

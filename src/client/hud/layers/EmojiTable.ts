@@ -161,7 +161,7 @@ export class EmojiTable extends LitElement {
     return html`
       <section class="hidden sm:block">
         <h3
-          class="mb-1 text-center text-[11px] font-semibold uppercase tracking-wider text-zinc-400"
+          class="mb-1 text-center text-[11px] font-semibold  tracking-wide text-zinc-400"
         >
           ${translateText("emoji_table.favorites")}
         </h3>
@@ -268,9 +268,7 @@ export class EmojiTable extends LitElement {
     if (section.columns === 3) grid = "grid-cols-[repeat(3,auto)]";
     return html`
       <section>
-        <h3
-          class="mb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400"
-        >
+        <h3 class="mb-1 text-[11px] font-semibold  tracking-wide text-zinc-400">
           ${translateText(section.title)}
         </h3>
         <div class="grid ${grid} gap-1">

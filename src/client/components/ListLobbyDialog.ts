@@ -123,13 +123,13 @@ export class ListLobbyDialog extends LitElement {
           <div class="flex gap-3">
             <button
               @click=${() => this.handleCancel()}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all"
             >
               ${translateText("common.cancel")}
             </button>
             <button
               @click=${() => this.handleConfirm(maxPlayers)}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-malibu-blue text-white hover:brightness-110 transition-all border-0"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-malibu-blue text-white hover:brightness-110 transition-all border-0"
             >
               ${translateText("host_modal.list_lobby_confirm")}
             </button>

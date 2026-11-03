@@ -172,7 +172,7 @@ export class CosmeticPreview extends LitElement {
         <span class="text-lg font-black leading-none ${colorClass}"
           >${pack.amount.toLocaleString()}</span
         >
-        <span class="text-[10px] font-bold leading-none text-white/50 uppercase"
+        <span class="text-[10px] font-bold leading-none text-white/50 "
           >${translateText(currencyKey)}</span
         >
         ${pack.product?.price
@@ -184,7 +184,7 @@ export class CosmeticPreview extends LitElement {
           : nothing}
         ${pack.bonusAmount > 0
           ? html`<div
-              class="absolute top-8 -right-10 w-40 bg-green-500 text-white text-[10px] font-black py-0.5 rotate-45 shadow-md uppercase tracking-wide pointer-events-none"
+              class="absolute top-8 -right-10 w-40 bg-green-500 text-white text-[10px] font-black py-0.5 rotate-45 shadow-md  tracking-wide pointer-events-none"
             >
               ${translateText("cosmetics.free", {
                 numFree: pack.bonusAmount.toLocaleString(),
@@ -206,9 +206,9 @@ export class CosmeticPreview extends LitElement {
         ? "text-2xl font-bold text-green-400"
         : "text-sm font-bold text-green-400";
       const unitClass = large
-        ? "text-xs text-white/50 uppercase"
-        : "text-[10px] text-white/50 uppercase";
-      const perkClass = `self-start text-left ${large ? "text-xs" : "text-[10px]"} font-bold text-purple-300 uppercase tracking-wide`;
+        ? "text-xs text-white/50 "
+        : "text-[10px] text-white/50 ";
+      const perkClass = `self-start text-left ${large ? "text-xs" : "text-[10px]"} font-bold text-purple-300  tracking-wide`;
       // The Steam licence a buyer of this tier must hold already confers the
       // verified name and public lobbies, so the tier does not claim them.
       const licencePerks = !subscription.requiresSteamLicence;
@@ -296,7 +296,7 @@ export class CosmeticPreview extends LitElement {
       )}
       ${hidden > 0
         ? html`<span
-            class="absolute bottom-1 right-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-white"
+            class="absolute bottom-1 right-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-black  tracking-wide text-white"
             >${translateText("cosmetics.pack_more_items", {
               count: hidden,
             })}</span
@@ -307,7 +307,7 @@ export class CosmeticPreview extends LitElement {
 
   private renderDefaultPreview(): TemplateResult {
     return html`<div
-      class="w-full h-full flex items-center justify-center text-white/40 text-xs uppercase"
+      class="w-full h-full flex items-center justify-center text-white/40 text-xs "
     >
       ${translateText("territory_patterns.pattern.default")}
     </div>`;

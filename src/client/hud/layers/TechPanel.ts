@@ -184,7 +184,7 @@ export class TechPanel extends LitElement implements Controller {
     return html`
       <section class="flex flex-col gap-2">
         <h3
-          class="flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-wider text-zinc-300"
+          class="flex items-center gap-2 px-1 text-sm font-semibold  tracking-wide text-zinc-300"
         >
           <of-icon name=${b.icon} size="16"></of-icon>
           ${translateText(`tech_panel.branch.${b.key}`)}

@@ -211,7 +211,7 @@ export class ClanDonateDialog extends LitElement {
             </span>`
           : ""}
         <span
-          class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider"
+          class="flex items-center gap-1.5 text-xs font-bold  tracking-wide"
         >
           ${type === "hard"
             ? html`<plutonium-icon .size=${14}></plutonium-icon>`
@@ -260,7 +260,7 @@ export class ClanDonateDialog extends LitElement {
           </div>
 
           <label
-            class="block text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2"
+            class="block text-[10px] font-bold text-white/40  tracking-wide mb-2"
             for="clan-donate-amount"
             >${translateText("clan_modal.donate_amount")}</label
           >
@@ -304,7 +304,7 @@ export class ClanDonateDialog extends LitElement {
               type="button"
               @click=${() => this.cancel()}
               ?disabled=${this.submitting}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-50 disabled:pointer-events-none"
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-50 disabled:pointer-events-none"
             >
               ${translateText("common.cancel")}
             </button>
@@ -313,7 +313,7 @@ export class ClanDonateDialog extends LitElement {
               data-action="donate"
               @click=${() => void this.submit()}
               ?disabled=${!canSubmit}
-              class="flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl text-white transition-all disabled:opacity-50 disabled:pointer-events-none border-0 ${isHard
+              class="flex-1 px-4 py-2.5 text-xs font-bold  tracking-wide rounded-xl text-white transition-all disabled:opacity-50 disabled:pointer-events-none border-0 ${isHard
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-amber-600 hover:bg-amber-700"}"
             >

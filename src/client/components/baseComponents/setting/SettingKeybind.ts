@@ -57,7 +57,7 @@ export class SettingKeybind extends LitElement {
 
           <div class="flex flex-col gap-1">
             <button
-              class="text-[10px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/20 border border-white/10 px-3 py-1 rounded text-white/60 hover:text-white transition-colors ${canReset
+              class="text-[10px] font-bold  tracking-wide bg-white/5 hover:bg-white/20 border border-white/10 px-3 py-1 rounded text-white/60 hover:text-white transition-colors ${canReset
                 ? ""
                 : "opacity-50 cursor-not-allowed pointer-events-none"}"
               @click=${this.resetToDefault}
@@ -66,7 +66,7 @@ export class SettingKeybind extends LitElement {
               ${translateText("user_setting.reset")}
             </button>
             <button
-              class="text-[10px] font-bold uppercase tracking-wider bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 px-3 py-1 rounded text-white/60 hover:text-red-200 transition-colors"
+              class="text-[10px] font-bold  tracking-wide bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 px-3 py-1 rounded text-white/60 hover:text-red-200 transition-colors"
               @click=${this.unbindKey}
             >
               ${translateText("user_setting.unbind")}

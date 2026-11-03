@@ -135,7 +135,7 @@ export class PackContentsDialog extends LitElement {
                     ></cosmetic-card>
                     <span
                       data-pack-contents-type
-                      class="text-[10px] font-bold uppercase tracking-wider text-white/50"
+                      class="text-[10px] font-bold  tracking-wide text-white/50"
                       >${cosmeticTypeLabel(item)}</span
                     >
                   </div>`,

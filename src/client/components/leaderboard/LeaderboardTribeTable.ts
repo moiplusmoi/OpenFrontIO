@@ -114,7 +114,7 @@ export class LeaderboardTribeTable extends LitElement {
         <div
           class="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-6"
         ></div>
-        <p class="text-blue-200/80 text-sm font-bold tracking-widest uppercase">
+        <p class="text-blue-200/80 text-sm font-bold tracking-wide ">
           ${translateText("common.loading")}
         </p>
       </div>
@@ -148,7 +148,7 @@ export class LeaderboardTribeTable extends LitElement {
           ${this.error ?? translateText("leaderboard_modal.error")}
         </p>
         <button
-          class="px-8 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-sm font-bold uppercase transition-all active:scale-95"
+          class="px-8 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-sm font-bold  transition-all active:scale-95"
           @click=${() => this.loadTribeLeaderboard()}
         >
           ${translateText("leaderboard_modal.try_again")}
@@ -257,7 +257,7 @@ export class LeaderboardTribeTable extends LitElement {
               </colgroup>
               <thead class="sticky top-0 z-10">
                 <tr
-                  class="text-white/40 text-[10px] uppercase tracking-wider border-b border-white/5 bg-[#1e2433]"
+                  class="text-white/40 text-[10px]  tracking-wide border-b border-white/5 bg-[#1e2433]"
                 >
                   <th class="py-4 px-4 text-center font-bold">
                     ${translateText("leaderboard_modal.rank")}

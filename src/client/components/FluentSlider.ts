@@ -96,7 +96,7 @@ export class FluentSlider extends LitElement {
           @change=${this.handleSliderChange}
         />
         <div
-          class="text-xs uppercase font-bold tracking-wider text-center w-full leading-tight mb-1 flex flex-col items-center ${this
+          class="text-xs  font-bold tracking-wide text-center w-full leading-tight mb-1 flex flex-col items-center ${this
             .value > 0
             ? "text-white"
             : "text-white/60"}"
@@ -137,7 +137,7 @@ export class FluentSlider extends LitElement {
                       this.value === this.defaultValue &&
                       this.defaultLabelKey
                     ? html`${this.value}
-                        <span class="text-white/40 uppercase"
+                        <span class="text-white/40 "
                           >(${translateText(this.defaultLabelKey)})</span
                         >`
                     : this.value}

@@ -70,7 +70,7 @@ export class DesktopNavBar extends LitElement {
         <button
           class="nav-menu-item ${currentPage === "page-play"
             ? "active"
-            : ""} text-white/70 hover:text-malibu-blue  font-medium tracking-wider uppercase cursor-pointer transition-colors [&.active]:text-malibu-blue "
+            : ""} text-white/70 hover:text-malibu-blue  font-medium tracking-wide  cursor-pointer transition-colors [&.active]:text-malibu-blue "
           data-page="page-play"
           data-i18n="main.play"
         ></button>
@@ -79,7 +79,7 @@ export class DesktopNavBar extends LitElement {
           <button
             class="nav-menu-item ${currentPage === "page-item-store"
               ? "active"
-              : ""} text-white/70 hover:text-malibu-blue  font-medium tracking-wider uppercase cursor-pointer transition-colors [&.active]:text-malibu-blue "
+              : ""} text-white/70 hover:text-malibu-blue  font-medium tracking-wide  cursor-pointer transition-colors [&.active]:text-malibu-blue "
             data-page="page-item-store"
             data-i18n="main.store"
             @click=${this._notifications.onStoreClick}
@@ -98,17 +98,17 @@ export class DesktopNavBar extends LitElement {
         <button
           class="no-game-portal nav-menu-item ${currentPage === "page-inventory"
             ? "active"
-            : ""} text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
+            : ""} text-white/70 hover:text-malibu-blue font-medium tracking-wide  cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
           data-page="page-inventory"
           data-i18n="main.inventory"
         ></button>
         <button
-          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
+          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue font-medium tracking-wide  cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
           data-page="page-leaderboard"
           data-i18n="main.leaderboard"
         ></button>
         <button
-          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue font-medium tracking-wider uppercase cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
+          class="no-game-portal nav-menu-item text-white/70 hover:text-malibu-blue font-medium tracking-wide  cursor-pointer transition-colors border-b-2 border-transparent pb-1 [&.active]:border-malibu-blue [&.active]:text-malibu-blue"
           data-page="page-clan"
           data-i18n="main.clans"
         ></button>

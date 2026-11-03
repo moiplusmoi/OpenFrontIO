@@ -267,8 +267,7 @@ export class CoachHints extends LitElement implements Controller {
           class="flex-1 text-left text-sm leading-5 min-w-0"
           @click=${this.onBodyClick}
         >
-          <span
-            class="block font-bold text-cyber-yellow uppercase tracking-wide text-xs"
+          <span class="block font-bold text-cyber-yellow  tracking-wide text-xs"
             >${translateText("coach.title")}</span
           >
           ${translateText(`coach.hint.${hint.id}`)}

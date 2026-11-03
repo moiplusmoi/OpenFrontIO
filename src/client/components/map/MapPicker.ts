@@ -136,7 +136,7 @@ export class MapPicker extends LitElement {
 
   private renderSectionHeading(label: string) {
     return html`<h4
-      class="text-xs font-bold text-white/40 uppercase tracking-widest mb-4 pl-2"
+      class="text-xs font-bold text-white/40  tracking-wide mb-4 pl-2"
     >
       ${label}
     </h4>`;
@@ -154,7 +154,7 @@ export class MapPicker extends LitElement {
           : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"}"
       >
         <span
-          class="flex items-center gap-3 text-sm font-bold text-white uppercase tracking-wider"
+          class="flex items-center gap-3 text-sm font-bold text-white  tracking-wide"
         >
           <svg
             class="w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${expanded
@@ -212,7 +212,7 @@ export class MapPicker extends LitElement {
           ? translateText("common.collapse_all")
           : translateText("common.expand_all")}
         @click=${() => this.toggleExpandAll()}
-        class="h-full flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white transition-all active:scale-95"
+        class="h-full flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold  tracking-wide text-white/60 hover:text-white transition-all active:scale-95"
       >
         <svg
           class="w-3 h-3 shrink-0 transition-transform duration-200 ${anyExpanded
@@ -300,7 +300,7 @@ export class MapPicker extends LitElement {
       type="button"
       role="tab"
       aria-selected=${isActive}
-      class="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${isActive
+      class="px-3 py-2 rounded-lg text-xs font-bold  tracking-wide transition-all active:scale-95 ${isActive
         ? "bg-malibu-blue/20 text-white shadow-[var(--shadow-malibu-blue-soft)]"
         : "text-white/60 hover:text-white"}"
       @click=${() => (this.activeTab = tab)}
@@ -363,7 +363,7 @@ export class MapPicker extends LitElement {
                 />
               </div>
               <div
-                class="text-xs font-bold text-white uppercase tracking-wider text-center leading-tight break-words hyphens-auto"
+                class="text-xs font-bold text-white  tracking-wide text-center leading-tight break-words hyphens-auto"
               >
                 ${translateText("map.random")}
               </div>

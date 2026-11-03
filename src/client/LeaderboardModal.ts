@@ -147,9 +147,7 @@ export class LeaderboardModal extends BaseModal {
     return modalHeader({
       titleContent: html`
         <div class="flex flex-wrap items-center gap-2">
-          <span
-            class="text-white text-xl sm:text-2xl font-bold uppercase tracking-widest"
-          >
+          <span class="text-white text-xl sm:text-2xl font-bold  tracking-wide">
             ${translateText("leaderboard_modal.title")}
           </span>
           ${this.activeTab === "clans" ? dateRange : ""}

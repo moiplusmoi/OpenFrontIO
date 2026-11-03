@@ -76,7 +76,7 @@ export class ClanMyRequestsView extends LitElement {
                       <button
                         @click=${() => this.handleWithdrawRequest(req.tag)}
                         ?disabled=${this.actionPending}
-                        class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/25 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                        class="text-[10px] font-bold  tracking-wide px-3 py-1 rounded-full bg-red-500/15 text-red-400 border border-red-500/20 hover:bg-red-500/25 transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                       >
                         ${translateText("clan_modal.cancel_request")}
                       </button>
