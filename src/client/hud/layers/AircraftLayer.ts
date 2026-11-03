@@ -23,9 +23,9 @@ import type { GameView, UnitView } from "../../view";
 
 /** Below this zoom (screen pixels per tile) the aircraft are hidden. */
 const MIN_SCALE = 0.6;
-const PLANE_TILES = 3.6;
-const PLANE_MIN_PX = 10;
-const PLANE_MAX_PX = 34;
+const PLANE_TILES = 5.5;
+const PLANE_MIN_PX = 16;
+const PLANE_MAX_PX = 52;
 /** One simulation tick (10 per second): the time an aircraft glides over. */
 const TICK_MS = 100;
 
