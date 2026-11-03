@@ -18,30 +18,32 @@ export class OButton extends LitElement {
   @property({ attribute: false }) icon?: TemplateResult;
   @property({ type: Boolean }) disable = false;
   @property({ type: Boolean }) submit = false;
-  @property({ type: Boolean }) uppercase = true;
+  @property({ type: Boolean }) uppercase = false;
 
   createRenderRoot() {
     return this;
   }
 
+  // Quiet and consistent: a fixed radius, semibold sentence-case labels, colour
+  // changes instead of bounces. Focus comes from the global :focus-visible ring.
   private readonly BASE =
-    "font-bold tracking-wider rounded-xl border border-transparent " +
-    "transition-all duration-300 transform hover:-translate-y-px " +
+    "font-semibold tracking-normal rounded-lg border border-transparent " +
+    "transition-colors duration-150 " +
     "outline-none text-center whitespace-normal break-words leading-tight overflow-hidden relative " +
-    "disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:opacity-70";
+    "disabled:cursor-not-allowed disabled:opacity-60";
 
   private variantClasses(): string {
     switch (this.variant) {
       case "primary":
-        return "bg-malibu-blue hover:bg-aquarius text-white disabled:bg-gray-600 disabled:text-gray-300";
+        return "bg-malibu-blue hover:bg-bright-blue active:bg-malibu-blue text-white shadow-sm disabled:bg-hud-raised disabled:text-ink-faint disabled:shadow-none";
       case "secondary":
-        return "bg-gray-700 hover:bg-gray-600 text-white disabled:bg-gray-800 disabled:text-gray-400";
+        return "bg-hud-raised border-hud-line-strong hover:bg-hud text-ink disabled:text-ink-faint";
       case "danger":
-        return "bg-red-600 hover:bg-red-500 text-white disabled:bg-red-900 disabled:text-gray-300";
+        return "bg-red-600 hover:bg-red-500 text-white disabled:bg-hud-raised disabled:text-ink-faint";
       case "warning":
-        return "bg-cyber-yellow hover:brightness-110 text-gray-900 disabled:bg-yellow-900 disabled:text-gray-300";
+        return "bg-cyber-yellow hover:brightness-95 text-gray-900 disabled:bg-hud-raised disabled:text-ink-faint";
       case "ghost":
-        return "bg-transparent hover:bg-white/10 text-malibu-blue disabled:text-gray-500 disabled:hover:bg-transparent";
+        return "bg-transparent hover:bg-white/5 text-aquarius disabled:text-ink-faint disabled:hover:bg-transparent";
     }
   }
 

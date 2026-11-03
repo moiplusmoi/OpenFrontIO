@@ -17,9 +17,12 @@
   "display_override": ["fullscreen", "minimal-ui"],
   "display": "standalone",
   "dir": "auto",
-  "lang": "en",
-  "name": "OpenFront.io",
-  "short_name": "OpenFront",
+  "lang": "fr",
+  "name": "GalloFront",
+  "short_name": "GalloFront",
   "start_url": "/",
-  "id": "/"
+  "id": "/",
+  "description": "Jeu de stratégie territorial, basé sur OpenFront (AGPL-3.0)",
+  "theme_color": "#0a1628",
+  "background_color": "#0a1628"
 }

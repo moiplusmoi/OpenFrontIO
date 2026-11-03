@@ -31,10 +31,18 @@
   --color-surface: #0a1628;
 
   /* In-game HUD panels: navy-tinted instead of neutral gray, so they sit in
-     the same family as the brand surface. */
-  --color-hud: #0b1828;
-  --color-hud-raised: #13243d;
-  --color-hud-line: rgba(63, 169, 245, 0.18);
+     the same family as the brand surface. One family of neutrals, one accent. */
+  --color-hud: #0b1628;
+  --color-hud-raised: #132640;
+  --color-hud-sunken: #081120;
+  --color-hud-line: rgba(120, 175, 235, 0.16);
+  --color-hud-line-strong: rgba(120, 175, 235, 0.32);
+  --color-ink: #e6edf7;
+  --color-ink-muted: #8ea3bf;
+  --color-ink-faint: #5d7090;
+
+  --radius-panel: 0.875rem;
+  --radius-control: 0.5rem;
 
   --shadow-malibu-blue: 0 0 15px rgba(0, 132, 209, 0.2);
   --shadow-malibu-blue-soft: 0 0 12px rgba(0, 132, 209, 0.2);
@@ -56,16 +64,37 @@
     border-color: var(--color-gray-200, currentColor);
   }
 
+  /* Form controls follow the dark UI: a sunken field, a quiet border and an
+     accent ring on focus, instead of the browser's white boxes. */
   input,
   textarea,
   select {
-    background-color: #fff;
-    color: #000;
+    background-color: var(--color-hud-sunken);
+    color: var(--color-ink);
+    border: 1px solid var(--color-hud-line);
+    border-radius: var(--radius-control);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    border-color: var(--color-aquarius);
+    box-shadow: 0 0 0 3px rgba(63, 169, 245, 0.25);
   }
 
   input::placeholder,
   textarea::placeholder {
-    color: var(--color-gray-400);
+    color: var(--color-ink-faint);
+  }
+
+  /* One visible focus style for keyboard users everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--color-aquarius);
+    outline-offset: 2px;
   }
 
   .custom-plutonium-input {
