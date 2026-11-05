@@ -748,7 +748,7 @@ export class ControlPanel extends LitElement implements Controller {
           width: 30px;
           height: 30px;
           border-radius: 50%;
-          background: #38bdf8;
+          background: var(--color-aquarius);
           border: 2px solid #fff;
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
         }
@@ -756,15 +756,15 @@ export class ControlPanel extends LitElement implements Controller {
           width: 30px;
           height: 30px;
           border-radius: 50%;
-          background: #38bdf8;
+          background: var(--color-aquarius);
           border: 2px solid #fff;
         }
         .touch-nudge {
           min-width: 40px;
           min-height: 40px;
-          border-radius: 8px;
-          border: 1px solid rgba(148, 163, 184, 0.6);
-          color: #fff;
+          border-radius: var(--radius-control);
+          border: 1px solid var(--color-hud-line-strong);
+          color: var(--color-ink);
           font-size: 22px;
           line-height: 1;
           background: rgba(30, 41, 59, 0.7);

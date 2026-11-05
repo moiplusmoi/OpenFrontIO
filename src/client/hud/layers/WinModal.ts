@@ -329,9 +329,9 @@ export class WinModal extends LitElement implements Controller {
         justify-content: center;
         min-height: 3rem;
         padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
+        border-radius: var(--radius-control);
         border: 1px solid;
-        color: #fff;
+        color: var(--color-ink);
         font-weight: 700;
         font-size: 1.0625rem;
         line-height: 1.25;
@@ -375,7 +375,7 @@ export class WinModal extends LitElement implements Controller {
         transform: translateY(0) scale(0.98);
       }
       .win-action:focus-visible {
-        outline: 2px solid #3fa9f5;
+        outline: 2px solid var(--color-aquarius);
         outline-offset: 2px;
       }
       .win-action-main {
