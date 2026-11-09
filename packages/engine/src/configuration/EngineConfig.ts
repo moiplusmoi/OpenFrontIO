@@ -446,6 +446,8 @@ export class EngineConfig extends Config {
         );
       case UnitType.Spy:
         return this.costWrapper(() => 300_000, UnitType.Spy);
+      case UnitType.Mine:
+        return this.costWrapper(() => 150_000, UnitType.Mine);
       case UnitType.Airport:
         return this.costWrapper(
           (n) => Math.min(2_000_000, (n + 1) * 750_000),

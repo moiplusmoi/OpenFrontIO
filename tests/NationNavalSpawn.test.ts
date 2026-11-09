@@ -2,6 +2,7 @@ import {
   Difficulty,
   PlayerInfo,
   PlayerType,
+  ResourceType,
   TechId,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
@@ -44,6 +45,9 @@ function setupNation(
   });
   game.endSpawnPhase();
   nation.addGold(10_000_000n);
+  // Submarines and carriers also cost oil and metal, which only mines provide.
+  nation.addResource(ResourceType.Oil, 1_000);
+  nation.addResource(ResourceType.Metal, 1_000);
   for (const tech of techs) {
     nation.startResearch(tech, 0);
     nation.completeResearch();

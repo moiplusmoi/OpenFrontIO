@@ -18,6 +18,7 @@ import { CityExecution } from "./CityExecution";
 import { DefensePostExecution } from "./DefensePostExecution";
 import { AirportExecution } from "./AirportExecution";
 import { BomberExecution } from "./BomberExecution";
+import { MineExecution } from "./MineExecution";
 import { FactoryExecution } from "./FactoryExecution";
 import { FighterExecution } from "./FighterExecution";
 import { MirvExecution } from "./MIRVExecution";
@@ -184,6 +185,9 @@ export class ConstructionExecution implements Execution {
       case UnitType.Factory:
         this.mg.addExecution(new FactoryExecution(this.structure!));
         break;
+      case UnitType.Mine:
+        this.mg.addExecution(new MineExecution(this.structure!));
+        break;
       case UnitType.Airport:
         this.mg.addExecution(new AirportExecution(this.structure!));
         break;
@@ -210,6 +214,7 @@ export class ConstructionExecution implements Execution {
       case UnitType.City:
       case UnitType.Factory:
       case UnitType.Airport:
+      case UnitType.Mine:
         return true;
       default:
         return false;

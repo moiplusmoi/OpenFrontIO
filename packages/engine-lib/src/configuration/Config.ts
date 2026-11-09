@@ -11,6 +11,8 @@ import {
   techDef,
   Gold,
   SpyMission,
+  ResourceCost,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import { PlayerLike } from "@openfront/engine-api/game/ReadViews";
 import { GameConfig } from "@openfront/engine-api/Schemas";
@@ -246,6 +248,19 @@ export class Config {
         return TechId.Mil4;
       default:
         return null;
+    }
+  }
+
+  // ---- GalloFront resources ----
+  /** Resources a unit costs on top of its gold (missing kinds cost nothing). */
+  unitResourceCost(type: UnitType): ResourceCost {
+    switch (type) {
+      case UnitType.Submarine:
+        return { [ResourceType.Oil]: 50 };
+      case UnitType.Carrier:
+        return { [ResourceType.Oil]: 100, [ResourceType.Metal]: 50 };
+      default:
+        return {};
     }
   }
 
@@ -580,6 +595,9 @@ export class Config {
           constructionDuration: this.instantBuild() ? 0 : 2 * 10,
           upgradable: true,
         };
+        break;
+      case UnitType.Mine:
+        info = { constructionDuration: this.instantBuild() ? 0 : 5 * 10 };
         break;
       case UnitType.TransportShip:
       case UnitType.SAMMissile:

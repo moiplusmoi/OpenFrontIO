@@ -1,6 +1,7 @@
 import {
   PlayerInfo,
   PlayerType,
+  ResourceType,
   TechId,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
@@ -57,6 +58,7 @@ describe("player-ordered naval construction", () => {
     const { game, p1 } = await seaGame();
     // No technology, only the second era: three techs owned.
     grant(p1, TechId.Eco1, TechId.Eco2, TechId.Eco3);
+    p1.addResource(ResourceType.Oil, 50);
 
     game.addExecution(
       new ConstructionExecution(p1, UnitType.Submarine, game.ref(WATER_X, ROW)),
@@ -78,6 +80,8 @@ describe("player-ordered naval construction", () => {
       TechId.Def1,
       TechId.Def2,
     );
+    p1.addResource(ResourceType.Oil, 100);
+    p1.addResource(ResourceType.Metal, 50);
 
     game.addExecution(
       new ConstructionExecution(p1, UnitType.Carrier, game.ref(WATER_X, ROW)),
@@ -85,6 +89,18 @@ describe("player-ordered naval construction", () => {
     executeTicks(game, 5);
 
     expect(p1.units(UnitType.Carrier).length).toBe(1);
+  });
+
+  test("a submarine is refused without the oil it costs", async () => {
+    const { game, p1 } = await seaGame();
+    grant(p1, TechId.Eco1, TechId.Eco2, TechId.Eco3);
+
+    game.addExecution(
+      new ConstructionExecution(p1, UnitType.Submarine, game.ref(WATER_X, ROW)),
+    );
+    executeTicks(game, 5);
+
+    expect(p1.units(UnitType.Submarine).length).toBe(0);
   });
 
   test("a submarine is refused in the first era", async () => {

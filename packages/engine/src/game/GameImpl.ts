@@ -27,6 +27,7 @@ import {
   Trios,
   UnitType,
   isNavalCombatant,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdate,
@@ -91,6 +92,7 @@ import {
   Player,
   Unit,
 } from "./Game";
+import { generateResourceDeposits } from "@openfront/engine-lib/game/ResourceDeposits";
 import { PlayerImpl } from "./PlayerImpl";
 import { RailNetwork } from "./RailNetwork";
 import {
@@ -178,6 +180,8 @@ export class GameImpl implements Game {
   /** Tiles from nuke blast radii this tick, drained by the renderer. */
   private _nukeImpactQueue: TileRef[] = [];
 
+  private _deposits: Map<TileRef, ResourceType>;
+
   constructor(
     private _humans: PlayerInfo[],
     private _nations: Nation[],
@@ -207,6 +211,7 @@ export class GameImpl implements Game {
       _config.disableNavMesh(),
     );
     this._sharedWaterCache = new SharedWaterCache(this);
+    this._deposits = generateResourceDeposits(_map);
 
     if (!restoring) {
       if (_config.gameConfig().gameMode === GameMode.Team) {
@@ -1366,6 +1371,14 @@ export class GameImpl implements Game {
   neighbors8(ref: TileRef, out: TileRef[]): number {
     return this._map.neighbors8(ref, out);
   }
+  depositAt(tile: TileRef): ResourceType | undefined {
+    return this._deposits.get(tile);
+  }
+
+  deposits(): ReadonlyMap<TileRef, ResourceType> {
+    return this._deposits;
+  }
+
   isWater(ref: TileRef): boolean {
     return this._map.isWater(ref);
   }

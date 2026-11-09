@@ -210,6 +210,10 @@ describe.each(VARIANTS)("full game snapshots: %s", (_, overrides) => {
         // (airports need mil_2), which the reference game never sets up.
         // CommercialAircraft.test.ts covers its flight and snapshot.
         "CommercialAircraft",
+        // GalloFront resources: the reference game builds no mine yet (nations
+        // get mines with the resource AI). Mine.test.ts covers its output and
+        // snapshot round trip. Remove this once the reference game builds one.
+        "Mine",
       ]);
       const missing = EXECUTION_SNAPSHOT_TYPES.map((t) => t.name).filter(
         (name) => !reference.execTypes.has(name) && !neverStored.has(name),

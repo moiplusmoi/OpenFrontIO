@@ -27,6 +27,9 @@ import {
   ResearchState,
   techLevelOf,
   IntelEntry,
+  RESOURCE_TYPES,
+  ResourceCost,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   AllianceView,
@@ -147,6 +150,12 @@ export class PlayerImpl implements Player {
   // GalloFront espionage (intel replaced, never mutated: identity diff)
   private _lastSpyTick: number = -1;
   private _intel: IntelEntry[] = [];
+  // GalloFront resources: a mine fills this, convoys and sales move it.
+  private _warehouse: Record<ResourceType, number> = {
+    Oil: 0,
+    Metal: 0,
+    Food: 0,
+  };
   public _lastTileChange: number = 0;
   // Bumped on every ownership change of one of this player's tiles (several
   // can happen within one tick, so the tick alone is not a cache key).
@@ -1439,6 +1448,7 @@ export class PlayerImpl implements Player {
     this._myUnitsVersion++;
     this.recordUnitConstructed(type);
     this.removeGold(cost);
+    this.spendResources(this.mg.config().unitResourceCost(type));
     this.removeTroops("troops" in params ? (params.troops ?? 0) : 0);
     this.mg.addUpdate(b.toUpdate());
     this.mg.addUnit(b);
@@ -1481,6 +1491,9 @@ export class PlayerImpl implements Player {
     }
     const requiredTech = this.mg.config().unitRequiredTech(unitType);
     if (requiredTech !== null && !this.hasTech(requiredTech)) {
+      return false;
+    }
+    if (!this.canAffordResources(this.mg.config().unitResourceCost(unitType))) {
       return false;
     }
     const cfg = this.mg.config();
@@ -1634,6 +1647,8 @@ export class PlayerImpl implements Player {
         return targetTile;
       case UnitType.Port:
         return this.portSpawn(targetTile, validTiles);
+      case UnitType.Mine:
+        return this.mineSpawn(targetTile);
       case UnitType.Warship:
       case UnitType.Frigate:
       case UnitType.Destroyer:
@@ -1814,6 +1829,17 @@ export class PlayerImpl implements Player {
     return bestPort?.tile() ?? false;
   }
 
+  /** A mine sits on an owned land deposit that no other mine uses. */
+  mineSpawn(tile: TileRef): TileRef | false {
+    if (!this.mg.isLand(tile)) return false;
+    if (this.mg.ownerID(tile) !== this.smallID()) return false;
+    if (this.mg.depositAt(tile) === undefined) return false;
+    if (this.mg.units(UnitType.Mine).some((m) => m.tile() === tile)) {
+      return false;
+    }
+    return tile;
+  }
+
   landBasedUnitSpawn(tile: TileRef): TileRef | false {
     return this.mg.isLand(tile) && !this.mg.isImpassable(tile) ? tile : false;
   }
@@ -1959,6 +1985,36 @@ export class PlayerImpl implements Player {
   techs(): readonly TechId[] {
     return this._techs;
   }
+  // ---- GalloFront resources ----
+  resource(type: ResourceType): number {
+    return this._warehouse[type];
+  }
+
+  resources(): Readonly<Record<ResourceType, number>> {
+    return this._warehouse;
+  }
+
+  addResource(type: ResourceType, amount: number): void {
+    this._warehouse = {
+      ...this._warehouse,
+      [type]: this._warehouse[type] + amount,
+    };
+  }
+
+  /** Only the kinds the cost names are checked; a missing kind is free. */
+  canAffordResources(cost: ResourceCost): boolean {
+    return RESOURCE_TYPES.every(
+      (t) => (cost[t] ?? 0) <= 0 || this._warehouse[t] >= (cost[t] ?? 0),
+    );
+  }
+
+  spendResources(cost: ResourceCost): void {
+    for (const t of RESOURCE_TYPES) {
+      const amount = cost[t] ?? 0;
+      if (amount > 0) this.addResource(t, -amount);
+    }
+  }
+
   hasTech(id: TechId): boolean {
     return this._techs.includes(id);
   }
@@ -2191,6 +2247,7 @@ export class PlayerImpl implements Player {
       capitalMovedTick: this._capitalMovedTick,
       lastSpyTick: this._lastSpyTick,
       intel: this._intel.map((e) => ({ ...e })),
+      warehouse: { ...this._warehouse },
     };
   }
 
@@ -2270,13 +2327,14 @@ export class PlayerImpl implements Player {
     this._capitalTile = s.capitalTile;
     this._capitalMovedTick = s.capitalMovedTick;
     this._lastSpyTick = s.lastSpyTick;
+    this._warehouse = { ...s.warehouse };
     this._intel = s.intel.map((e) => ({ ...e }));
   }
 }
 
 export const PlayerSnapshot = snapshotType({
   name: "Player",
-  version: 4,
+  version: 5,
   schema: z.object({
     smallID: zInt(),
     info: PlayerInfoSchema,
@@ -2353,11 +2411,14 @@ export const PlayerSnapshot = snapshotType({
     intel: z.array(
       z.object({ target: zInt(), until: zInt(), stale: z.boolean() }),
     ),
+    // v5 (GalloFront): resource warehouse
+    warehouse: z.object({ Oil: zInt(), Metal: zInt(), Food: zInt() }),
   }),
   migrations: {
     1: (d: object) => ({ ...d, techs: [], research: null }),
     2: (d: object) => ({ ...d, capitalTile: null, capitalMovedTick: -1 }),
     3: (d: object) => ({ ...d, lastSpyTick: -1, intel: [] }),
+    4: (d: object) => ({ ...d, warehouse: { Oil: 0, Metal: 0, Food: 0 } }),
   },
 });
 export type PlayerState = z.infer<typeof PlayerSnapshot.schema>;

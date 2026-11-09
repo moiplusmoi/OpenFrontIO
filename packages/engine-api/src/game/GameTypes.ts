@@ -215,6 +215,8 @@ export enum UnitType {
   Train = "Train",
   Factory = "Factory",
   Spy = "Spy",
+  // GalloFront resources: a mine sits next to a deposit and fills its warehouse
+  Mine = "Mine",
   // GalloFront aviation
   Airport = "Airport",
   Bomber = "Bomber",
@@ -418,7 +420,24 @@ export const Structures = unitTypeGroup([
   UnitType.Port,
   UnitType.Factory,
   UnitType.Airport,
+  UnitType.Mine,
 ] as const);
+
+// Deposits on the map: a mine on an owned tile next to one yields its resource.
+export enum ResourceType {
+  Oil = "Oil",
+  Metal = "Metal",
+  Food = "Food",
+}
+
+export const RESOURCE_TYPES = [
+  ResourceType.Oil,
+  ResourceType.Metal,
+  ResourceType.Food,
+] as const;
+
+/** What a unit or action costs in resources (missing kinds cost nothing). */
+export type ResourceCost = Partial<Record<ResourceType, number>>;
 
 export const BuildMenus = unitTypeGroup([
   ...Structures.types,

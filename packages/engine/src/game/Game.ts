@@ -32,6 +32,8 @@ import {
   TechId,
   ResearchState,
   IntelEntry,
+  ResourceCost,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdate,
@@ -145,6 +147,7 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Factory]: Record<string, never>;
+  [UnitType.Mine]: Record<string, never>;
 
   [UnitType.MissileSilo]: Record<string, never>;
 
@@ -463,6 +466,10 @@ export interface Player extends PlayerLike {
   // GalloFront technologies
   techs(): readonly TechId[];
   hasTech(id: TechId): boolean;
+  // GalloFront resources
+  resource(type: ResourceType): number;
+  addResource(type: ResourceType, amount: number): void;
+  canAffordResources(cost: ResourceCost): boolean;
   research(): ResearchState | null;
   startResearch(tech: TechId, endTick: Tick): void;
   completeResearch(): void;
@@ -573,6 +580,9 @@ export interface Game extends GameLike {
   map(): GameMap;
   miniMap(): GameMap;
   forEachTile(fn: (tile: TileRef) => void): void;
+  // Resource deposits: fixed for the map, see generateResourceDeposits.
+  depositAt(tile: TileRef): ResourceType | undefined;
+  deposits(): ReadonlyMap<TileRef, ResourceType>;
   // Zero-allocation neighbor iteration (cardinal only), in the same N, S, W, E
   // order as neighbors().
   forEachNeighbor(tile: TileRef, callback: (neighbor: TileRef) => void): void;
