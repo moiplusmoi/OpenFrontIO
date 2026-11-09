@@ -187,6 +187,10 @@
     "until": "Banned until {date}."
   },
   "build_menu": {
+    "airliners_need_partner": "Airliners need a second airport: your own, or one of a player you can trade with.",
+    "airliners_short": "Airliners",
+    "batch_count": "Batch",
+    "batch_count_title": "Right-click with a structure armed builds this many around the click. Shift + right-click on your structure upgrades this many of its kind (1–200)",
     "desc": {
       "airport": "Launches bombers, fighters and paradrops within 200 tiles (+25 per level); each level is a sortie slot that reloads in 30 s. Needs Offensive Doctrine (mil 2).",
       "atom_bomb": "Small explosion",
@@ -206,20 +210,16 @@
       "submarine": "Stealth torpedo boat. Invisible to enemies until a surface ship or port of theirs is within 35 tiles. Sinks merchant ships outright, and does 40% of the warship shell damage. Needs the second era.",
       "warship": "Captures trade ships, destroys ships and boats"
     },
+    "lot_built": "{placed}/{requested} built",
+    "lot_upgraded": "{placed}/{requested} upgraded",
+    "multi_place": "Lot",
+    "multi_place_title": "Keep the ship armed after each placement, to place several",
+    "multi_single": "One",
     "not_enough_money": "Not enough money",
     "requires_tech": "Requires: {tech}",
     "requires_tech_tap": "Tap to open Technologies",
     "upgrade_amount": "x{amount}",
-    "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several",
-    "multi_place": "Lot",
-    "multi_single": "One",
-    "airliners_short": "Airliners",
-    "lot_built": "{placed}/{requested} built",
-    "lot_upgraded": "{placed}/{requested} upgraded",
-    "multi_place_title": "Keep the ship armed after each placement, to place several",
-    "batch_count": "Batch",
-    "batch_count_title": "Right-click with a structure armed builds this many around the click. Shift + right-click on your structure upgrades this many of its kind (1–200)",
-    "airliners_need_partner": "Airliners need a second airport: your own, or one of a player you can trade with."
+    "warship_shift_hint": "Hold Shift and click to place several ships; hold Shift and drag to select several"
   },
   "change_username_modal": {
     "title": "Change Username",
@@ -871,11 +871,6 @@
     "ranks": "Ranks",
     "things": "Things"
   },
-  "reconnect_banner": {
-    "text": "Connection lost, reconnecting… ({attempt}/{max})",
-    "retry": "Retry now",
-    "slow": "Slow connection (~{ms} ms)"
-  },
   "error_modal": {
     "connection_error": "Connection error!",
     "connection_lost": "Lost connection to the game server and could not reconnect. Refresh the page to try rejoining.",
@@ -1226,13 +1221,13 @@
     "action_esc": "Closes menu. Cancels unit build preview.",
     "action_game_speed": "Game speed down / up (single player)",
     "action_move_camera": "Move camera",
+    "action_naval_batch": "Hold Shift and click to place several naval units in a row (ghost stays armed)",
     "action_pause_game": "Pause / Resume game",
     "action_quick_chat": "Open quick chat",
     "action_ratio_change": "Decrease/Increase attack ratio",
     "action_reset_gfx": "Reset graphics",
     "action_tech_panel": "Open the technologies panel",
     "action_warship_multiselect": "Select multiple warships (drag to draw selection box)",
-    "action_naval_batch": "Hold Shift and click to place several naval units in a row (ghost stays armed)",
     "action_warship_selectall": "Select all your warships",
     "action_zoom": "Zoom out/in",
     "airport": "With Offensive Doctrine (mil 2), build an airport (750k, then +750k per level, 2M max). Each level is a sortie slot: a bomber, fighter or paradrop takes one, and it reloads in 30 s. Its range is 200 tiles (+25 per level). Captured with the land, it keeps its level; its fighters die with it.",
@@ -1257,8 +1252,8 @@
     "build_silo_desc": "Allows launching missiles.",
     "build_warship_desc": "Patrols in an area, capturing enemy trade ships and destroying their Boats (transport ships) and Warships. Spawns from the nearest Port and patrols the area you first clicked to build it. You can control Warships by attack-clicking on them (see action Attack under Hotkeys) and then attack-clicking the new area you want them to move to. Warships can level up (max level 3) by capturing enemy trade ships and destroying their transport boats and Warships. Leveling up increases the Warship's damage and health.",
     "capital": "Your first city becomes your capital: +10% max troops and ×1.5 defense within 30 tiles of it. If it is captured or destroyed, you lose 25% of your troops and gold (the gold goes to the conqueror), territory more than 60 tiles from any remaining city revolts, and your largest remaining city becomes the new capital. You can move the capital to another city from its menu (3 min cooldown).",
-    "drag": "drag",
     "click": "click",
+    "drag": "drag",
     "exit_confirmation": "Are you sure you want to exit the game?",
     "fighter": "600k gold, needs Air Superiority (mil 4). Built from your own territory next to one of your airports (one fighter per airport level), it patrols 60 tiles around it and intercepts enemy bombers and air transports (60%), atom bombs (25%) and hydrogen bombs (15%), one try per target. It has 1 hit point against SAMs and is lost with its airport.",
     "gallofront_aviation": "Aviation: Offensive Doctrine (mil 2) opens airports (O) and paradrops, Aviation (mil 3) bombers, Air Superiority (mil 4) fighters.",
@@ -1541,9 +1536,9 @@
     "title": "OpenFront (ALPHA)",
     "troubleshooting": "Troubleshooting",
     "tutorial": "Tutorial",
+    "tutorial_replay": "Replay the tutorial",
     "user_avatar_alt": "{username}'s avatar",
-    "wiki": "Wiki",
-    "tutorial_replay": "Replay the tutorial"
+    "wiki": "Wiki"
   },
   "map": {
     "achiran": "Achiran",
@@ -2190,6 +2185,16 @@
     "title": "Enjoying OpenFront?",
     "visit_store": "Visit store"
   },
+  "quick_settings": {
+    "effects": "Sound effects",
+    "haptics": "Vibrations",
+    "music": "Music",
+    "size": "Interface size",
+    "size_large": "Large",
+    "size_normal": "Normal",
+    "size_xl": "Extra large",
+    "title": "Quick settings"
+  },
   "radial_menu": {
     "delete_unit_description": "Click to delete the nearest unit",
     "delete_unit_title": "Delete Unit",
@@ -2206,6 +2211,11 @@
     "spy_steal": "Steal",
     "spy_steal_desc": "Steal 8% of this player's gold (up to 2M). 65% success. 300k gold.",
     "upgrade_x": "Upgrade x{amount}"
+  },
+  "reconnect_banner": {
+    "retry": "Retry now",
+    "slow": "Slow connection (~{ms} ms)",
+    "text": "Connection lost, reconnecting… ({attempt}/{max})"
   },
   "relation": {
     "default": "Default",
@@ -2268,17 +2278,6 @@
   },
   "rewards_modal": {
     "title": "Rewards"
-  },
-  "world_event": {
-    "boom": "Economic boom",
-    "crisis": "Economic crisis",
-    "drought": "Drought",
-    "effect": {
-      "boom": "worker gold +50%",
-      "crisis": "worker gold −40%",
-      "drought": "troop growth −40%"
-    },
-    "started": "{event} begins"
   },
   "season": {
     "autumn": "Autumn",
@@ -2723,16 +2722,6 @@
     "desktop": "A new version of OpenFront is available. It will download in the background; reload from the update bar once it is ready.",
     "message": "A new version of OpenFront is available. The page will now refresh to update."
   },
-  "quick_settings": {
-    "title": "Quick settings",
-    "size": "Interface size",
-    "size_normal": "Normal",
-    "size_large": "Large",
-    "size_xl": "Extra large",
-    "music": "Music",
-    "effects": "Sound effects",
-    "haptics": "Vibrations"
-  },
   "user_setting": {
     "alert_frame_desc": "Toggle the alert frame. When enabled, the frame will be displayed when you are betrayed or attacked over land.",
     "alert_frame_label": "Alert Frame",
@@ -3005,5 +2994,16 @@
     "your_game": "Your game",
     "your_team": "Your team won!",
     "youtube_tutorial": "Need some help?"
+  },
+  "world_event": {
+    "boom": "Economic boom",
+    "crisis": "Economic crisis",
+    "drought": "Drought",
+    "effect": {
+      "boom": "worker gold +50%",
+      "crisis": "worker gold −40%",
+      "drought": "troop growth −40%"
+    },
+    "started": "{event} begins"
   }
 }
