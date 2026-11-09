@@ -261,7 +261,11 @@ export class RailNetworkImpl implements RailNetwork {
   }
 
   overlappingRailroads(unitType: UnitType, tile: TileRef): TileRef[] {
-    if (![UnitType.City, UnitType.Port, UnitType.Factory].includes(unitType)) {
+    if (
+      ![UnitType.City, UnitType.Port, UnitType.Factory, UnitType.Mine].includes(
+        unitType,
+      )
+    ) {
       return [];
     }
     const tiles = new Set<TileRef>();
@@ -278,7 +282,11 @@ export class RailNetworkImpl implements RailNetwork {
   }
 
   computeGhostRailPaths(unitType: UnitType, tile: TileRef): TileRef[][] {
-    if (![UnitType.City, UnitType.Port, UnitType.Factory].includes(unitType)) {
+    if (
+      ![UnitType.City, UnitType.Port, UnitType.Factory, UnitType.Mine].includes(
+        unitType,
+      )
+    ) {
       return [];
     }
 
@@ -290,7 +298,7 @@ export class RailNetworkImpl implements RailNetwork {
     const minRangeSquared = this.game.config().trainStationMinRange() ** 2;
     const maxPathSize = this.game.config().railroadMaxSize();
 
-    // A City or Port only joins the rail network when a Factory is already in
+    // A City, Port or Mine only joins the rail network when a Factory is already in
     // range (see CityExecution/PortExecution). A Factory always becomes a
     // station and pulls nearby City/Port/Factory into the network itself, so
     // it needs no pre-existing factory to connect to.
@@ -306,6 +314,7 @@ export class RailNetworkImpl implements RailNetwork {
       UnitType.City,
       UnitType.Factory,
       UnitType.Port,
+      UnitType.Mine,
     ]);
     neighbors.sort((a, b) => a.distSquared - b.distSquared);
 

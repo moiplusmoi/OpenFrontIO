@@ -203,6 +203,7 @@
       "fighter": "Patrols 60 tiles around its airport and intercepts enemy bombers and transports (60%), atom bombs (25%) and hydrogen bombs (15%). One per airport level. Needs Air Superiority (mil 4).",
       "frigate": "Fast raider. Cheap and fragile, with light shells (60% damage). Hunts trade ships and screens the fleet. Each frigate afloat makes the next one dearer.",
       "hydrogen_bomb": "Large explosion",
+      "mine": "Built on an owned deposit. It fills its stock, and convoys carry that stock to your cities, ports and airports, or sell it to a neighbour.",
       "mirv": "Huge explosion, only targets selected player",
       "missile_silo": "Used to launch nukes",
       "port": "Sends trade ships to generate gold",

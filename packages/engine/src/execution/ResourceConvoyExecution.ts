@@ -108,7 +108,7 @@ export class ResourceConvoyExecution implements Execution {
 
   private routeIsValid(mg: Game): boolean {
     if (!this.src.isActive() || !this.dst.isActive()) return false;
-    if (this.src.owner() !== this.owner || this.dst.owner() !== this.owner) {
+    if (this.src.owner() !== this.owner || !this.canReach(this.dst.owner())) {
       return false;
     }
     if (this.src === this.dst || this.amount <= 0) return false;
@@ -130,12 +130,17 @@ export class ResourceConvoyExecution implements Execution {
     return srcType === UnitType.Airport && dstType === UnitType.Airport;
   }
 
+  /** Own structures always; another player's only when the trade is allowed. */
+  private canReach(recipient: Player): boolean {
+    return recipient === this.owner || this.owner.canTrade(recipient);
+  }
+
   private routeStillOwned(): boolean {
     return (
       this.src.isActive() &&
       this.dst.isActive() &&
       this.src.owner() === this.owner &&
-      this.dst.owner() === this.owner
+      this.canReach(this.dst.owner())
     );
   }
 
@@ -184,8 +189,24 @@ export class ResourceConvoyExecution implements Execution {
     }
   }
 
+  /**
+   * Hands the cargo over. Another player's structure is a sale: the buyer pays
+   * the price per unit, and only what it can pay is delivered.
+   */
   private deliver(): void {
-    const stored = this.dst.addStock(this.resource, this.loaded);
+    const buyer = this.dst.owner();
+    let deliverable = this.loaded;
+    const price = this.game!.config().resourcePrice(this.resource);
+    if (buyer !== this.owner) {
+      const affordable = price > 0n ? buyer.gold() / price : 0n;
+      deliverable = Math.min(this.loaded, Number(affordable));
+    }
+    const stored = this.dst.addStock(this.resource, deliverable);
+    if (buyer !== this.owner && stored > 0) {
+      const paid = BigInt(stored) * price;
+      buyer.removeGold(paid);
+      this.owner.addGold(paid);
+    }
     const back = this.loaded - stored;
     if (back > 0) this.src.addStock(this.resource, back);
     this.loaded = 0;

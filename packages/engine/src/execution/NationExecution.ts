@@ -41,6 +41,7 @@ import { NationResearchBehavior } from "./nation/NationResearchBehavior";
 import { NationSpyBehavior } from "./nation/NationSpyBehavior";
 import { NationStructureBehavior } from "./nation/NationStructureBehavior";
 import { NationWarshipBehavior } from "./nation/NationWarshipBehavior";
+import { NationResourceBehavior } from "./nation/NationResourceBehavior";
 import { SpawnExecution } from "./SpawnExecution";
 import { AiAttackBehavior } from "./utils/AiAttackBehavior";
 
@@ -233,6 +234,7 @@ export class NationExecution implements Execution {
     this.airBehavior.maybeAct();
     this.warshipBehavior.maybeSpawnWarship();
     this.warshipBehavior.maybeSpawnSpecialNaval();
+    new NationResourceBehavior(this.random, this.mg, this.player).maybeAct();
     this.handleEmbargoesToHostileNations();
     this.attackBehavior.maybeAttack();
     this.warshipBehavior.counterWarshipInfestation();

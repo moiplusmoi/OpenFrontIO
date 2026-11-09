@@ -50,6 +50,13 @@ function own(
   }
 }
 
+function grantMil2(p: Player) {
+  for (const t of [TechId.Mil1, TechId.Mil2]) {
+    p.startResearch(t, 0);
+    p.completeResearch();
+  }
+}
+
 function convoy(
   g: Game,
   p: Player,
@@ -215,16 +222,15 @@ describe("resource convoy safety", () => {
     expect(from.stock(ResourceType.Food)).toBe(50);
   });
 
-  test("an order naming a structure of another player moves nothing", async () => {
+  test("an embargo keeps a convoy from reaching another player", async () => {
     const { game: g, p1, p2 } = await game(PLAINS);
     own(g, p1, 0, 0, 30, 60);
     own(g, p2, 31, 0, 60, 60);
-    p1.startResearch(TechId.Mil1, 0);
-    p1.completeResearch();
-    p1.startResearch(TechId.Mil2, 0);
-    p1.completeResearch();
+    grantMil2(p1);
     const mine = p1.buildUnit(UnitType.Airport, g.ref(10, 10), {});
     const theirs = p2.buildUnit(UnitType.Airport, g.ref(40, 10), {});
+    p2.addGold(10_000_000n);
+    p1.addEmbargo(p2, false);
     mine.addStock(ResourceType.Food, 50);
 
     convoy(g, p1, mine, theirs, ResourceType.Food, 50, "air");
@@ -232,6 +238,45 @@ describe("resource convoy safety", () => {
 
     expect(mine.stock(ResourceType.Food)).toBe(50);
     expect(theirs.stock(ResourceType.Food)).toBe(0);
+  });
+
+  test("a sale: the buyer pays the price per unit and the seller is paid", async () => {
+    const { game: g, p1, p2 } = await game(PLAINS);
+    own(g, p1, 0, 0, 30, 60);
+    own(g, p2, 31, 0, 60, 60);
+    grantMil2(p1);
+    const seller = p1.buildUnit(UnitType.Airport, g.ref(10, 10), {});
+    const buyer = p2.buildUnit(UnitType.Airport, g.ref(40, 10), {});
+    seller.addStock(ResourceType.Food, 50);
+    p2.addGold(10_000_000n);
+    const price = g.config().resourcePrice(ResourceType.Food);
+    const buyerGold = p2.gold();
+    const sellerGold = p1.gold();
+
+    convoy(g, p1, seller, buyer, ResourceType.Food, 20, "air");
+    runUntil(g, () => buyer.stock(ResourceType.Food) > 0);
+
+    expect(buyer.stock(ResourceType.Food)).toBe(20);
+    expect(p2.gold()).toBe(buyerGold - price * 20n);
+    expect(p1.gold()).toBe(sellerGold + price * 20n);
+  });
+
+  test("a buyer who cannot pay receives nothing and the cargo goes home", async () => {
+    const { game: g, p1, p2 } = await game(PLAINS);
+    own(g, p1, 0, 0, 30, 60);
+    own(g, p2, 31, 0, 60, 60);
+    grantMil2(p1);
+    const seller = p1.buildUnit(UnitType.Airport, g.ref(10, 10), {});
+    const buyer = p2.buildUnit(UnitType.Airport, g.ref(40, 10), {});
+    seller.addStock(ResourceType.Food, 50);
+    // Broke: zero gold, so not even one unit can be paid for.
+    expect(p2.gold()).toBe(0n);
+
+    convoy(g, p1, seller, buyer, ResourceType.Food, 20, "air");
+    executeTicks(g, 200);
+
+    expect(buyer.stock(ResourceType.Food)).toBe(0);
+    expect(seller.stock(ResourceType.Food)).toBe(50);
   });
 
   test("a convoy in flight survives a snapshot round trip", async () => {

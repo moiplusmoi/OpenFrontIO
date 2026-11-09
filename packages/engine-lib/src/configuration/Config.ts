@@ -266,6 +266,16 @@ export class Config {
     return 100;
   }
 
+  /** Gold a buyer pays per unit of a resource it buys from another player. */
+  resourcePrice(type: ResourceType): bigint {
+    switch (type) {
+      case ResourceType.Food:
+        return 500n;
+      default:
+        return 1_000n;
+    }
+  }
+
   /** How much of each resource one structure can hold. */
   resourceStockCapacity(): number {
     return 200;

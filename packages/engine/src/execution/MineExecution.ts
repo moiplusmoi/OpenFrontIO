@@ -1,4 +1,5 @@
 import { zRef } from "@openfront/engine-lib/snapshot/SnapshotType";
+import { TrainStationExecution } from "./TrainStationExecution";
 import { z } from "zod";
 import { Execution, Game, Unit } from "../game/Game";
 import { execSnapshotType } from "../snapshot/ExecutionSnapshot";
@@ -21,6 +22,7 @@ export const MINE_OUTPUT = 10;
 export class MineExecution implements Execution {
   private active: boolean = true;
   private game: Game;
+  private stationCreated = false;
 
   constructor(private mine: Unit) {}
 
@@ -34,6 +36,11 @@ export class MineExecution implements Execution {
       return;
     }
     if (this.mine.isUnderConstruction()) return;
+    // A station lets convoys leave the mine by rail.
+    if (!this.stationCreated) {
+      this.game.addExecution(new TrainStationExecution(this.mine));
+      this.stationCreated = true;
+    }
     const resource = this.game.depositAt(this.mine.tile());
     if (resource === undefined) {
       this.active = false;
@@ -55,6 +62,7 @@ export class MineExecution implements Execution {
     return MineExecutionSnapshot.write({
       active: this.active,
       initialized: this.game !== undefined,
+      stationCreated: this.stationCreated,
       mine: w.unit(this.mine),
     });
   }
@@ -62,6 +70,7 @@ export class MineExecution implements Execution {
   restoreSnapshot(s: MineState, r: SnapshotReader): void {
     this.active = s.active;
     if (s.initialized) this.game = r.game;
+    this.stationCreated = s.stationCreated;
     this.mine = r.unit(s.mine);
   }
 }
@@ -69,6 +78,7 @@ export class MineExecution implements Execution {
 const MineStateSchema = z.object({
   active: z.boolean(),
   initialized: z.boolean(),
+  stationCreated: z.boolean(),
   mine: zRef(),
 });
 

@@ -40,6 +40,7 @@ const submarineIcon = assetUrl("images/NinjaIconWhite.svg");
 const carrierIcon = assetUrl("images/AirportIconWhite.svg");
 const cityIcon = assetUrl("images/CityIconWhite.svg");
 const factoryIcon = assetUrl("images/FactoryIconWhite.svg");
+const mineIcon = assetUrl("images/MineIconWhite.svg");
 const goldCoinIcon = assetUrl("images/GoldCoinIcon.svg");
 const mirvIcon = assetUrl("images/MIRVIcon.svg");
 const missileSiloIcon = assetUrl("images/MissileSiloIconWhite.svg");
@@ -159,6 +160,14 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: factoryIcon,
       description: "build_menu.desc.factory",
       key: "unit_type.factory",
+      countable: true,
+    },
+    // GalloFront resources: built on an owned deposit
+    {
+      unitType: UnitType.Mine,
+      icon: mineIcon,
+      description: "build_menu.desc.mine",
+      key: "unit_type.mine",
       countable: true,
     },
     // GalloFront aviation (gated by Config.unitRequiredTech)
