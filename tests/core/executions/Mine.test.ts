@@ -104,13 +104,14 @@ describe("mines", () => {
 describe("unit resource costs", () => {
   test("building a unit spends its resources", async () => {
     const { game, p1 } = await landGame();
-    p1.addResource(ResourceType.Oil, 500);
-    p1.addResource(ResourceType.Metal, 500);
-    p1.buildUnit(UnitType.Port, game.ref(7, 10), {});
+    // Stocks live in structures, and each holds at most the capacity.
+    p1.buildUnit(UnitType.City, game.ref(3, 10), {});
+    p1.addResource(ResourceType.Oil, 200);
+    p1.addResource(ResourceType.Metal, 200);
     p1.buildUnit(UnitType.Carrier, game.ref(8, 10), {
       patrolTile: game.ref(8, 10),
     });
-    expect(p1.resource(ResourceType.Oil)).toBe(400);
-    expect(p1.resource(ResourceType.Metal)).toBe(450);
+    expect(p1.resource(ResourceType.Oil)).toBe(100);
+    expect(p1.resource(ResourceType.Metal)).toBe(150);
   });
 });

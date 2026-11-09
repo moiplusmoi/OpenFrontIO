@@ -46,8 +46,6 @@ function setupNation(
   game.endSpawnPhase();
   nation.addGold(10_000_000n);
   // Submarines and carriers also cost oil and metal, which only mines provide.
-  nation.addResource(ResourceType.Oil, 1_000);
-  nation.addResource(ResourceType.Metal, 1_000);
   for (const tech of techs) {
     nation.startResearch(tech, 0);
     nation.completeResearch();
@@ -57,6 +55,9 @@ function setupNation(
     new ConstructionExecution(nation, UnitType.Port, game.ref(SHORE_X, 15)),
   );
   executeTicks(game, 5);
+  // Stocks live in structures, so they go in once the port stands.
+  nation.addResource(ResourceType.Oil, 200);
+  nation.addResource(ResourceType.Metal, 200);
   const naval = new NationWarshipBehavior(
     new PseudoRandom(42),
     game,

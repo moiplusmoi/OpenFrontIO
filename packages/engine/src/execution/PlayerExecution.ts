@@ -3,6 +3,7 @@ import {
   Cell,
   PlayerType,
   Structures,
+  ResourceType,
   UnitType,
 } from "@openfront/engine-api/game/GameTypes";
 import { zInt, zPlayerRef } from "@openfront/engine-lib/snapshot/SnapshotType";
@@ -139,10 +140,23 @@ export class PlayerExecution implements Execution {
         100,
     );
     this.player.addTroops(troopInc);
-    const goldFromWorkers =
+    let goldFromWorkers =
       (this.config.goldAdditionRate(this.player, season) *
         BigInt(this.config.worldEventGoldPct(event))) /
       100n;
+    // GalloFront food: cities eat from their own stock. Only the fed share of
+    // the cities earns the workers' gold.
+    const cities = this.player.units(UnitType.City);
+    const interval = this.config.cityFoodIntervalTicks();
+    if (cities.length > 0) {
+      if (this.mg!.ticks() % interval === 0) {
+        for (const city of cities) {
+          city.takeStock(ResourceType.Food, this.config.cityFoodPerInterval());
+        }
+      }
+      const fed = cities.filter((c) => c.stock(ResourceType.Food) > 0).length;
+      goldFromWorkers = (goldFromWorkers * BigInt(fed)) / BigInt(cities.length);
+    }
     this.player.addGold(goldFromWorkers);
 
     // Record stats

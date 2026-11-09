@@ -150,12 +150,6 @@ export class PlayerImpl implements Player {
   // GalloFront espionage (intel replaced, never mutated: identity diff)
   private _lastSpyTick: number = -1;
   private _intel: IntelEntry[] = [];
-  // GalloFront resources: a mine fills this, convoys and sales move it.
-  private _warehouse: Record<ResourceType, number> = {
-    Oil: 0,
-    Metal: 0,
-    Food: 0,
-  };
   public _lastTileChange: number = 0;
   // Bumped on every ownership change of one of this player's tiles (several
   // can happen within one tick, so the tick alone is not a cache key).
@@ -1986,32 +1980,48 @@ export class PlayerImpl implements Player {
     return this._techs;
   }
   // ---- GalloFront resources ----
+  /** Every active structure this player owns. */
+  private ownedStructures(): Unit[] {
+    return this._units.filter((u) => u.isActive() && Structures.has(u.type()));
+  }
+
+  /** A player's stock of a resource: what its structures hold, in total. */
   resource(type: ResourceType): number {
-    return this._warehouse[type];
+    let total = 0;
+    for (const u of this.ownedStructures()) total += u.stock(type);
+    return total;
   }
 
   resources(): Readonly<Record<ResourceType, number>> {
-    return this._warehouse;
+    return Object.fromEntries(
+      RESOURCE_TYPES.map((t) => [t, this.resource(t)]),
+    ) as Record<ResourceType, number>;
   }
 
+  /** Puts resources into the owner's structures that still have room. */
   addResource(type: ResourceType, amount: number): void {
-    this._warehouse = {
-      ...this._warehouse,
-      [type]: this._warehouse[type] + amount,
-    };
+    let left = amount;
+    for (const u of this.ownedStructures()) {
+      if (left <= 0) break;
+      left -= u.addStock(type, left);
+    }
   }
 
   /** Only the kinds the cost names are checked; a missing kind is free. */
   canAffordResources(cost: ResourceCost): boolean {
     return RESOURCE_TYPES.every(
-      (t) => (cost[t] ?? 0) <= 0 || this._warehouse[t] >= (cost[t] ?? 0),
+      (t) => (cost[t] ?? 0) <= 0 || this.resource(t) >= (cost[t] ?? 0),
     );
   }
 
+  /** Takes the cost from the structures' stocks, wherever they hold it. */
   spendResources(cost: ResourceCost): void {
     for (const t of RESOURCE_TYPES) {
-      const amount = cost[t] ?? 0;
-      if (amount > 0) this.addResource(t, -amount);
+      let left = cost[t] ?? 0;
+      for (const u of this.ownedStructures()) {
+        if (left <= 0) break;
+        left -= u.takeStock(t, left);
+      }
     }
   }
 
@@ -2247,7 +2257,6 @@ export class PlayerImpl implements Player {
       capitalMovedTick: this._capitalMovedTick,
       lastSpyTick: this._lastSpyTick,
       intel: this._intel.map((e) => ({ ...e })),
-      warehouse: { ...this._warehouse },
     };
   }
 
@@ -2327,14 +2336,13 @@ export class PlayerImpl implements Player {
     this._capitalTile = s.capitalTile;
     this._capitalMovedTick = s.capitalMovedTick;
     this._lastSpyTick = s.lastSpyTick;
-    this._warehouse = { ...s.warehouse };
     this._intel = s.intel.map((e) => ({ ...e }));
   }
 }
 
 export const PlayerSnapshot = snapshotType({
   name: "Player",
-  version: 5,
+  version: 6,
   schema: z.object({
     smallID: zInt(),
     info: PlayerInfoSchema,
@@ -2411,14 +2419,17 @@ export const PlayerSnapshot = snapshotType({
     intel: z.array(
       z.object({ target: zInt(), until: zInt(), stale: z.boolean() }),
     ),
-    // v5 (GalloFront): resource warehouse
-    warehouse: z.object({ Oil: zInt(), Metal: zInt(), Food: zInt() }),
   }),
   migrations: {
     1: (d: object) => ({ ...d, techs: [], research: null }),
     2: (d: object) => ({ ...d, capitalTile: null, capitalMovedTick: -1 }),
     3: (d: object) => ({ ...d, lastSpyTick: -1, intel: [] }),
     4: (d: object) => ({ ...d, warehouse: { Oil: 0, Metal: 0, Food: 0 } }),
+    // v6: the warehouse is gone; a player's resources are its structures' stocks.
+    5: (d: object) => {
+      const { warehouse: _warehouse, ...rest } = d as Record<string, unknown>;
+      return rest;
+    },
   },
 });
 export type PlayerState = z.infer<typeof PlayerSnapshot.schema>;

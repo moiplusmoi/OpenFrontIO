@@ -11,6 +11,7 @@ import {
   UnitType,
   WarshipState,
   isNavalCombatant,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   GameUpdateType,
@@ -87,6 +88,10 @@ export class UnitImpl implements Unit {
     params: AllUnitParams = {},
   ) {
     this._lastTile = _tile;
+    // A city starts with a reserve of food, so it is not hungry at the first tick.
+    if (_type === UnitType.City) {
+      this._stock = { ...this._stock, Food: mg.config().cityStartingFood() };
+    }
     this._health = toInt(this.mg.unitInfo(_type).maxHealth ?? 1);
     this._targetTile =
       "targetTile" in params ? (params.targetTile ?? undefined) : undefined;
@@ -303,6 +308,8 @@ export class UnitImpl implements Unit {
   // ---- GalloFront sabotage ----
   private _disabledUntil: number = -1;
   private _aircraftTargetedBySAM = false;
+  // GalloFront resources: what this structure holds, per kind (see Config.resourceStockCapacity).
+  private _stock: Record<ResourceType, number> = { Oil: 0, Metal: 0, Food: 0 };
   disable(untilTick: number): void {
     this._disabledUntil = untilTick;
     this.mg.addUpdate(this.toUpdate());
@@ -793,6 +800,29 @@ export class UnitImpl implements Unit {
     return this._hasTrainStation;
   }
 
+  /** Amount of a resource this structure holds. */
+  stock(type: ResourceType): number {
+    return this._stock[type];
+  }
+
+  /** Stores as much of `amount` as the capacity allows; returns what was stored. */
+  addStock(type: ResourceType, amount: number): number {
+    const room = Math.max(
+      0,
+      this.mg.config().resourceStockCapacity() - this._stock[type],
+    );
+    const stored = Math.min(room, amount);
+    this._stock = { ...this._stock, [type]: this._stock[type] + stored };
+    return stored;
+  }
+
+  /** Takes up to `amount` from the stock; returns what was taken. */
+  takeStock(type: ResourceType, amount: number): number {
+    const taken = Math.min(this._stock[type], Math.max(0, amount));
+    this._stock = { ...this._stock, [type]: this._stock[type] - taken };
+    return taken;
+  }
+
   increaseLevel(): void {
     if (this._type === UnitType.SAMLauncher) {
       const currentTick = this.mg.ticks();
@@ -853,6 +883,7 @@ export class UnitImpl implements Unit {
       id: this._id,
       disabledUntil: this._disabledUntil,
       aircraftTargetedBySAM: this._aircraftTargetedBySAM,
+      stock: { ...this._stock },
       type: this._type,
       owner: w.player(this._owner),
       tile: this._tile,
@@ -961,6 +992,7 @@ export class UnitImpl implements Unit {
     this._level = s.level;
     this._disabledUntil = s.disabledUntil;
     this._aircraftTargetedBySAM = s.aircraftTargetedBySAM;
+    this._stock = { ...s.stock };
     this._targetable = s.targetable;
     this._loaded = s.loaded ?? undefined;
     this._trainType = s.trainType ?? undefined;
@@ -973,7 +1005,7 @@ export class UnitImpl implements Unit {
 
 export const UnitSnapshot = snapshotType({
   name: "Unit",
-  version: 2,
+  version: 3,
   schema: z.object({
     id: zInt(),
     type: UnitTypeSchema,
@@ -1021,6 +1053,8 @@ export const UnitSnapshot = snapshotType({
     // v2 (GalloFront): sabotage + SAM lock on aircraft
     disabledUntil: zInt(),
     aircraftTargetedBySAM: z.boolean(),
+    // v3 (GalloFront): resources held
+    stock: z.object({ Oil: zInt(), Metal: zInt(), Food: zInt() }),
     targetable: z.boolean(),
     loaded: z.boolean().nullable(),
     trainType: z.enum(TrainType).nullable(),
@@ -1040,6 +1074,7 @@ export const UnitSnapshot = snapshotType({
       disabledUntil: -1,
       aircraftTargetedBySAM: false,
     }),
+    2: (d: object) => ({ ...d, stock: { Oil: 0, Metal: 0, Food: 0 } }),
   },
 });
 export type UnitState = z.infer<typeof UnitSnapshot.schema>;

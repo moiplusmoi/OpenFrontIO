@@ -214,6 +214,11 @@ describe.each(VARIANTS)("full game snapshots: %s", (_, overrides) => {
         // get mines with the resource AI). Mine.test.ts covers its output and
         // snapshot round trip. Remove this once the reference game builds one.
         "Mine",
+        // GalloFront logistics: no reference-game player sends a convoy yet (the
+        // AI does not ship resources). ResourceConvoy.test.ts covers the convoy,
+        // its order and a snapshot taken mid-flight.
+        "ResourceConvoy",
+        "SendConvoy",
       ]);
       const missing = EXECUTION_SNAPSHOT_TYPES.map((t) => t.name).filter(
         (name) => !reference.execTypes.has(name) && !neverStored.has(name),

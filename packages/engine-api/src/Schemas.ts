@@ -17,6 +17,7 @@ import {
   TechId,
   UnitType,
   SpyMission,
+  ResourceType,
 } from "./game/GameTypes";
 import { PlayerStatsSchema } from "./StatsSchemas";
 
@@ -47,6 +48,7 @@ export type Intent =
   | EmbargoAllIntent
   | UpgradeStructureIntent
   | DeleteUnitIntent
+  | SendConvoyIntent
   | KickPlayerIntent
   | TogglePauseIntent
   | UpdateGameConfigIntent
@@ -541,6 +543,17 @@ export const DeleteUnitIntentSchema = z.object({
   unitId: zb.uint(),
 });
 
+// GalloFront resources: move a stock from one owned structure to another.
+export const SendConvoyIntentSchema = z.object({
+  type: z.literal("send_convoy"),
+  srcId: zb.uint(),
+  dstId: zb.uint(),
+  resource: z.enum(ResourceType),
+  amount: zb.uint(),
+  mode: z.enum(["rail", "sea", "air"]),
+});
+export type SendConvoyIntent = z.infer<typeof SendConvoyIntentSchema>;
+
 export const QuickChatIntentSchema = z.object({
   type: z.literal("quick_chat"),
   recipient: MappedID,
@@ -637,6 +650,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   QuickChatIntentSchema,
   AllianceExtensionIntentSchema,
   DeleteUnitIntentSchema,
+  SendConvoyIntentSchema,
   KickPlayerIntentSchema,
   TogglePauseIntentSchema,
   UpdateGameConfigIntentSchema,

@@ -18,6 +18,7 @@ import { AttackExecution } from "./AttackExecution";
 import { BoatRetreatExecution } from "./BoatRetreatExecution";
 import { ConstructionExecution } from "./ConstructionExecution";
 import { DeleteUnitExecution } from "./DeleteUnitExecution";
+import { SendConvoyExecution } from "./ResourceConvoyExecution";
 import { DonateGoldExecution } from "./DonateGoldExecution";
 import { DonateTroopsExecution } from "./DonateTroopExecution";
 import { EmbargoAllExecution } from "./EmbargoAllExecution";
@@ -229,6 +230,15 @@ export class Executor {
         );
       case "delete_unit":
         return new DeleteUnitExecution(player, intent.unitId);
+      case "send_convoy":
+        return new SendConvoyExecution(
+          player,
+          intent.srcId,
+          intent.dstId,
+          intent.resource,
+          intent.amount,
+          intent.mode,
+        );
       case "quick_chat":
         return new QuickChatExecution(
           player,

@@ -265,6 +265,10 @@ export interface Unit extends UnitLike {
   hash(): number;
   toUpdate(): UnitUpdate;
   hasTrainStation(): boolean;
+  // GalloFront resources held by a structure
+  stock(type: ResourceType): number;
+  addStock(type: ResourceType, amount: number): number;
+  takeStock(type: ResourceType, amount: number): number;
   setTrainStation(trainStation: boolean): void;
   wasDestroyedByEnemy(): boolean;
   destroyer(): Player | undefined;

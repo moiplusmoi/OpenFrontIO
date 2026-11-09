@@ -22,6 +22,10 @@ import { EmbargoExecutionSnapshot } from "../execution/EmbargoExecution";
 import { EmojiExecutionSnapshot } from "../execution/EmojiExecution";
 import { FactoryExecutionSnapshot } from "../execution/FactoryExecution";
 import { MineExecutionSnapshot } from "../execution/MineExecution";
+import {
+  ResourceConvoySnapshot,
+  SendConvoySnapshot,
+} from "../execution/ResourceConvoyExecution";
 import { MarkDisconnectedExecutionSnapshot } from "../execution/MarkDisconnectedExecution";
 import { MirvExecutionSnapshot } from "../execution/MIRVExecution";
 import { MissileSiloExecutionSnapshot } from "../execution/MissileSiloExecution";
@@ -85,6 +89,8 @@ export const EXECUTION_SNAPSHOT_TYPES = [
   EmojiExecutionSnapshot,
   FactoryExecutionSnapshot,
   MineExecutionSnapshot,
+  ResourceConvoySnapshot,
+  SendConvoySnapshot,
   MarkDisconnectedExecutionSnapshot,
   MirvExecutionSnapshot,
   MissileSiloExecutionSnapshot,

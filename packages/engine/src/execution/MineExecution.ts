@@ -14,9 +14,9 @@ export const MINE_INTERVAL_TICKS = 50;
 export const MINE_OUTPUT = 10;
 
 /**
- * Works a mine: while it stands on a deposit and belongs to someone, its
- * owner's warehouse grows with the deposit's resource. Convoys that carry the
- * output to cities, ports and airports come later.
+ * Works a mine: while it stands on a deposit and belongs to someone, its stock
+ * grows with the deposit's resource. Convoys carry that stock to other owned
+ * structures (see ResourceConvoyExecution).
  */
 export class MineExecution implements Execution {
   private active: boolean = true;
@@ -40,7 +40,7 @@ export class MineExecution implements Execution {
       return;
     }
     if (this.game.ticks() % MINE_INTERVAL_TICKS !== 0) return;
-    this.mine.owner().addResource(resource, MINE_OUTPUT);
+    this.mine.addStock(resource, MINE_OUTPUT);
   }
 
   isActive(): boolean {

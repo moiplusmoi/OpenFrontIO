@@ -252,6 +252,25 @@ export class Config {
   }
 
   // ---- GalloFront resources ----
+  /** Food a city starts with; a city with none is hungry and earns less gold. */
+  cityStartingFood(): number {
+    return 150;
+  }
+
+  /** A city eats this much food every this many ticks. */
+  cityFoodPerInterval(): number {
+    return 1;
+  }
+
+  cityFoodIntervalTicks(): number {
+    return 100;
+  }
+
+  /** How much of each resource one structure can hold. */
+  resourceStockCapacity(): number {
+    return 200;
+  }
+
   /** Resources a unit costs on top of its gold (missing kinds cost nothing). */
   unitResourceCost(type: UnitType): ResourceCost {
     switch (type) {
