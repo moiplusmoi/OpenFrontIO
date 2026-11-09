@@ -60,10 +60,10 @@ function carrier(game: Game, owner: Player, x: number, y: number): Unit {
 }
 
 describe("carrier: stats", () => {
-  test("health, air superiority tech and its slower, lighter hull", async () => {
+  test("health, aviation tech and its slower, lighter hull", async () => {
     const { game } = await seaGame();
     expect(game.config().unitInfo(UnitType.Carrier).maxHealth).toBe(1800);
-    expect(game.config().unitRequiredTech(UnitType.Carrier)).toBe(TechId.Mil4);
+    expect(game.config().unitRequiredTech(UnitType.Carrier)).toBe(TechId.Mil3);
     expect(game.config().navalTraits(UnitType.Carrier)).toEqual({
       stepsPerTick: 1,
       moveEveryTicks: 2,

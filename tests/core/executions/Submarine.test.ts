@@ -81,12 +81,10 @@ describe("submarine detection", () => {
 });
 
 describe("submarine stats", () => {
-  test("health, sonar tech and price", async () => {
+  test("health, no tech needed (second era) and price", async () => {
     const { game, p1 } = await seaGame();
     expect(game.config().unitInfo(UnitType.Submarine).maxHealth).toBe(600);
-    expect(game.config().unitRequiredTech(UnitType.Submarine)).toBe(
-      TechId.Def2,
-    );
+    expect(game.config().unitRequiredTech(UnitType.Submarine)).toBeNull();
     expect(game.config().navalTraits(UnitType.Submarine).shellDamagePct).toBe(
       40,
     );

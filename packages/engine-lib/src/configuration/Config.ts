@@ -237,12 +237,11 @@ export class Config {
       // which already hardens warships.
       case UnitType.Destroyer:
         return TechId.Mil2;
-      // Submarines carry sonar, which Radar (def_2) provides.
-      case UnitType.Submarine:
-        return TechId.Def2;
-      // Carriers launch sorties: they need Air Superiority (mil_4).
+      // Submarines need no technology: they unlock with the second era.
+      // Carriers launch sorties from the air arm: Aviation (mil_3), with the
+      // third era (see unitRequiredEra).
       case UnitType.Carrier:
-        return TechId.Mil4;
+        return TechId.Mil3;
       case UnitType.Fighter:
         return TechId.Mil4;
       default:

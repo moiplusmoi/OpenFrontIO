@@ -106,6 +106,33 @@ export class NationWarshipBehavior {
     return false;
   }
 
+  // Submarines and carriers: one of each at a time, bought from a port like a
+  // warship, once the nation can afford and unlock them. Easy nations stay
+  // with the surface fleet.
+  maybeSpawnSpecialNaval(): boolean {
+    if (this.player === null) throw new Error("not initialized");
+    const { difficulty } = this.game.config().gameConfig();
+    if (difficulty === Difficulty.Easy) return false;
+    const chance = difficulty === Difficulty.Medium ? 15 : 40;
+    for (const type of [UnitType.Submarine, UnitType.Carrier] as const) {
+      if (this.game.config().isUnitDisabled(type)) continue;
+      if (this.player.units(type).length > 0) continue;
+      if (this.random.nextInt(0, 100) >= chance) continue;
+      const ports = this.player.units(UnitType.Port);
+      if (ports.length === 0) return false;
+      if (this.player.gold() <= this.cost(type)) continue;
+      const port = this.random.randElement(ports);
+      const targetTile = this.warshipSpawnTile(port.tile(), 250);
+      if (targetTile === null) continue;
+      if (this.player.canBuild(type, targetTile) === false) continue;
+      this.game.addExecution(
+        new ConstructionExecution(this.player, type, targetTile),
+      );
+      return true;
+    }
+    return false;
+  }
+
   private warshipSpawnTile(portTile: TileRef, radius: number): TileRef | null {
     for (let attempts = 0; attempts < 50; attempts++) {
       const randX = this.random.nextInt(

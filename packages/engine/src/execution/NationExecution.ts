@@ -232,6 +232,7 @@ export class NationExecution implements Execution {
     this.spyBehavior.maybeSpy();
     this.airBehavior.maybeAct();
     this.warshipBehavior.maybeSpawnWarship();
+    this.warshipBehavior.maybeSpawnSpecialNaval();
     this.handleEmbargoesToHostileNations();
     this.attackBehavior.maybeAttack();
     this.warshipBehavior.counterWarshipInfestation();
