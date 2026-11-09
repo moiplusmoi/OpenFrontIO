@@ -111,6 +111,7 @@ export function createGame(
   miniGameMap: GameMap,
   config: EngineConfig,
   teamGameSpawnAreas?: TeamGameSpawnAreas,
+  gameID: string = "",
 ): Game {
   const stats = new StatsImpl();
   return new GameImpl(
@@ -121,6 +122,8 @@ export function createGame(
     config,
     stats,
     teamGameSpawnAreas,
+    false,
+    gameID,
   );
 }
 
@@ -193,6 +196,8 @@ export class GameImpl implements Game {
     // Restoring a snapshot: skip team and player setup, the snapshot
     // supplies both (see restoreState).
     restoring: boolean = false,
+    // The game ID seeds the resource deposits, so a restore rebuilds the same ones.
+    gameID: string = "",
   ) {
     const constructorStart = performance.now();
 
@@ -211,7 +216,7 @@ export class GameImpl implements Game {
       _config.disableNavMesh(),
     );
     this._sharedWaterCache = new SharedWaterCache(this);
-    this._deposits = generateResourceDeposits(_map);
+    this._deposits = generateResourceDeposits(_map, gameID);
 
     if (!restoring) {
       if (_config.gameConfig().gameMode === GameMode.Team) {

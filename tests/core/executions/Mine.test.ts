@@ -26,10 +26,16 @@ async function landGame(): Promise<{ game: Game; p1: Player }> {
 }
 
 describe("resource deposits", () => {
-  test("the same map always yields the same deposits", async () => {
+  test("the same game always yields the same deposits", async () => {
     const { game } = await landGame();
-    const again = generateResourceDeposits(game.map());
+    const again = generateResourceDeposits(game.map(), "");
     expect([...again.entries()]).toEqual([...game.deposits().entries()]);
+  });
+
+  test("another game on the same map gets other deposits", async () => {
+    const { game } = await landGame();
+    const other = generateResourceDeposits(game.map(), "another-game");
+    expect([...other.keys()]).not.toEqual([...game.deposits().keys()]);
   });
 
   test("deposits sit on land, never next to each other, at least six", async () => {

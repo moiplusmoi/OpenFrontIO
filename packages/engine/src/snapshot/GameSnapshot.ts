@@ -297,6 +297,7 @@ export function restoreGame(bytes: Uint8Array, deps: RestoreDeps): Game {
     new StatsImpl(),
     deps.teamGameSpawnAreas,
     true,
+    root.gameID ?? "",
   );
 
   // Pass 1: an empty shell for every object, so references resolve.
