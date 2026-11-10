@@ -188,6 +188,7 @@ export class UnitImpl implements Unit {
       troops: this._troops,
       ownerID: this._owner.smallID(),
       lastOwnerID: this._lastOwner?.smallID(),
+      stock: { ...this._stock },
       isActive: this._active,
       reachedTarget: this._reachedTarget,
       warshipState:
@@ -813,6 +814,7 @@ export class UnitImpl implements Unit {
     );
     const stored = Math.min(room, amount);
     this._stock = { ...this._stock, [type]: this._stock[type] + stored };
+    if (stored > 0) this.mg.addUpdate(this.toUpdate());
     return stored;
   }
 
@@ -820,6 +822,7 @@ export class UnitImpl implements Unit {
   takeStock(type: ResourceType, amount: number): number {
     const taken = Math.min(this._stock[type], Math.max(0, amount));
     this._stock = { ...this._stock, [type]: this._stock[type] - taken };
+    if (taken > 0) this.mg.addUpdate(this.toUpdate());
     return taken;
   }
 

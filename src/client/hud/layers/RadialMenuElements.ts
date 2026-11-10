@@ -20,7 +20,7 @@ import { findClosestBy } from "@openfront/engine-lib/Util";
 import { assetUrl } from "@openfront/shared/AssetUrls";
 import { UIState } from "../../UIState";
 import { translateText } from "../../Utils";
-import { GameView, PlayerView } from "../../view";
+import { GameView, PlayerView, UnitView } from "../../view";
 import { BuildItemDisplay, BuildMenu, flattenedBuildTable } from "./BuildMenu";
 import { ChatIntegration } from "./ChatIntegration";
 import { EmojiTable } from "./EmojiTable";
@@ -31,6 +31,7 @@ import { missingTech, requiresTechLabel } from "./TechLock";
 import { ShowTechPanelEvent } from "./TechPanelEvents";
 
 import { EventBus } from "@openfront/shared/EventBus";
+import { ShowConvoyPanelEvent } from "./ConvoyPanelEvents";
 import {
   BuildUnitIntentEvent,
   SendParadropIntentEvent,
@@ -42,6 +43,7 @@ const allianceIcon = assetUrl("images/AllianceIconWhite.svg");
 const boatIcon = assetUrl("images/BoatIconWhite.svg");
 const buildIcon = assetUrl("images/BuildIconWhite.svg");
 const chatIcon = assetUrl("images/ChatIconWhite.svg");
+const mineIcon = assetUrl("images/MineIconWhite.svg");
 const donateGoldIcon = assetUrl("images/DonateGoldIconWhite.svg");
 const donateTroopIcon = assetUrl("images/DonateTroopIconWhite.svg");
 const emojiIcon = assetUrl("images/EmojiIconWhite.svg");
@@ -112,6 +114,7 @@ export const COLORS = {
   breakAlly: "#dc2626",
   breakAllyNoDebuff: "#d97706",
   delete: "#ef4444",
+  convoy: "#0084d1",
   info: "#475569",
   target: "#ef4444",
   attack: "#ef4444",
@@ -143,6 +146,7 @@ export enum Slot {
   Ally = "ally",
   Back = "back",
   Delete = "delete",
+  Convoy = "convoy",
 }
 
 function isFriendlyTarget(params: MenuElementParams): boolean {
@@ -866,6 +870,36 @@ const donateGoldRadialElement: MenuElement = {
   },
 };
 
+/** GalloFront: a structure that can start a convoy, under the cursor on own land. */
+function convoySourceNear(params: MenuElementParams): UnitView | null {
+  return (
+    params.myPlayer
+      .units(UnitType.Mine, UnitType.City, UnitType.Port, UnitType.Airport)
+      .find(
+        (u) =>
+          !u.isUnderConstruction() &&
+          params.game.manhattanDist(u.tile(), params.tile) <= 5,
+      ) ?? null
+  );
+}
+
+export const convoySourceElement: MenuElement = {
+  id: Slot.Convoy,
+  name: "convoy",
+  disabled: (params: MenuElementParams) =>
+    params.game.inSpawnPhase() || convoySourceNear(params) === null,
+  icon: mineIcon,
+  color: COLORS.convoy,
+  tooltipKeys: [
+    { key: "radial_menu.convoy_title", className: "title" },
+    { key: "radial_menu.convoy_description", className: "description" },
+  ],
+  action: (params: MenuElementParams) => {
+    const src = convoySourceNear(params);
+    if (src !== null) params.eventBus.emit(new ShowConvoyPanelEvent(src.id()));
+  },
+};
+
 export const deleteUnitElement: MenuElement = {
   id: Slot.Delete,
   name: "delete",
@@ -1273,6 +1307,7 @@ export const rootMenuElement: MenuElement = {
       ...(isOwnTerritory
         ? [
             deleteUnitElement,
+            convoySourceElement,
             allyRequestElement,
             buildMenuElement,
             ...(hasCityHere ? [setCapitalElement] : []),

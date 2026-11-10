@@ -53,6 +53,7 @@ import { SettingsModal } from "./layers/SettingsModal";
 import { SpawnTimer } from "./layers/SpawnTimer";
 import { CoachHints } from "./layers/CoachHints";
 import { SeasonDisplay } from "./layers/SeasonDisplay";
+import { ConvoyPanel } from "./layers/ConvoyPanel";
 import { TechPanel } from "./layers/TechPanel";
 import { TutorialPanel } from "./layers/TutorialPanel";
 import { UnitDisplay } from "./layers/UnitDisplay";
@@ -113,6 +114,13 @@ export function createRenderer(
   }
   techPanel.game = game;
   techPanel.eventBus = eventBus;
+
+  const convoyPanel = document.querySelector("convoy-panel") as ConvoyPanel;
+  if (!(convoyPanel instanceof ConvoyPanel)) {
+    console.error("ConvoyPanel element not found in the DOM");
+  }
+  convoyPanel.game = game;
+  convoyPanel.eventBus = eventBus;
 
   const gameLeftSidebar = document.querySelector(
     "game-left-sidebar",
@@ -385,6 +393,7 @@ export function createRenderer(
     chatDisplay,
     buildMenu,
     techPanel,
+    convoyPanel,
     new MainRadialMenu(
       eventBus,
       game,

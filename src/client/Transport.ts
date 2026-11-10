@@ -8,6 +8,7 @@ import {
   TechId,
   Tick,
   UnitType,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import {
   AllPlayersStats,
@@ -159,6 +160,17 @@ export class UpgradeBatchIntentEvent implements GameEvent {
 /** GalloFront: start researching a technology. */
 export class SendResearchIntentEvent implements GameEvent {
   constructor(public readonly tech: TechId) {}
+}
+
+/** GalloFront: send a resource convoy from one owned structure to another. */
+export class SendConvoyIntentEvent implements GameEvent {
+  constructor(
+    public readonly srcId: number,
+    public readonly dstId: number,
+    public readonly resource: ResourceType,
+    public readonly amount: number,
+    public readonly mode: "rail" | "sea" | "air",
+  ) {}
 }
 
 /** GalloFront: move the capital to the city on `tile`. */
@@ -393,6 +405,7 @@ export class Transport {
       this.onUpgradeBatchIntent(e),
     );
     this.subscribe(SendResearchIntentEvent, (e) => this.onResearchIntent(e));
+    this.subscribe(SendConvoyIntentEvent, (e) => this.onConvoyIntent(e));
     this.subscribe(SendSetCapitalIntentEvent, (e) =>
       this.onSetCapitalIntent(e),
     );
@@ -1006,6 +1019,17 @@ export class Transport {
       tile: event.tile,
       rocketDirectionUp: event.rocketDirectionUp,
       amount: event.amount,
+    });
+  }
+
+  private onConvoyIntent(event: SendConvoyIntentEvent) {
+    this.sendIntent({
+      type: "send_convoy",
+      srcId: event.srcId,
+      dstId: event.dstId,
+      resource: event.resource,
+      amount: event.amount,
+      mode: event.mode,
     });
   }
 

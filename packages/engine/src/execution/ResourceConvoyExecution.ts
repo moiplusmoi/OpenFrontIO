@@ -1,5 +1,9 @@
 import { TileRef } from "@openfront/engine-api/game/GameMap";
-import { ResourceType, UnitType } from "@openfront/engine-api/game/GameTypes";
+import {
+  ResourceType,
+  SurfaceCombatants,
+  UnitType,
+} from "@openfront/engine-api/game/GameTypes";
 import { zInt, zRef } from "@openfront/engine-lib/snapshot/SnapshotType";
 import { z } from "zod";
 import { Execution, Game, Player, Unit } from "../game/Game";
@@ -22,6 +26,9 @@ import type {
 export const CONVOY_SPEED = { rail: 2, sea: 2, air: 4 } as const;
 
 export type ConvoyMode = keyof typeof CONVOY_SPEED;
+
+/** A sea convoy within this many tiles of an enemy surface ship is sunk. */
+export const CONVOY_INTERCEPT_RANGE = 10;
 
 /**
  * A convoy carries one resource from a structure's stock to another structure
@@ -82,6 +89,12 @@ export class ResourceConvoyExecution implements Execution {
       this.abort();
       return;
     }
+    if (this.isIntercepted(this.game)) {
+      // Sunk at sea: the cargo is lost, nothing comes back.
+      this.loaded = 0;
+      this.active = false;
+      return;
+    }
     if (this.mode === "rail") {
       this.moveAlongRail();
     } else {
@@ -133,6 +146,14 @@ export class ResourceConvoyExecution implements Execution {
   /** Own structures always; another player's only when the trade is allowed. */
   private canReach(recipient: Player): boolean {
     return recipient === this.owner || this.owner.canTrade(recipient);
+  }
+
+  /** Only sea convoys are exposed: an enemy surface ship nearby sinks one. */
+  private isIntercepted(mg: Game): boolean {
+    if (this.mode !== "sea") return false;
+    return mg
+      .nearbyUnits(this.position, CONVOY_INTERCEPT_RANGE, SurfaceCombatants)
+      .some(({ unit }) => unit.owner().canAttackPlayer(this.owner, true));
   }
 
   private routeStillOwned(): boolean {

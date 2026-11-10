@@ -19,6 +19,7 @@ import {
   TechId,
   ResearchState,
   IntelEntry,
+  ResourceType,
 } from "./GameTypes";
 
 export interface GameUpdateViewData {
@@ -192,6 +193,8 @@ export interface UnitUpdate {
   type: GameUpdateType.Unit;
   unitType: UnitType;
   troops: number;
+  // GalloFront resources held by the structure
+  stock?: Record<ResourceType, number>;
   id: number;
   ownerID: number;
   lastOwnerID?: number;

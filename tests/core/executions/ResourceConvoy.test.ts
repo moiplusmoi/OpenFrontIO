@@ -160,6 +160,77 @@ describe("resource convoys by sea", () => {
   }, 120_000);
 });
 
+describe("resource convoy interception", () => {
+  test("an enemy warship near a sea convoy sinks it and the cargo is lost", async () => {
+    const { game: g, p1, p2 } = await game(WORLD);
+    p1.addGold(10_000_000n);
+    p2.addGold(10_000_000n);
+    let anchor: TileRef | null = null;
+    g.map().forEachTile((t) => {
+      if (anchor === null && g.isLand(t) && g.isShore(t)) anchor = t;
+    });
+    const at = anchor!;
+    for (let x = g.x(at) - 60; x <= g.x(at) + 60; x++) {
+      for (let y = g.y(at) - 60; y <= g.y(at) + 60; y++) {
+        if (g.isValidCoord(x, y) && g.isLand(g.ref(x, y)))
+          p1.conquer(g.ref(x, y));
+      }
+    }
+    g.addExecution(new ConstructionExecution(p1, UnitType.Port, at));
+    executeTicks(g, 3);
+    const [from] = p1.units(UnitType.Port);
+    const water = g.getWaterComponent(from.tile());
+    let to: Unit | undefined;
+    let enemyTile: TileRef | undefined;
+    // A far port of ours on the same sea, and an enemy ship on the water next to ours.
+    for (
+      let x = g.x(at) - 60;
+      x <= g.x(at) + 60 && (to === undefined || enemyTile === undefined);
+      x++
+    ) {
+      for (
+        let y = g.y(at) - 60;
+        y <= g.y(at) + 60 && (to === undefined || enemyTile === undefined);
+        y++
+      ) {
+        if (!g.isValidCoord(x, y)) continue;
+        const t = g.ref(x, y);
+        if (
+          to === undefined &&
+          g.isLand(t) &&
+          g.isShore(t) &&
+          g.manhattanDist(t, from.tile()) >= 40 &&
+          water !== null &&
+          g.hasWaterComponent(t, water) &&
+          p1.canBuild(UnitType.Port, t) !== false
+        ) {
+          g.addExecution(new ConstructionExecution(p1, UnitType.Port, t));
+          executeTicks(g, 3);
+          to = p1.units(UnitType.Port).find((u) => u !== from);
+        }
+      }
+    }
+    expect(to, "a second port").toBeDefined();
+    for (let dx = -4; dx <= 4 && enemyTile === undefined; dx++) {
+      for (let dy = -4; dy <= 4 && enemyTile === undefined; dy++) {
+        if (!g.isValidCoord(g.x(from.tile()) + dx, g.y(from.tile()) + dy))
+          continue;
+        const t = g.ref(g.x(from.tile()) + dx, g.y(from.tile()) + dy);
+        if (g.isWater(t)) enemyTile = t;
+      }
+    }
+    expect(enemyTile, "water beside the port").toBeDefined();
+    p2.buildUnit(UnitType.Warship, enemyTile!, { patrolTile: enemyTile! });
+
+    from.addStock(ResourceType.Metal, 30);
+    convoy(g, p1, from, to!, ResourceType.Metal, 30, "sea");
+    executeTicks(g, 20);
+
+    expect(to!.stock(ResourceType.Metal)).toBe(0);
+    expect(from.stock(ResourceType.Metal)).toBe(0);
+  }, 120_000);
+});
+
 describe("resource convoys by air", () => {
   test("a cargo plane carries food between two airports", async () => {
     const { game: g, p1 } = await game(PLAINS);

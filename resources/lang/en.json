@@ -657,6 +657,23 @@
     "teammate_afk_neighbor_info": "You can attack disconnected teammates.",
     "traitor_neighbor_info": "You can betray traitors without becoming a traitor yourself."
   },
+  "convoy": {
+    "amount": "Amount",
+    "cancel": "Cancel",
+    "choose": "Choose a structure",
+    "food": "Food",
+    "metal": "Metal",
+    "mode": "Route",
+    "mode_air": "Air",
+    "mode_rail": "Rail",
+    "mode_sea": "Sea",
+    "oil": "Oil",
+    "resource": "Resource",
+    "route_hint": "Rail needs stations on both ends, sea needs ports on the same sea, air needs airports. The convoy is sunk if an enemy warship comes near on the sea.",
+    "send": "Send",
+    "title": "Send a convoy",
+    "to": "To"
+  },
   "cosmetics": {
     "adfree": "ad-free for life!",
     "ai_label": "Made with AI assistance",
@@ -2197,6 +2214,8 @@
     "title": "Quick settings"
   },
   "radial_menu": {
+    "convoy_description": "Send a resource convoy from this structure.",
+    "convoy_title": "Convoy",
     "delete_unit_description": "Click to delete the nearest unit",
     "delete_unit_title": "Delete Unit",
     "paradrop": "Paradrop",

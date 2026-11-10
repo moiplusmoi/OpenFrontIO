@@ -6,6 +6,7 @@ import {
   TransportShipState,
   UnitType,
   WarshipState,
+  ResourceType,
 } from "@openfront/engine-api/game/GameTypes";
 import { UnitUpdate } from "@openfront/engine-api/game/GameUpdates";
 import { UnitLike } from "@openfront/engine-api/game/ReadViews";
@@ -33,6 +34,7 @@ export class UnitView implements UnitLike {
   public lastPos: TileRef[] = [];
   /** Long-lived renderer state — mutated in place by update(). */
   public state: UnitState;
+  private _stock: Record<ResourceType, number> = { Oil: 0, Metal: 0, Food: 0 };
   /** Engine-only fields not in UnitState. Use warshipState() / transportShipState() to read. */
   private _warshipState?: WarshipState;
   private _transportShipState?: TransportShipState;
@@ -76,6 +78,7 @@ export class UnitView implements UnitLike {
   update(data: UnitUpdate) {
     this.lastPos.push(data.pos);
     this._wasUpdated = true;
+    this._stock = data.stock ?? { Oil: 0, Metal: 0, Food: 0 };
     const wasUnderConstruction = this.state.underConstruction;
     applyUnitUpdateInPlace(this.state, data);
     this._warshipState = data.warshipState;
@@ -121,6 +124,10 @@ export class UnitView implements UnitLike {
   }
   troops(): number {
     return this.state.troops;
+  }
+  /** GalloFront: what this structure holds of a resource. */
+  stock(type: ResourceType): number {
+    return this._stock[type];
   }
   warshipState(): WarshipState {
     if (this._warshipState === undefined) {
