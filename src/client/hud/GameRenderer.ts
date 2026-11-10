@@ -31,6 +31,7 @@ import { AircraftLayer } from "./layers/AircraftLayer";
 import { OverlayLayer } from "./layers/OverlayLayer";
 import { FleetLayer } from "./layers/FleetLayer";
 import { CapitalLayer } from "./layers/CapitalLayer";
+import { DepositLayer } from "./layers/DepositLayer";
 import { SpyLayer } from "./layers/SpyLayer";
 import { ChatDisplay } from "./layers/ChatDisplay";
 import { ChatModal } from "./layers/ChatModal";
@@ -382,6 +383,7 @@ export function createRenderer(
     new SoundEffectController(game, eventBus),
     new AmbienceController(game, eventBus, transformHandler),
     new CapitalLayer(game, transformHandler, inputEl),
+    new DepositLayer(game, transformHandler, inputEl),
     new SpyLayer(game, transformHandler, inputEl),
     new AircraftLayer(game, transformHandler, inputEl),
     overlay,

@@ -1082,6 +1082,11 @@ export class GameView implements GameLike {
   terrainType(ref: TileRef): TerrainType {
     return this._map.terrainType(ref);
   }
+  /** The map, for rules that place things on it (e.g. resource deposits). */
+  gameMap(): GameMap {
+    return this._map;
+  }
+
   forEachTile(fn: (tile: TileRef) => void): void {
     return this._map.forEachTile(fn);
   }
