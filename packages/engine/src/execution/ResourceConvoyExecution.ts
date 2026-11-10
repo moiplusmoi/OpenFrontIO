@@ -31,6 +31,35 @@ export type ConvoyMode = keyof typeof CONVOY_SPEED;
 export const CONVOY_INTERCEPT_RANGE = 10;
 
 /**
+ * The route a convoy from `src` to `dst` would take, or null when no route
+ * exists. Ports join by sea, airports by air, anything with stations by rail.
+ */
+export function convoyModeBetween(
+  mg: Game,
+  src: Unit,
+  dst: Unit,
+): ConvoyMode | null {
+  if (src === dst) return null;
+  if (src.type() === UnitType.Port && dst.type() === UnitType.Port) {
+    const water = mg.getWaterComponent(src.tile());
+    if (water !== null && mg.hasWaterComponent(dst.tile(), water)) return "sea";
+  }
+  if (src.type() === UnitType.Airport && dst.type() === UnitType.Airport) {
+    return "air";
+  }
+  if (src.hasTrainStation() && dst.hasTrainStation()) {
+    const stations = mg.railNetwork().stationManager();
+    const from = stations.findStation(src);
+    const to = stations.findStation(dst);
+    if (from !== null && to !== null) {
+      if (mg.railNetwork().findStationsPath(from, to).length >= 2)
+        return "rail";
+    }
+  }
+  return null;
+}
+
+/**
  * A convoy carries one resource from a structure's stock to another structure
  * of the same owner: by rail between stations, by sea between ports, or by air
  * between airports. It takes its cargo when it leaves; what does not fit at the

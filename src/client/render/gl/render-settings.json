@@ -129,11 +129,11 @@
     "iconGrowZoom": 7,
     "shapes": {
       "City": {
-        "scale": 1,
+        "scale": 0.7,
         "iconFill": 0.85
       },
       "Port": {
-        "scale": 1.08,
+        "scale": 0.75,
         "iconFill": 0.85
       },
       "Factory": {

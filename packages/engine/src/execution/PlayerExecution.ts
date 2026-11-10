@@ -10,6 +10,7 @@ import { zInt, zPlayerRef } from "@openfront/engine-lib/snapshot/SnapshotType";
 import { getMode, simpleHash } from "@openfront/engine-lib/Util";
 import { z } from "zod";
 import { EngineConfig } from "../configuration/EngineConfig";
+import { runResourceCompanies } from "./ResourceCompany";
 import { Execution, Game, Player } from "../game/Game";
 import {
   bumpTraversalGeneration,
@@ -158,6 +159,9 @@ export class PlayerExecution implements Execution {
       goldFromWorkers = (goldFromWorkers * BigInt(fed)) / BigInt(cities.length);
     }
     this.player.addGold(goldFromWorkers);
+
+    // GalloFront trade companies move surplus resources on their own.
+    runResourceCompanies(this.mg!, this.player);
 
     // Record stats
     this.mg.stats().goldWork(this.player, goldFromWorkers);
